@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+publish/
+
+# Visual Studio
+.vs/
+*.user
+
+# Local configuration and data written next to the executable
+settings.json
+Aufzeichnungen/
+GPX/
+*.csv
+*.gpx
