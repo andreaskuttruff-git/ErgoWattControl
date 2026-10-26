@@ -244,12 +244,23 @@ public sealed class RideForm : Form
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         // Handled here rather than in KeyDown so the keys work regardless of which control has focus.
+        // Numpad digits mirror the arrow keys printed on them, so a wireless keypad on the handlebar works with NumLock on or off.
+        switch (keyData)
+        {
+            case Keys.Enter when _route is null:
+                if (_recorder is null) StartRecording(); else StopRecording();
+                return true;
+            case Keys.NumPad0:
+            case Keys.Insert:
+                FitTo(RiderScreen());
+                return true;
+        }
         var step = keyData switch
         {
-            Keys.Up or Keys.Oemplus or Keys.Add => 5,
-            Keys.Down or Keys.OemMinus or Keys.Subtract => -5,
-            Keys.PageUp => 25,
-            Keys.PageDown => -25,
+            Keys.Up or Keys.NumPad8 or Keys.Oemplus or Keys.Add => 5,
+            Keys.Down or Keys.NumPad2 or Keys.OemMinus or Keys.Subtract => -5,
+            Keys.PageUp or Keys.NumPad9 => 25,
+            Keys.PageDown or Keys.NumPad3 => -25,
             _ => 0,
         };
         if (step == 0)
