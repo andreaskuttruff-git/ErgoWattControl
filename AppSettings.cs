@@ -15,6 +15,9 @@ public sealed class AppSettings
     /// <summary>Windows device name (e.g. \\.\DISPLAY1) of the monitor for the ride view; null = first non-primary monitor.</summary>
     public string? RideMonitor { get; set; }
 
+    /// <summary>Upper power limit in W; the cockpit type may allow less (8008/8080: 800 W, others 400 W).</summary>
+    public int MaxWattLimit { get; set; } = ErgoController.AbsoluteMaxWatt;
+
     /// <summary>
     /// CSV file name patterns per recording type (without .csv). Placeholders:
     /// {Datum} = yyyy-MM-dd, {Uhrzeit} = HH-mm-ss, {Strecke} = GPX file name.

@@ -63,6 +63,7 @@ public sealed class RideForm : Form
         BuildLayout();
         EnableMouseDrag(this);
         WattWheel.Attach(this, StepWatt);
+        _controller.SetUserLimit(_settings.MaxWattLimit);
 
         _btnRecord.Click += (_, _) =>
         {
@@ -75,6 +76,7 @@ public sealed class RideForm : Form
         if (demo)
         {
             _demo = new DemoRider();
+            _controller.AssumeCockpitType(40);
             var timer = new System.Windows.Forms.Timer { Interval = 1300 };
             timer.Tick += (_, _) => ShowData(_demo.Next(_controller.TargetWatt));
             Shown += (_, _) =>
@@ -440,7 +442,7 @@ public sealed class RideForm : Form
         }
 
         StopRecording();
-        _route = new RouteSession(route, _settings, ErgoController.MinWatt, ErgoController.MaxWatt);
+        _route = new RouteSession(route, _settings, ErgoController.MinWatt, _controller.MaxWatt);
         _controller.SetTargetWatt(_route.TargetWatt);
         _profile.SetRoute(route);
         _profile.Visible = true;
@@ -497,6 +499,10 @@ public sealed class RideForm : Form
         _settings.GradeFactorPercent = dialog.GradeFactorPercent;
         _settings.StartGear = dialog.StartGear;
         _settings.Gearing = dialog.Gearing;
+        _settings.MaxWattLimit = dialog.MaxWattLimit;
+        _controller.SetUserLimit(_settings.MaxWattLimit);
+        if (_route is null)
+            ShowTarget(_controller.TargetWatt);
         try
         {
             _settings.Save();

@@ -24,6 +24,9 @@ public sealed class SettingsForm : Form
     public int GradeFactorPercent => (int)_numGradeFactor.Value;
     public int StartGear => (int)_numStartGear.Value;
 
+    private readonly NumericUpDown _numMaxWatt = new() { Minimum = ErgoController.MinWatt, Maximum = ErgoController.AbsoluteMaxWatt, Increment = 25, Width = 80 };
+    public int MaxWattLimit => (int)_numMaxWatt.Value / 5 * 5;
+
     private readonly ComboBox _cmbGearing = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
     public string Gearing => (string)_cmbGearing.SelectedItem!;
 
@@ -68,10 +71,15 @@ public sealed class SettingsForm : Form
         grid.Controls.Add(Row(
             Unit("Fahrer"), _numRider, Unit("kg   Rad"), _numBike, Unit("kg   Steigung"), _numGradeFactor, Unit("%")), 1, 4);
         grid.Controls.Add(Row(Unit("Übersetzung"), _cmbGearing, Unit("   Startgang"), _numStartGear), 1, 5);
+        var hardware = controller.CockpitType is { } type
+            ? $"W   (Cockpit {DaumCockpit.DescribeType(type)}: max. {controller.HardwareMaxWatt} W)"
+            : $"W   (Cockpit-Typ noch unbekannt, bis dahin max. {controller.HardwareMaxWatt} W)";
+        grid.Controls.Add(RowLabel("Wattgrenze:"), 0, 6);
+        grid.Controls.Add(Row(_numMaxWatt, Unit(hardware)), 1, 6);
         var buttons = Row(btnOk, btnCancel);
         buttons.Anchor = AnchorStyles.Right;
         buttons.Margin = new Padding(3, 18, 3, 3);
-        grid.Controls.Add(buttons, 1, 6);
+        grid.Controls.Add(buttons, 1, 7);
         Controls.Add(grid);
 
         _txtFolder.Text = settings.RecordingDirectory;
@@ -79,6 +87,7 @@ public sealed class SettingsForm : Form
         _numBike.Value = (decimal)Math.Clamp(settings.BikeWeightKg, 5, 40);
         _numGradeFactor.Value = Math.Clamp(settings.GradeFactorPercent, 10, 100);
         _numStartGear.Value = Math.Clamp(settings.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
+        _numMaxWatt.Value = Math.Clamp(settings.MaxWattLimit, ErgoController.MinWatt, ErgoController.AbsoluteMaxWatt);
         _cmbGearing.Items.AddRange([RouteSession.GearingMtb, RouteSession.GearingRoad]);
         _cmbGearing.SelectedItem = settings.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
         _cmbMonitor.Items.Add(new MonitorItem(null, "Automatisch (erster Nebenmonitor)"));

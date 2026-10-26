@@ -85,6 +85,27 @@ public sealed class DaumCockpit : IDisposable
         return reply[2];
     }
 
+    /// <summary>Get_Version (0x73): returns the cockpit type byte (10 Cardio, 20 Fitness, 30 Vita De Luxe, 40 8008, 50 8080, 60 Therapie).</summary>
+    public byte GetCockpitType()
+    {
+        var reply = Transact([0x73, Address], 11);
+        return reply[10];
+    }
+
+    public static string DescribeType(byte type) => type switch
+    {
+        10 => "Cardio",
+        20 => "Fitness",
+        30 => "Vita De Luxe",
+        40 => "8008",
+        50 => "8080",
+        60 => "Therapie",
+        _ => $"unbekannt ({type})",
+    };
+
+    /// <summary>Highest power the cockpit type accepts: 800 W for the 8008/8080 series, otherwise 400 W.</summary>
+    public static int MaxWattForType(byte? type) => type is 40 or 50 ? 800 : 400;
+
     /// <summary>Switches the cockpit to Programm 0 (freies Training) so it accepts Set_Watt from the PC.</summary>
     public void SelectFreeTraining() => Transact([0x23, Address, 0x00], 4);
 
@@ -103,7 +124,8 @@ public sealed class DaumCockpit : IDisposable
     /// <summary>Sets the target power. Returns the watt value actually accepted (rounded to 5W steps).</summary>
     public int SetWatt(int watt)
     {
-        watt = Math.Clamp(watt, 25, 400);
+        // Protocol range; the controller enforces the limit of the actual cockpit type.
+        watt = Math.Clamp(watt, 25, 800);
         var steps = (byte)Math.Round(watt / 5.0);
         var reply = Transact([0x51, Address, steps], 3);
         return reply[2] * 5;

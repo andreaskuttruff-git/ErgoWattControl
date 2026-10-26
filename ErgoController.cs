@@ -10,7 +10,8 @@ namespace ErgoWattControl;
 public sealed class ErgoController : IDisposable
 {
     public const int MinWatt = 25;
-    public const int MaxWatt = 400;
+    /// <summary>Highest limit a user can set; the cockpit type may allow less.</summary>
+    public const int AbsoluteMaxWatt = 800;
 
     private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(3);
     private static readonly TimeSpan PollDelay = TimeSpan.FromMilliseconds(400);
@@ -28,7 +29,15 @@ public sealed class ErgoController : IDisposable
     /// <summary>Short status text, whether connected, and the full technical error message (null when there is none).</summary>
     public event Action<string, bool, string?>? StatusChanged;
 
+    private volatile int _hardwareMaxWatt = DaumCockpit.MaxWattForType(null);
+    private volatile int _userLimitWatt = AbsoluteMaxWatt;
+
     public int TargetWatt => _targetWatt;
+    /// <summary>Effective upper limit: the lower of what the cockpit type allows and the user's limit.</summary>
+    public int MaxWatt => Math.Min(_hardwareMaxWatt, _userLimitWatt);
+    public int HardwareMaxWatt => _hardwareMaxWatt;
+    /// <summary>Cockpit type from Get_Version; null until known or if the cockpit does not answer the query.</summary>
+    public byte? CockpitType { get; private set; }
     public bool IsConnected { get; private set; }
     public byte CockpitAddress { get; private set; }
     public string? PortName => _portName;
@@ -50,7 +59,22 @@ public sealed class ErgoController : IDisposable
         _wake.Set();
     }
 
-    /// <summary>Clamps to the cockpit's range in 5 W steps and returns the value actually requested.</summary>
+    /// <summary>Sets the user's power limit; a target above it is lowered immediately.</summary>
+    public void SetUserLimit(int watt)
+    {
+        _userLimitWatt = Math.Clamp(watt, MinWatt, AbsoluteMaxWatt);
+        if (_targetWatt > MaxWatt)
+            SetTargetWatt(MaxWatt);
+    }
+
+    /// <summary>Demo mode has no cockpit to ask, so it pretends to be the given type.</summary>
+    public void AssumeCockpitType(byte type)
+    {
+        CockpitType = type;
+        _hardwareMaxWatt = DaumCockpit.MaxWattForType(type);
+    }
+
+    /// <summary>Clamps to the allowed range in 5 W steps and returns the value actually requested.</summary>
     public int SetTargetWatt(int watt)
     {
         watt = Math.Clamp((int)Math.Round(watt / 5.0) * 5, MinWatt, MaxWatt);
@@ -103,10 +127,13 @@ public sealed class ErgoController : IDisposable
             {
                 Report($"Verbinde mit {port} …", false);
                 cockpit = new DaumCockpit(port);
+                cockpit.QueryAddress();
+                QueryCockpitType(cockpit);
                 InitializeCockpit(cockpit);
                 CockpitAddress = cockpit.Address;
                 IsConnected = true;
-                Report($"Verbunden auf {port}", true);
+                var type = CockpitType is { } t ? $"Cockpit-Typ {DaumCockpit.DescribeType(t)}" : "Cockpit-Typ unbekannt";
+                Report($"Verbunden auf {port}", true, $"{type}, Gerätegrenze {HardwareMaxWatt} W, eingestellte Grenze {_userLimitWatt} W");
                 Poll(cockpit);
             }
             catch (Exception ex) when (_running)
@@ -133,6 +160,22 @@ public sealed class ErgoController : IDisposable
             if (_running && !_portChanged)
                 _wake.Wait(RetryDelay);
         }
+    }
+
+    private void QueryCockpitType(DaumCockpit cockpit)
+    {
+        try
+        {
+            AssumeCockpitType(cockpit.GetCockpitType());
+        }
+        catch (TimeoutException)
+        {
+            // Older cockpits don't know Get_Version: stay with the safe 400 W.
+            CockpitType = null;
+            _hardwareMaxWatt = DaumCockpit.MaxWattForType(null);
+        }
+        if (_targetWatt > MaxWatt)
+            _targetWatt = MaxWatt;
     }
 
     private void InitializeCockpit(DaumCockpit cockpit)
