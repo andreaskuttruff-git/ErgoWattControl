@@ -91,8 +91,21 @@ public sealed class RideForm : Form
         {
             Shown += (_, _) => _controller.Start(_settings.PortName);
         }
-        FormClosing += (_, _) =>
+        FormClosing += (_, e) =>
         {
+            // The ✕ sits right next to the pulse display: don't let a stray click end a running training.
+            if (e.CloseReason == CloseReason.UserClosing && (_recorder is not null || _route is not null))
+            {
+                var what = _route is not null ? "Eine Strecke wird gefahren." : "Eine Aufnahme läuft.";
+                var answer = MessageBox.Show(this, $"{what}\n\nTraining beenden und App schließen?\nDie Aufnahme bis hierher wird gespeichert.",
+                    "Training läuft", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                if (answer != DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                EndRoute(completed: false); // shows the route summary; no-op in free training
+            }
             StopRecording();
             _controller.Dispose();
         };
@@ -473,16 +486,22 @@ public sealed class RideForm : Form
 
         if (recorded is null)
             return;
-        var title = completed ? "Ziel erreicht" : "Strecke beendet";
-        MessageBox.Show(this,
-            $"{route.Route.Name}\n\n" +
-            $"Strecke:\t{route.Position / 1000:0.0} von {route.Route.TotalDistance / 1000:0.0} km\n" +
-            $"Fahrzeit:\t{route.MovingTime:h\\:mm\\:ss}\n" +
-            $"Ø Leistung:\t{route.AverageWatt:0} W\n" +
-            (route.AveragePulse > 0 ? $"Ø Puls:\t{route.AveragePulse:0}\n" : "") +
-            $"Energie:\t{recorded.EnergyKJ:0} kJ\n\n" +
-            $"Gespeichert: {Path.GetFileName(recorded.FilePath)}",
-            title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        var facts = new List<(string, string)>
+        {
+            ("Strecke", $"{route.Position / 1000:0.0} von {route.Route.TotalDistance / 1000:0.0} km"),
+            ("Fahrzeit", $"{route.MovingTime:h\\:mm\\:ss}"),
+        };
+        if (route.MovingTime.TotalSeconds > 0)
+            facts.Add(("Ø Geschwindigkeit", $"{route.Position / route.MovingTime.TotalSeconds * 3.6:0.0} km/h"));
+        facts.Add(("Ø Leistung", $"{route.AverageWatt:0} W"));
+        if (route.AveragePulse > 0)
+            facts.Add(("Ø Puls", $"{route.AveragePulse:0}"));
+        facts.Add(("Energie", $"{recorded.EnergyKJ:0} kJ"));
+        facts.Add(("Umdrehungen", $"{recorded.Revolutions:0}"));
+
+        using var summary = new SummaryForm(completed ? "Ziel erreicht" : "Strecke beendet",
+            completed ? $"Ziel erreicht – {route.Route.Name}" : route.Route.Name, facts, recorded.FilePath);
+        summary.ShowDialog(this);
     }
 
     private void OpenSettings()
