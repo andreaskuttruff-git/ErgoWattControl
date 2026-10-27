@@ -436,7 +436,7 @@ public sealed class RideForm : Form
         }
         if (confirm)
         {
-            using var overview = new RouteOverviewForm(route, _settings);
+            using var overview = new RouteOverviewForm(route, _settings, _controller.MaxWatt);
             if (overview.ShowDialog(this) != DialogResult.OK)
                 return;
         }

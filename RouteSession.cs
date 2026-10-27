@@ -125,11 +125,25 @@ public sealed class RouteSession
 
     private double StandingReferenceSpeed() => 60 / 60.0 * MetersPerRevolution();
 
-    private double PowerFor(double grade, double v)
+    private double PowerFor(double grade, double v) => PowerFor(grade, v, _mass, _crr, _cda);
+
+    private static double PowerFor(double grade, double v, double mass, double crr, double cda)
     {
         var angle = Math.Atan(grade);
-        var force = _mass * Gravity * (Math.Sin(angle) + _crr * Math.Cos(angle)) + 0.5 * AirDensity * _cda * v * v;
+        var force = mass * Gravity * (Math.Sin(angle) + crr * Math.Cos(angle)) + 0.5 * AirDensity * cda * v * v;
         return force * v;
+    }
+
+    /// <summary>
+    /// Least power the steepest climb demands: lowest gear at <paramref name="rpm"/>. Riding faster or in a higher gear
+    /// costs more, so this is the peak the rider cannot avoid.
+    /// </summary>
+    public static (double Watt, double SpeedKmh, double GradePercent) PeakPower(GpxRoute route, AppSettings settings, int rpm)
+    {
+        var grade = route.MaxGrade * Math.Clamp(settings.GradeFactorPercent, 0, 100) / 100.0;
+        var v = rpm / 60.0 * MetersPerRevolution(settings.Gearing, MinGear);
+        var watt = PowerFor(grade, v, settings.RiderWeightKg + settings.BikeWeightKg, settings.RollingResistance, settings.DragAreaM2);
+        return (watt, v * 3.6, grade * 100);
     }
 
     private int RoundToStep(double watt) =>

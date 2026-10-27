@@ -18,6 +18,8 @@ public sealed class GpxRoute
     public double TotalDistance { get; }
     public double Ascent { get; }
     public double MaxGrade { get; }
+    /// <summary>Position (m) of the steepest 10-m step.</summary>
+    public double MaxGradeDistance { get; }
     public double MinElevation { get; }
     public double MaxElevation { get; }
 
@@ -31,7 +33,12 @@ public sealed class GpxRoute
         for (var i = 1; i < elevation.Length; i++)
         {
             Ascent += Math.Max(0, elevation[i] - elevation[i - 1]);
-            MaxGrade = Math.Max(MaxGrade, (elevation[i] - elevation[i - 1]) / Step);
+            var grade = (elevation[i] - elevation[i - 1]) / Step;
+            if (grade > MaxGrade)
+            {
+                MaxGrade = grade;
+                MaxGradeDistance = (i - 0.5) * Step;
+            }
         }
     }
 
