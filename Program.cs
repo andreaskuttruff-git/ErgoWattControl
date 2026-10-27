@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace ErgoWattControl;
 
 static class Program
@@ -50,26 +48,34 @@ static class Program
         }
     }
 
-    [DllImport("kernel32.dll")]
-    private static extern bool AttachConsole(int processId);
-
     /// <summary>
-    /// A WinExe has no console of its own: when started from a console window the help is printed there,
-    /// otherwise (shortcut, Explorer) it is shown in a message box.
+    /// Shown in a modal window rather than on the console: a WinExe doesn't make the console wait,
+    /// so console output would appear after the next prompt.
     /// </summary>
     private static void ShowHelp(string? error)
     {
-        var text = error is null ? HelpText : $"{error}\n\n{HelpText}";
-        const int parentProcess = -1;
-        if (AttachConsole(parentProcess))
+        // Own dialog instead of MessageBox: it wraps long lines early and breaks the indentation.
+        using var form = new Form
         {
-            Console.WriteLine();
-            Console.WriteLine(text);
-        }
-        else
-        {
-            MessageBox.Show(text, "ErgoWattControl – Parameter", MessageBoxButtons.OK,
-                error is null ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
-        }
+            Text = "ErgoWattControl – Parameter",
+            FormBorderStyle = FormBorderStyle.FixedDialog,
+            MaximizeBox = false,
+            MinimizeBox = false,
+            StartPosition = FormStartPosition.CenterScreen,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Padding = new Padding(16),
+            Font = new Font("Segoe UI", 10),
+        };
+        var layout = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.TopDown, Dock = DockStyle.Fill };
+        if (error is not null)
+            layout.Controls.Add(new Label { Text = error, AutoSize = true, ForeColor = Color.Firebrick, Font = new Font("Segoe UI", 10, FontStyle.Bold), Margin = new Padding(0, 0, 0, 12) });
+        layout.Controls.Add(new Label { Text = HelpText, AutoSize = true, Font = new Font("Consolas", 10) });
+        var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0), Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
+        layout.Controls.Add(ok);
+        form.Controls.Add(layout);
+        form.AcceptButton = ok;
+        form.CancelButton = ok;
+        form.ShowDialog();
     }
 }
