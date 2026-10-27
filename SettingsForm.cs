@@ -96,6 +96,21 @@ public sealed class SettingsForm : Form
         _cmbMonitor.SelectedItem = _cmbMonitor.Items.Cast<MonitorItem>().FirstOrDefault(m => m.DeviceName == settings.RideMonitor)
             ?? _cmbMonitor.Items[0]; // saved monitor no longer connected
         btnIdentify.Click += (_, _) => Monitors.Identify(TimeSpan.FromSeconds(3));
+
+        Tip(_cmbPorts, "Serielle Schnittstelle, an der das Cockpit hängt (Update-Kabel bzw. USB-RS232-Adapter).\nNach dem Speichern verbindet sich die App sofort neu.");
+        Tip(btnRefresh, "Liste der COM-Ports neu einlesen, z. B. nach dem Einstecken eines USB-Adapters.");
+        Tip(btnTest, "Prüft, ob am gewählten Port ein Cockpit antwortet. Ändert nichts am Cockpit.");
+        Tip(_txtFolder, "Ordner für die CSV-Aufzeichnungen.\nDie Dateinamen legen FileNameFreeTraining und FileNameRoute in der settings.json fest.");
+        Tip(btnBrowse, "Ablageordner auswählen.");
+        Tip(btnOpen, "Ablageordner im Explorer öffnen.");
+        Tip(_cmbMonitor, "Monitor, auf den der Button \"Fahransicht\" das Fenster legt.\n\"Automatisch\" nimmt den ersten Monitor, der nicht der Hauptmonitor ist.");
+        Tip(btnIdentify, "Zeigt auf jedem Monitor 3 Sekunden lang groß seine Nummer.");
+        Tip(_numRider, "Dein Körpergewicht. Bestimmt im Streckenmodus, wie viel Leistung ein Anstieg kostet.");
+        Tip(_numBike, "Gewicht des Rads, mit dem du die Strecke virtuell fährst. Zählt wie das Fahrergewicht.");
+        Tip(_numGradeFactor, "Wie steil die GPX-Strecke wirkt: 100 % = wie in echt, 50 % = alle Steigungen und Gefälle halb so steil.\nMacht bergige Strecken fahrbar, ohne an die Wattgrenze zu stoßen.");
+        Tip(_cmbGearing, "Übersetzung der 28 virtuellen Gänge im Streckenmodus.\nMTB: kleinere Gänge (2,0–7,4 m pro Kurbelumdrehung), am Berg langsam kurbeln möglich.\nRennrad: Daum-Tabelle (3,7–9,3 m pro Kurbelumdrehung).");
+        Tip(_numStartGear, "Gang, in dem eine Strecke beginnt (1 = leichtester, 28 = schwerster).");
+        Tip(_numMaxWatt, "Höchste Leistung, die die App einstellt – auch im Streckenmodus.\nDas Cockpit selbst begrenzt zusätzlich (8008/8080: 800 W, andere: 400 W); es gilt der kleinere Wert.");
         RefreshPorts(settings.PortName);
         _lblTest.Text = controller.IsConnected ? $"Aktuell verbunden auf {controller.PortName}" : "Aktuell nicht verbunden";
 
@@ -148,6 +163,16 @@ public sealed class SettingsForm : Form
                 e.Cancel = true;
             }
         };
+    }
+
+    private readonly ToolTip _toolTip = new() { InitialDelay = 400, AutoPopDelay = 20000 };
+
+    /// <summary>Also sets the tip on child controls: a NumericUpDown's inner text box would otherwise show none.</summary>
+    private void Tip(Control control, string text)
+    {
+        _toolTip.SetToolTip(control, text);
+        foreach (Control child in control.Controls)
+            Tip(child, text);
     }
 
     private void RefreshPorts(string? select)
