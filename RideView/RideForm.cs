@@ -80,7 +80,7 @@ public sealed class RideForm : Form
             if (_route is not null) EndRoute(completed: false);
             else if (_replay is not null) EndReplay(completed: false);
             else if (_recorder is null) StartRecording();
-            else StopRecording();
+            else FinishFreeRecording();
         };
         _controller.DataReceived += d => PostToUi(() => ShowData(d));
         _controller.StatusChanged += (text, ok, detail) => PostToUi(() => ShowStatus(text, ok, detail));
@@ -285,7 +285,7 @@ public sealed class RideForm : Form
         switch (keyData)
         {
             case Keys.Enter when !Guided:
-                if (_recorder is null) StartRecording(); else StopRecording();
+                if (_recorder is null) StartRecording(); else FinishFreeRecording();
                 return true;
             case Keys.NumPad0:
             case Keys.Insert:
@@ -469,6 +469,15 @@ public sealed class RideForm : Form
         UpdateRecordButton();
         _time.ForeColor = _timeCaption.ForeColor = Color.White;
         ShowTotals(0, 0, 0, Caption);
+    }
+
+    /// <summary>"Stop" in free training: close the file, then offer to rename it.</summary>
+    private void FinishFreeRecording()
+    {
+        var saved = _recorder?.FilePath;
+        StopRecording();
+        if (saved is not null && File.Exists(saved))
+            RenameRecordingForm.Ask(this, saved);
     }
 
     /// <summary>Free training: start/stop recording. Route: recording runs automatically, the button ends the route.</summary>

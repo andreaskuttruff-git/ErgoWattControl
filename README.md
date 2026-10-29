@@ -32,4 +32,4 @@ dotnet publish -c Release -o publish
 
 ## Konfiguration
 
-`settings.json` neben der .exe (wird beim ersten Start angelegt): COM-Port, Ablageordner, Monitor der Fahransicht, Gewichte, Übersetzung, Steigungsfaktor sowie die Dateinamen-Muster der Aufzeichnungen (`{Datum}`, `{Uhrzeit}`, `{Strecke}`).
+`settings.json` neben der .exe (wird beim ersten Start angelegt): COM-Port, Ablageordner, Monitor der Fahransicht, Gewichte, Übersetzung, Steigungsfaktor sowie die Dateinamen-Muster der Aufzeichnungen (`{Datum}`, `{Uhrzeit}`, `{Strecke}`). Der Name lässt sich im Start-Dialog von Strecke/Wiederholung ändern, im freien Training nach „Stop“.

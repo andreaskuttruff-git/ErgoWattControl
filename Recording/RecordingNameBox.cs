@@ -21,5 +21,8 @@ public sealed class RecordingNameBox : FlowLayoutPanel
         Controls.Add(new Label { Text = ".csv", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(2, 6, 0, 0) });
     }
 
+    /// <summary>The text field, for dialogs that want it focused.</summary>
+    public TextBox Input => _text;
+
     public string? CustomName => _text.Text.Trim() == _default ? null : AppSettings.SanitizeFileName(_text.Text);
 }

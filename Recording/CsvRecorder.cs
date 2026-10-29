@@ -87,7 +87,7 @@ public sealed class CsvRecorder : IDisposable
 
     public void Dispose() => _writer.Dispose();
 
-    private static string UniquePath(string path)
+    public static string UniquePath(string path)
     {
         if (!File.Exists(path))
             return path;
