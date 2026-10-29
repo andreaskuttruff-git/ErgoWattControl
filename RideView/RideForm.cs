@@ -93,6 +93,7 @@ public sealed class RideForm : Form
             _controller.AssumeCockpitType(40);
             var timer = new System.Windows.Forms.Timer { Interval = 1300 };
             timer.Tick += (_, _) => ShowData(_demo.Next(_controller.TargetWatt));
+            FormClosed += (_, _) => timer.Dispose();
             Shown += (_, _) =>
             {
                 ShowStatus("Demo-Modus (kein Cockpit)", true);
