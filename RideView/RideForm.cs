@@ -14,6 +14,7 @@ public sealed class RideForm : Form
     private static readonly Color RpmColor = Color.FromArgb(80, 200, 255);
     private const string PowerHint = "[↑↓ + − / Mausrad ±5  Bild ±25]";
     private const string GearHint = "[↑↓ + − / Mausrad Gang ±1  Bild ±5]";
+    private const string ReplayHint = "[↑↓ + − / Mausrad Profil ±5  Bild ±25]";
 
     private readonly AppSettings _settings;
     private readonly ErgoController _controller = new();
@@ -23,6 +24,13 @@ public sealed class RideForm : Form
     private readonly Label _powerCaption = CreateValueCaption("LEISTUNG");
     private ToolStripMenuItem _menuRouteStart = null!;
     private ToolStripMenuItem _menuRouteEnd = null!;
+    private ReplaySession? _replay;
+    private readonly WorkoutProfile _workoutProfile = new() { Dock = DockStyle.Fill, Visible = false };
+    private ToolStripMenuItem _menuReplayStart = null!;
+    private ToolStripMenuItem _menuReplayEnd = null!;
+
+    /// <summary>A route or a replayed training sets the power; free training is controlled by the rider.</summary>
+    private bool Guided => _route is not null || _replay is not null;
 
     private readonly Label _powerHint = CreateCaption(PowerHint);
     private readonly Label _power = CreateValue(88, PowerColor);
@@ -68,6 +76,7 @@ public sealed class RideForm : Form
         _btnRecord.Click += (_, _) =>
         {
             if (_route is not null) EndRoute(completed: false);
+            else if (_replay is not null) EndReplay(completed: false);
             else if (_recorder is null) StartRecording();
             else StopRecording();
         };
@@ -82,7 +91,9 @@ public sealed class RideForm : Form
             Shown += (_, _) =>
             {
                 ShowStatus("Demo-Modus (kein Cockpit)", true);
-                if (demoRoute is not null)
+                if (demoRoute is not null && demoRoute.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    StartReplay(demoRoute, confirm: false);
+                else if (demoRoute is not null)
                     StartRoute(demoRoute, confirm: false);
                 timer.Start();
             };
@@ -94,9 +105,10 @@ public sealed class RideForm : Form
         FormClosing += (_, e) =>
         {
             // The ✕ sits right next to the pulse display: don't let a stray click end a running training.
-            if (e.CloseReason == CloseReason.UserClosing && (_recorder is not null || _route is not null))
+            if (e.CloseReason == CloseReason.UserClosing && (_recorder is not null || Guided))
             {
-                var what = _route is not null ? "Eine Strecke wird gefahren." : "Eine Aufnahme läuft.";
+                var what = _route is not null ? "Eine Strecke wird gefahren."
+                    : _replay is not null ? "Ein Training wird wiederholt." : "Eine Aufnahme läuft.";
                 var answer = MessageBox.Show(this, $"{what}\n\nTraining beenden und App schließen?\nDie Aufnahme bis hierher wird gespeichert.",
                     "Training läuft", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                 if (answer != DialogResult.Yes)
@@ -104,7 +116,9 @@ public sealed class RideForm : Form
                     e.Cancel = true;
                     return;
                 }
-                EndRoute(completed: false); // shows the route summary; no-op in free training
+                // Show the summary; both are no-ops in free training.
+                EndRoute(completed: false);
+                EndReplay(completed: false);
             }
             StopRecording();
             _controller.Dispose();
@@ -162,6 +176,7 @@ public sealed class RideForm : Form
         _pulseGraph.Margin = Padding.Empty;
         lowerGraph.Controls.Add(_pulseGraph);
         lowerGraph.Controls.Add(_profile);
+        lowerGraph.Controls.Add(_workoutProfile);
         grid.Controls.Add(lowerGraph, 0, 3);
         grid.SetColumnSpan(lowerGraph, 2);
 
@@ -215,8 +230,13 @@ public sealed class RideForm : Form
         var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 14) };
         _menuRouteStart = new ToolStripMenuItem("Strecke fahren …", null, (_, _) => StartRoute());
         _menuRouteEnd = new ToolStripMenuItem("Strecke beenden", null, (_, _) => EndRoute(completed: false)) { Enabled = false };
+        _menuReplayStart = new ToolStripMenuItem("Training wiederholen …", null, (_, _) => StartReplay());
+        _menuReplayEnd = new ToolStripMenuItem("Wiederholung beenden", null, (_, _) => EndReplay(completed: false)) { Enabled = false };
         menu.Items.Add(_menuRouteStart);
         menu.Items.Add(_menuRouteEnd);
+        menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add(_menuReplayStart);
+        menu.Items.Add(_menuReplayEnd);
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Einstellungen …", null, (_, _) => OpenSettings());
         menu.Items.Add(new ToolStripSeparator());
@@ -262,7 +282,7 @@ public sealed class RideForm : Form
         // Numpad digits mirror the arrow keys printed on them, so a wireless keypad on the handlebar works with NumLock on or off.
         switch (keyData)
         {
-            case Keys.Enter when _route is null:
+            case Keys.Enter when !Guided:
                 if (_recorder is null) StartRecording(); else StopRecording();
                 return true;
             case Keys.NumPad0:
@@ -293,6 +313,12 @@ public sealed class RideForm : Form
             ShowGear();
             return;
         }
+        if (_replay is { } replay)
+        {
+            _controller.SetTargetWatt(replay.ShiftOffset(step));
+            ShowReplay();
+            return;
+        }
         ShowTarget(_controller.SetTargetWatt(_controller.TargetWatt + step));
     }
 
@@ -306,9 +332,32 @@ public sealed class RideForm : Form
         _powerCaption.Text = $"GANG   {route.TargetWatt} W";
     }
 
+    private void ShowReplay()
+    {
+        if (_replay is not { } replay)
+            return;
+        _power.Text = $"{replay.TargetWatt} W";
+        _powerCaption.Text = replay.Offset == 0 ? "PROFIL" : $"PROFIL   {replay.Offset:+0;-0} W";
+        var next = replay.NextChange() is { } change
+            ? $"nächster Wechsel in {WorkoutProfile.Format(change.In.TotalSeconds)} \u2192 {change.Watt} W"
+            : "bis zum Ende gleichbleibend";
+        _workoutProfile.SetPosition(replay.Elapsed.TotalSeconds,
+            $"{next}      {WorkoutProfile.Format(replay.Elapsed.TotalSeconds)} / {WorkoutProfile.Format(replay.Workout.Duration)}");
+    }
+
     private void ShowData(RunData d)
     {
-        if (_route is { } route)
+        if (_replay is { } replay)
+        {
+            if (replay.Update(d, DateTime.Now) is { } replayWatt)
+                _controller.SetTargetWatt(replayWatt);
+            _powerHint.Text = ReplayHint;
+            ShowReplay();
+            // The recording starts with the first pedal stroke, like a route.
+            if (_recorder is null && d.Rpm > 0 && !replay.Finished)
+                StartRecording(replay.Workout.Name, replayMode: true);
+        }
+        else if (_route is { } route)
         {
             if (route.Update(d, DateTime.Now) is { } watt)
                 _controller.SetTargetWatt(watt);
@@ -335,7 +384,7 @@ public sealed class RideForm : Form
         _speed.Text = _route is { } r ? $"{r.SpeedKmh:0}" : d.SpeedKmh.ToString();
         // While recording, show the recording's own duration (free training: keeps running through pauses;
         // route: pedalling time only); otherwise the cockpit's pedaling time.
-        var time = _recorder?.Elapsed ?? (_route is null ? TimeSpan.FromSeconds(d.TimeSeconds) : TimeSpan.Zero);
+        var time = _recorder?.Elapsed ?? (Guided ? TimeSpan.Zero : TimeSpan.FromSeconds(d.TimeSeconds));
         _time.Text = $"{time:h\\:mm\\:ss}";
         _powerGraph.Add([d.Watt, d.Rpm], rpmRange);
         _pulseGraph.Add(d.Pulse);
@@ -345,7 +394,9 @@ public sealed class RideForm : Form
             return;
         try
         {
-            if (_route is { } ride)
+            if (_replay is not null)
+                _recorder.Write(d, _controller.TargetWatt, counting: d.Rpm > 0);
+            else if (_route is { } ride)
                 _recorder.Write(d, _controller.TargetWatt, counting: d.Rpm > 0,
                     new RouteRow(ride.Position / 1000, ride.GradePercent, ride.Gear, ride.SpeedKmh));
             else
@@ -353,6 +404,8 @@ public sealed class RideForm : Form
             ShowTotals(_recorder.DistanceKm, _recorder.EnergyKJ, _recorder.Revolutions, Color.OrangeRed);
             if (_route is { Finished: true })
                 EndRoute(completed: true);
+            if (_replay is { Finished: true })
+                EndReplay(completed: true);
         }
         catch (IOException ex)
         {
@@ -377,8 +430,8 @@ public sealed class RideForm : Form
         _toolTip.SetToolTip(_status, detail is null ? text : $"{text}\n{detail}");
     }
 
-    /// <param name="routeName">Name of the route being ridden; null for free training.</param>
-    private void StartRecording(string? routeName = null)
+    /// <param name="routeName">Name of the route or replayed training; null for free training.</param>
+    private void StartRecording(string? routeName = null, bool replayMode = false)
     {
         if (!_controller.IsConnected && _demo is null)
         {
@@ -387,9 +440,10 @@ public sealed class RideForm : Form
         }
         try
         {
-            var pattern = routeName is null ? _settings.FileNameFreeTraining : _settings.FileNameRoute;
+            var pattern = replayMode ? _settings.FileNameReplay
+                : routeName is null ? _settings.FileNameFreeTraining : _settings.FileNameRoute;
             var fileName = AppSettings.BuildFileName(pattern, DateTime.Now, routeName);
-            _recorder = new CsvRecorder(_settings.RecordingDirectory, fileName, routeColumns: routeName is not null);
+            _recorder = new CsvRecorder(_settings.RecordingDirectory, fileName, routeColumns: routeName is not null && !replayMode);
         }
         catch (Exception ex)
         {
@@ -416,13 +470,112 @@ public sealed class RideForm : Form
     /// <summary>Free training: start/stop recording. Route: recording runs automatically, the button ends the route.</summary>
     private void UpdateRecordButton()
     {
-        _btnRecord.Text = _route is not null ? "■ Strecke beenden" : _recorder is null ? "● Aufnahme" : "■ Stop";
+        _btnRecord.Text = _route is not null ? "■ Strecke beenden"
+            : _replay is not null ? "■ Wiederholung beenden"
+            : _recorder is null ? "● Aufnahme" : "■ Stop";
         _btnRecord.ForeColor = _recorder is null ? Color.White : Color.OrangeRed;
     }
 
+    private void SetGuidedMenus()
+    {
+        _menuRouteStart.Enabled = _menuReplayStart.Enabled = !Guided;
+        _menuRouteEnd.Enabled = _route is not null;
+        _menuReplayEnd.Enabled = _replay is not null;
+    }
+
+    private void StartReplay()
+    {
+        if (Guided)
+            return;
+        using var picker = new OpenFileDialog
+        {
+            Title = "Gespeichertes Training auswählen",
+            InitialDirectory = Directory.Exists(_settings.RecordingDirectory) ? _settings.RecordingDirectory : null,
+            Filter = "Aufzeichnungen (*.csv)|*.csv",
+        };
+        if (picker.ShowDialog(this) == DialogResult.OK)
+            StartReplay(picker.FileName, confirm: true);
+    }
+
+    private void StartReplay(string csvPath, bool confirm)
+    {
+        WorkoutRecording workout;
+        try
+        {
+            workout = WorkoutRecording.Load(csvPath);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Das Training konnte nicht geladen werden:\n{ex.Message}", "Training wiederholen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+        if (confirm)
+        {
+            using var overview = new ReplayOverviewForm(workout, _settings.ReplayShowOriginalPulse);
+            if (overview.ShowDialog(this) != DialogResult.OK)
+                return;
+            // The checkbox is the setting: remember the choice for the next replay.
+            if (workout.HasPulse && overview.ShowOriginalPulse != _settings.ReplayShowOriginalPulse)
+            {
+                _settings.ReplayShowOriginalPulse = overview.ShowOriginalPulse;
+                try { _settings.Save(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            }
+        }
+
+        StopRecording();
+        _replay = new ReplaySession(workout, ErgoController.MinWatt, _controller.MaxWatt);
+        _controller.SetTargetWatt(_replay.TargetWatt);
+        _workoutProfile.SetWorkout(workout, _replay.WattAt, _settings.ReplayShowOriginalPulse);
+        _workoutProfile.Visible = true;
+        _pulseGraph.Visible = false;
+        UpdateRecordButton();
+        SetGuidedMenus();
+        _powerHint.Text = ReplayHint;
+        _time.Text = "0:00:00";
+        ShowReplay();
+    }
+
+    private void EndReplay(bool completed)
+    {
+        if (_replay is not { } replay)
+            return;
+        var recorded = _recorder;
+        StopRecording();
+        _replay = null;
+        _workoutProfile.Visible = false;
+        _pulseGraph.Visible = true;
+        UpdateRecordButton();
+        SetGuidedMenus();
+        _powerCaption.Text = "LEISTUNG";
+        _powerHint.Text = PowerHint;
+        ShowTarget(_controller.TargetWatt);
+
+        if (recorded is null)
+            return;
+        // "damals" refers to the same section of the original, so a replay stopped early compares fairly.
+        var then = replay.Workout.AveragesUntil(replay.Elapsed.TotalSeconds);
+        var facts = new List<(string, string)>
+        {
+            ("Gefahren", $"{WorkoutProfile.Format(replay.Elapsed.TotalSeconds)} von {WorkoutProfile.Format(replay.Workout.Duration)}"),
+            ("Ø Leistung", $"{replay.AverageWatt:0} W   (damals Ø {then.Watt:0} W)"),
+        };
+        if (replay.Offset != 0)
+            facts.Add(("Profil verschoben", $"{replay.Offset:+0;-0} W"));
+        if (replay.AveragePulse > 0)
+            facts.Add(("Ø Puls", then.Pulse > 0
+                ? $"{replay.AveragePulse:0}   (damals Ø {then.Pulse:0})"
+                : $"{replay.AveragePulse:0}"));
+        facts.Add(("Energie", $"{recorded.EnergyKJ:0} kJ"));
+        facts.Add(("Umdrehungen", $"{recorded.Revolutions:0}"));
+        using var summary = new SummaryForm(completed ? "Training beendet" : "Wiederholung beendet",
+            completed ? $"Geschafft – {replay.Workout.Name}" : replay.Workout.Name, facts, recorded.FilePath);
+        summary.ShowDialog(this);
+    }
+
+
     private void StartRoute()
     {
-        if (_route is not null)
+        if (Guided)
             return;
         Directory.CreateDirectory(_settings.GpxDirectory);
         using var picker = new OpenFileDialog
@@ -461,8 +614,7 @@ public sealed class RideForm : Form
         _profile.Visible = true;
         _pulseGraph.Visible = false;
         UpdateRecordButton();
-        _menuRouteStart.Enabled = false;
-        _menuRouteEnd.Enabled = true;
+        SetGuidedMenus();
         _powerHint.Text = GearHint;
         _time.Text = "0:00:00";
         ShowGear();
@@ -478,8 +630,7 @@ public sealed class RideForm : Form
         _profile.Visible = false;
         _pulseGraph.Visible = true;
         UpdateRecordButton();
-        _menuRouteStart.Enabled = true;
-        _menuRouteEnd.Enabled = false;
+        SetGuidedMenus();
         _powerCaption.Text = "LEISTUNG";
         _powerHint.Text = PowerHint;
         ShowTarget(_controller.TargetWatt);

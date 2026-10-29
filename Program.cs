@@ -10,10 +10,11 @@ static class Program
           ErgoWattControl.exe
               Normalbetrieb: verbindet sich mit dem Cockpit am eingestellten COM-Port.
 
-          ErgoWattControl.exe -demo [GPX-Datei]
+          ErgoWattControl.exe -demo [GPX- oder CSV-Datei]
               Demo-Modus ohne Cockpit: ein simulierter Fahrer (ca. 75 RPM) ersetzt das
               Ergometer, die serielle Schnittstelle wird nicht benutzt.
-              Mit GPX-Datei startet diese Strecke sofort, ohne Übersicht.
+              Mit GPX-Datei startet diese Strecke sofort, ohne Übersicht;
+              mit einer Aufzeichnung (CSV) wird dieses Training wiederholt.
               Beispiel: ErgoWattControl.exe -demo "GPX\Tour.gpx"
 
           ErgoWattControl.exe -help

@@ -11,6 +11,17 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 - Automatisches Verbinden und Neuverbinden nach einem Cockpit-Reset
 - **Demo-Modus** ohne Ergometer: `ErgoWattControl.exe --demo [strecke.gpx]`
 
+## Aufbau des Quellcodes
+
+| Ordner | Inhalt |
+|---|---|
+| `Cockpit/` | RS232-Protokoll (`DaumCockpit`), Verbindung/Neuverbinden (`ErgoController`), Drehzahlbereich der Bremse, Demo-Fahrer |
+| `RideView/` | Fahransicht (`RideForm`), Verlaufsgraph, Mausrad, Zusammenfassung, Monitorauswahl |
+| `Recording/` | CSV-Aufzeichnung |
+| `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenübersicht |
+| `Replay/` | gespeichertes Training wiederholen: Einlesen, Ablauf, Leistungsprofil, Übersicht |
+| `Settings/` | `settings.json` und Einstellungsdialog |
+
 ## Bauen
 
 .NET 10, Windows Forms:

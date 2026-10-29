@@ -20,10 +20,15 @@ public sealed class AppSettings
 
     /// <summary>
     /// CSV file name patterns per recording type (without .csv). Placeholders:
-    /// {Datum} = yyyy-MM-dd, {Uhrzeit} = HH-mm-ss, {Strecke} = GPX file name.
+    /// {Datum} = yyyy-MM-dd, {Uhrzeit} = HH-mm-ss, {Strecke} = GPX file name, {Training} = replayed recording.
     /// </summary>
     public string FileNameFreeTraining { get; set; } = "Training_{Datum}_{Uhrzeit}";
     public string FileNameRoute { get; set; } = "Strecke_{Strecke}_{Datum}_{Uhrzeit}";
+    /// <summary>Replaying a recorded training; {Training} = name of the replayed recording.</summary>
+    public string FileNameReplay { get; set; } = "Wiederholung_{Datum}_{Uhrzeit}";
+
+    /// <summary>Show the pulse of the original recording while replaying it (only if it contains pulse data).</summary>
+    public bool ReplayShowOriginalPulse { get; set; } = true;
 
     public string GpxDirectory { get; set; } = Path.Combine(AppContext.BaseDirectory, "GPX");
     public double RiderWeightKg { get; set; } = 135;
@@ -68,7 +73,8 @@ public sealed class AppSettings
         var name = pattern
             .Replace("{Datum}", time.ToString("yyyy-MM-dd"))
             .Replace("{Uhrzeit}", time.ToString("HH-mm-ss"))
-            .Replace("{Strecke}", route ?? "");
+            .Replace("{Strecke}", route ?? "")
+            .Replace("{Training}", route ?? "");
         foreach (var c in Path.GetInvalidFileNameChars())
             name = name.Replace(c, '_');
         return string.IsNullOrWhiteSpace(name) ? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}" : name;
