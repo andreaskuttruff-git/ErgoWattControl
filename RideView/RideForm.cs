@@ -22,6 +22,8 @@ public sealed class RideForm : Form
     private RouteSession? _route;
     /// <summary>Recording name typed in a start dialog, waiting for the first pedal stroke.</summary>
     private string? _customFileName;
+    // The "Training beenden" dialog is open while the ride keeps running behind it (closing via ✕ or "Beenden").
+    private bool _closeDialogOpen;
     private readonly RouteProfile _profile = new() { Dock = DockStyle.Fill, Visible = false };
     private readonly Label _powerCaption = CreateValueCaption("LEISTUNG");
     private ToolStripMenuItem _menuRouteStart = null!;
@@ -108,20 +110,27 @@ public sealed class RideForm : Form
         FormClosing += (_, e) =>
         {
             // The ✕ sits right next to the pulse display: don't let a stray click end a running training.
+            // Free training, route and replay all get the same dialog: save/rename, discard, or carry on riding.
             if (e.CloseReason == CloseReason.UserClosing && (_recorder is not null || Guided))
             {
-                var what = _route is not null ? "Eine Strecke wird gefahren."
-                    : _replay is not null ? "Ein Training wird wiederholt." : "Eine Aufnahme läuft.";
-                var answer = MessageBox.Show(this, $"{what}\n\nTraining beenden und App schließen?\nDie Aufnahme bis hierher wird gespeichert.",
-                    "Training läuft", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                if (answer != DialogResult.Yes)
+                // A route or replay records from the first pedal stroke on; before that the dialog shows the name it would get.
+                var file = _recorder?.FilePath ?? Path.Combine(_settings.RecordingDirectory, (_customFileName ?? AppSettings.BuildFileName(
+                    _replay is not null ? _settings.FileNameReplay : _settings.FileNameRoute, DateTime.Now,
+                    _route?.Route.Name ?? _replay?.Workout.Name)) + ".csv");
+                using var dialog = new RenameRecordingForm(file, closingApp: true);
+                DialogResult result;
+                _closeDialogOpen = true;
+                try { result = dialog.ShowDialog(this); }
+                finally { _closeDialogOpen = false; }
+                if (result == DialogResult.Cancel)
                 {
                     e.Cancel = true;
                     return;
                 }
-                // Show the summary; both are no-ops in free training.
-                EndRoute(completed: false);
-                EndReplay(completed: false);
+                var recorder = _recorder;
+                StopRecording();
+                if (recorder is not null)
+                    RenameRecordingForm.Apply(this, recorder.FilePath, result, dialog.NewName);
             }
             StopRecording();
             _controller.Dispose();
@@ -557,7 +566,8 @@ public sealed class RideForm : Form
 
     private void EndReplay(bool completed)
     {
-        if (_replay is not { } replay)
+        // While the close dialog is open the replay keeps running; finishing then would stack a second dialog.
+        if (_replay is not { } replay || _closeDialogOpen)
             return;
         var recorded = _recorder;
         StopRecording();
@@ -654,7 +664,8 @@ public sealed class RideForm : Form
 
     private void EndRoute(bool completed)
     {
-        if (_route is not { } route)
+        // While the close dialog is open the route keeps running; reaching the finish then would stack a second dialog.
+        if (_route is not { } route || _closeDialogOpen)
             return;
         var recorded = _recorder;
         StopRecording();
