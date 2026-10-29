@@ -521,7 +521,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Das Training konnte nicht geladen werden:\n{ex.Message}", "Training wiederholen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            ShowLoadError("Das Training", "Training wiederholen", csvPath, ex);
             return;
         }
         string? customName = null;
@@ -591,6 +591,15 @@ public sealed class RideForm : Form
         summary.ShowDialog(this);
     }
 
+    /// <summary>Shows why a route or training could not be loaded and keeps the full exception in Fehler.log next to the exe.</summary>
+    private void ShowLoadError(string what, string caption, string path, Exception ex)
+    {
+        var log = Path.Combine(AppContext.BaseDirectory, "Fehler.log");
+        try { File.AppendAllText(log, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {path}\r\n{ex}\r\n\r\n"); }
+        catch (Exception) { }
+        var reason = string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : $"{ex.GetType().Name}: {ex.Message}";
+        MessageBox.Show(this, $"{what} konnte nicht geladen werden:\n{reason}\n\nDetails: {log}", caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
 
     private void StartRoute()
     {
@@ -616,7 +625,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Die Strecke konnte nicht geladen werden:\n{ex.Message}", "Strecke fahren", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            ShowLoadError("Die Strecke", "Strecke fahren", gpxPath, ex);
             return;
         }
         string? customName = null;
