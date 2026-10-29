@@ -187,6 +187,8 @@ public sealed class RideForm : Form
         foreach (var b in new[] { _btnRecord, btnRideView })
         {
             b.AutoSize = true;
+            // Buttons only grow by default; the record button must shrink back after "■ Wiederholung beenden".
+            b.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             b.Margin = new Padding(6, 3, 6, 0);
             ApplyOutlineStyle(b);
         }
