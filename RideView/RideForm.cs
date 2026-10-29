@@ -20,6 +20,8 @@ public sealed class RideForm : Form
     private readonly ErgoController _controller = new();
     private CsvRecorder? _recorder;
     private RouteSession? _route;
+    /// <summary>Recording name typed in a start dialog, waiting for the first pedal stroke.</summary>
+    private string? _customFileName;
     private readonly RouteProfile _profile = new() { Dock = DockStyle.Fill, Visible = false };
     private readonly Label _powerCaption = CreateValueCaption("LEISTUNG");
     private ToolStripMenuItem _menuRouteStart = null!;
@@ -442,7 +444,9 @@ public sealed class RideForm : Form
         {
             var pattern = replayMode ? _settings.FileNameReplay
                 : routeName is null ? _settings.FileNameFreeTraining : _settings.FileNameRoute;
-            var fileName = AppSettings.BuildFileName(pattern, DateTime.Now, routeName);
+            // A name typed in the start dialog wins over the pattern; it is used for this one recording only.
+            var fileName = _customFileName ?? AppSettings.BuildFileName(pattern, DateTime.Now, routeName);
+            _customFileName = null;
             _recorder = new CsvRecorder(_settings.RecordingDirectory, fileName, routeColumns: routeName is not null && !replayMode);
         }
         catch (Exception ex)
@@ -509,11 +513,14 @@ public sealed class RideForm : Form
             MessageBox.Show(this, $"Das Training konnte nicht geladen werden:\n{ex.Message}", "Training wiederholen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
+        string? customName = null;
         if (confirm)
         {
-            using var overview = new ReplayOverviewForm(workout, _settings.ReplayShowOriginalPulse);
+            using var overview = new ReplayOverviewForm(workout, _settings.ReplayShowOriginalPulse,
+                AppSettings.BuildFileName(_settings.FileNameReplay, DateTime.Now, workout.Name));
             if (overview.ShowDialog(this) != DialogResult.OK)
                 return;
+            customName = overview.RecordingFileName;
             // The checkbox is the setting: remember the choice for the next replay.
             if (workout.HasPulse && overview.ShowOriginalPulse != _settings.ReplayShowOriginalPulse)
             {
@@ -523,6 +530,7 @@ public sealed class RideForm : Form
         }
 
         StopRecording();
+        _customFileName = customName;
         _replay = new ReplaySession(workout, ErgoController.MinWatt, _controller.MaxWatt);
         _controller.SetTargetWatt(_replay.TargetWatt);
         _workoutProfile.SetWorkout(workout, _replay.WattAt, _settings.ReplayShowOriginalPulse);
@@ -600,14 +608,17 @@ public sealed class RideForm : Form
             MessageBox.Show(this, $"Die Strecke konnte nicht geladen werden:\n{ex.Message}", "Strecke fahren", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
+        string? customName = null;
         if (confirm)
         {
             using var overview = new RouteOverviewForm(route, _settings, _controller.MaxWatt);
             if (overview.ShowDialog(this) != DialogResult.OK)
                 return;
+            customName = overview.RecordingFileName;
         }
 
         StopRecording();
+        _customFileName = customName;
         _route = new RouteSession(route, _settings, ErgoController.MinWatt, _controller.MaxWatt);
         _controller.SetTargetWatt(_route.TargetWatt);
         _profile.SetRoute(route);

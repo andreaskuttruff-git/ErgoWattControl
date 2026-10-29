@@ -4,15 +4,20 @@ namespace ErgoWattControl;
 public sealed class RouteOverviewForm : Form
 {
     private const int PeakRpm = 60;
+    private readonly RecordingNameBox _fileName;
+
+    /// <summary>File name the rider typed for the recording; null = use the configured pattern.</summary>
+    public string? RecordingFileName => _fileName.CustomName;
 
     public RouteOverviewForm(GpxRoute route, AppSettings settings, int maxWatt)
     {
+        _fileName = new RecordingNameBox(AppSettings.BuildFileName(settings.FileNameRoute, DateTime.Now, route.Name));
         Text = $"Strecke fahren – {route.Name}";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(860, 560);
+        ClientSize = new Size(860, 600);
         Font = new Font("Segoe UI", 11);
 
         var peak = RouteSession.PeakPower(route, settings, PeakRpm);
@@ -34,6 +39,8 @@ public sealed class RouteOverviewForm : Form
             overLimit ? Color.Firebrick : null);
         Fact("Gewicht:", $"{settings.RiderWeightKg:0} kg Fahrer + {settings.BikeWeightKg:0} kg Rad");
         Fact("Einstellungen:", $"Steigungsfaktor {settings.GradeFactorPercent} %,  {settings.Gearing}-Übersetzung,  Startgang {settings.StartGear}");
+        facts.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 16, 2) });
+        facts.Controls.Add(_fileName);
         var note = new Label
         {
             Text = "Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst.",
@@ -60,5 +67,6 @@ public sealed class RouteOverviewForm : Form
         Controls.Add(profilePanel);
         Controls.Add(buttons);
         Controls.Add(facts);
+        ActiveControl = start;
     }
 }

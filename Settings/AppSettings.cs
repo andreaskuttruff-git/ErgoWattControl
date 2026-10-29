@@ -75,8 +75,17 @@ public sealed class AppSettings
             .Replace("{Uhrzeit}", time.ToString("HH-mm-ss"))
             .Replace("{Strecke}", route ?? "")
             .Replace("{Training}", route ?? "");
+        return SanitizeFileName(name) ?? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}";
+    }
+
+    /// <summary>Replaces characters not allowed in file names by "_" and drops a typed ".csv"; null if nothing is left.</summary>
+    public static string? SanitizeFileName(string name)
+    {
+        name = name.Trim();
+        if (name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            name = name[..^4];
         foreach (var c in Path.GetInvalidFileNameChars())
             name = name.Replace(c, '_');
-        return string.IsNullOrWhiteSpace(name) ? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}" : name;
+        return string.IsNullOrWhiteSpace(name) ? null : name;
     }
 }

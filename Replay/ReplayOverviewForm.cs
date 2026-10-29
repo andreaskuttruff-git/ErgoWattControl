@@ -7,14 +7,20 @@ public sealed class ReplayOverviewForm : Form
 
     public bool ShowOriginalPulse => _showPulse.Checked;
 
-    public ReplayOverviewForm(WorkoutRecording workout, bool showPulse)
+    private readonly RecordingNameBox _fileName;
+
+    /// <summary>File name the rider typed for the recording; null = use the configured pattern.</summary>
+    public string? RecordingFileName => _fileName.CustomName;
+
+    public ReplayOverviewForm(WorkoutRecording workout, bool showPulse, string defaultFileName)
     {
+        _fileName = new RecordingNameBox(defaultFileName);
         Text = $"Training wiederholen – {workout.Name}";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterParent;
-        ClientSize = new Size(860, 520);
+        ClientSize = new Size(860, 560);
         Font = new Font("Segoe UI", 11);
 
         var facts = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, ColumnCount = 2, Padding = new Padding(12, 10, 12, 6) };
@@ -26,6 +32,8 @@ public sealed class ReplayOverviewForm : Form
         Fact("Dauer:", WorkoutProfile.Format(workout.Duration));
         Fact("Leistung:", $"Ø {workout.AverageWatt:0} W,  max. {workout.MaxWatt} W");
         Fact("Puls damals:", workout.HasPulse ? $"Ø {workout.AveragePulse:0}" : "keine Pulsdaten aufgezeichnet");
+        facts.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 16, 2) });
+        facts.Controls.Add(_fileName);
         var note = new Label
         {
             Text = "Die Zeit läuft nur, solange du trittst. + / − und das Mausrad verschieben das ganze Profil um ±5 W.",
