@@ -60,7 +60,8 @@ public sealed class RideForm : Form
 
     /// <param name="demo">Simulate the cockpit with a virtual rider instead of using the serial port (UI testing without the bike).</param>
     /// <param name="demoRoute">In demo mode: GPX file to start riding immediately.</param>
-    public RideForm(AppSettings settings, bool demo = false, string? demoRoute = null)
+    /// <param name="startOnMainScreen">Open on the primary monitor instead of the ride monitor; "Fahransicht" still moves it there.</param>
+    public RideForm(AppSettings settings, bool demo = false, string? demoRoute = null, bool startOnMainScreen = false)
     {
         _settings = settings;
         Text = "Ergo Watt Control";
@@ -68,7 +69,7 @@ public sealed class RideForm : Form
         StartPosition = FormStartPosition.Manual;
         BackColor = Background;
         MaximumSize = Monitors.MaxRideViewSize(RiderScreen());
-        FitTo(RiderScreen());
+        FitTo(startOnMainScreen ? Screen.PrimaryScreen! : RiderScreen());
 
         BuildLayout();
         EnableMouseDrag(this);

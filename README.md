@@ -10,6 +10,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 - **Strecke fahren:** GPX-Strecke nachfahren; aus Steigung, Gewicht und virtueller Geschwindigkeit (Trittfrequenz × Gang) wird die Bremsleistung berechnet. Übersetzung Rennrad oder MTB, Steigungsfaktor einstellbar
 - Automatisches Verbinden und Neuverbinden nach einem Cockpit-Reset
 - **Demo-Modus** ohne Ergometer: `ErgoWattControl.exe --demo [strecke.gpx]`
+- **Start auf dem Hauptbildschirm** statt auf dem Fahrer-Monitor: `ErgoWattControl.exe -main` (kombinierbar mit `-demo`)
 
 ## Aufbau des Quellcodes
 

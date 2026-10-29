@@ -17,36 +17,49 @@ static class Program
               mit einer Aufzeichnung (CSV) wird dieses Training wiederholt.
               Beispiel: ErgoWattControl.exe -demo "GPX\Tour.gpx"
 
+          ErgoWattControl.exe -main
+              Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor.
+              "Fahransicht" schiebt das Fenster wie gewohnt auf den Fahrer-Monitor.
+              Kombinierbar: ErgoWattControl.exe -main -demo
+
           ErgoWattControl.exe -help
               Zeigt diese Hilfe.
 
-        Schreibweisen: -demo, --demo, /demo  sowie  -help, --help, -h, -?, /?
+        Schreibweisen: -demo, --demo, /demo,  -main, --main, /main  sowie  -help, --help, -h, -?, /?
         Einstellungen: settings.json neben der exe (wird beim ersten Start angelegt).
         """;
 
-    /// <param name="args">"-demo [gpx-Datei]": simulated cockpit, optionally starting a route; "-help": usage.</param>
+    /// <param name="args">"-demo [gpx/csv]": simulated cockpit, optionally starting a route or replay; "-main": open on the primary monitor; "-help": usage.</param>
     [STAThread]
     static void Main(string[] args)
     {
         ApplicationConfiguration.Initialize();
 
-        // Accept the usual spellings (--demo, -demo, /demo) so a typo doesn't silently start the real cockpit mode.
-        var option = args.Length > 0 ? args[0].TrimStart('-', '/').ToLowerInvariant() : null;
-        switch (option)
+        bool demo = false, mainScreen = false;
+        string? demoRoute = null;
+        for (var i = 0; i < args.Length; i++)
         {
-            case null:
-                Application.Run(new RideForm(AppSettings.Load()));
-                break;
-            case "demo":
-                Application.Run(new RideForm(AppSettings.Load(), demo: true, demoRoute: args.Length > 1 ? args[1] : null));
-                break;
-            case "help" or "h" or "?":
-                ShowHelp(null);
-                break;
-            default:
-                ShowHelp($"Unbekannter Parameter: {args[0]}");
-                break;
+            // Accept the usual spellings (--demo, -demo, /demo) so a typo doesn't silently start the real cockpit mode.
+            switch (args[i].TrimStart('-', '/').ToLowerInvariant())
+            {
+                case "demo":
+                    demo = true;
+                    // The file is the next argument unless that is another option.
+                    if (i + 1 < args.Length && !args[i + 1].StartsWith('-') && !args[i + 1].StartsWith('/'))
+                        demoRoute = args[++i];
+                    break;
+                case "main":
+                    mainScreen = true;
+                    break;
+                case "help" or "h" or "?":
+                    ShowHelp(null);
+                    return;
+                default:
+                    ShowHelp($"Unbekannter Parameter: {args[i]}");
+                    return;
+            }
         }
+        Application.Run(new RideForm(AppSettings.Load(), demo, demoRoute, mainScreen));
     }
 
     /// <summary>
