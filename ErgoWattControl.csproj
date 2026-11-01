@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Elevation profile as icon (exe, shortcuts, taskbar, setup); drawn by Setup\make-icon.py -->
+    <ApplicationIcon>ErgoWattControl.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +21,9 @@
          (ProgramFiles); the generator tool below them is a project of its own -->
     <Compile Remove="Programme\**" />
     <None Remove="Programme\**" />
+    <!-- The WiX setup projects and their output are built separately (Setup\build-setup.ps1) -->
+    <None Remove="Setup\**" />
+    <Compile Remove="Setup\**" />
     <EmbeddedResource Include="Programme\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
     <!-- User help (F1 / menu "Hilfe"), shown from the exe in the help window (HelpWindow) -->
     <None Remove="Hilfe.html;Hilfe-Bilder\**" />

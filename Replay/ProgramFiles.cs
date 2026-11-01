@@ -1,7 +1,7 @@
 namespace ErgoWattControl;
 
 /// <summary>
-/// The training programs ship inside the exe. At start they are written to the Programme folder next to it wherever
+/// The training programs ship inside the exe. At start they are written to the Programme folder wherever
 /// a file is missing or differs from the shipped one (a changed file is overwritten). Other files there, such as the
 /// rider's own programs, are left alone.
 /// </summary>
@@ -9,7 +9,8 @@ public static class ProgramFiles
 {
     private const string ResourcePrefix = "Programme/";
 
-    public static string Folder => Path.Combine(AppContext.BaseDirectory, "Programme");
+    /// <summary>Documents\ErgoWattControl\Programme, or next to the exe in portable mode.</summary>
+    public static string Folder => Path.Combine(AppPaths.DataFolder, "Programme");
 
     /// <returns>Number of files written; failures are noted in Fehler.log and don't stop the start.</returns>
     public static int Install()
@@ -33,8 +34,7 @@ public static class ProgramFiles
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                try { File.AppendAllText(Path.Combine(AppContext.BaseDirectory, "Fehler.log"), $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {path}\r\n{ex}\r\n\r\n"); }
-                catch (Exception) { }
+                AppPaths.Log(path, ex);
             }
         }
         return written;

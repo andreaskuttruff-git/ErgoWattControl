@@ -64,7 +64,7 @@ public sealed class RoutePickerForm : Form
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
         buttons.Controls.AddRange([cancel, _start]);
 
-        var other = new Button { Text = "Andere Datei …", Dock = DockStyle.Bottom, Height = 36 };
+        var other = new Button { Text = "GPX-Datei aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
         other.Click += (_, _) => PickOtherFile();
         var listPanel = new Panel { Dock = DockStyle.Left, Width = 372, Padding = new Padding(12, 12, 0, 0) };
         listPanel.Controls.Add(_list);

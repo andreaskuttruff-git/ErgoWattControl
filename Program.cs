@@ -26,7 +26,9 @@ static class Program
               Zeigt diese Hilfe.
 
         Schreibweisen: -demo, --demo, /demo,  -main, --main, /main  sowie  -help, --help, -h, -?, /?
-        Einstellungen: settings.json neben der exe (wird beim ersten Start angelegt).
+        Einstellungen: %AppData%\ErgoWattControl\settings.json, Aufzeichnungen, Strecken
+        und Programme in Dokumente\ErgoWattControl. Liegt eine settings.json neben der exe,
+        bleibt alles im Programmordner (portabel).
         """;
 
     /// <param name="args">"-demo [gpx/json/csv]": simulated cockpit, optionally starting a route or replay; "-main": open on the primary monitor; "-help": usage.</param>
@@ -49,6 +51,12 @@ static class Program
                     // The file is the next argument unless that is another option.
                     if (i + 1 < args.Length && !args[i + 1].StartsWith('-') && !args[i + 1].StartsWith('/'))
                         demoRoute = args[++i];
+                    break;
+                // From the setup's "Starten" button: the checkbox value decides (1 = demo, 0 = normal start).
+                case "demo:1":
+                    demo = true;
+                    break;
+                case "demo:0":
                     break;
                 case "main":
                     mainScreen = true;

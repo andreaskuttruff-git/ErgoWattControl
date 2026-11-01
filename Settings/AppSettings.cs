@@ -3,14 +3,13 @@ using System.Text.Json;
 
 namespace ErgoWattControl;
 
-/// <summary>Persisted user settings, stored as settings.json next to the executable.</summary>
+/// <summary>Persisted user settings, stored as settings.json (see <see cref="AppPaths"/> for where).</summary>
 public sealed class AppSettings
 {
-    private static readonly string FilePath = Path.Combine(AppContext.BaseDirectory, "settings.json");
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
     public string? PortName { get; set; }
-    public string RecordingDirectory { get; set; } = Path.Combine(AppContext.BaseDirectory, "Aufzeichnungen");
+    public string RecordingDirectory { get; set; } = Path.Combine(AppPaths.DataFolder, "Aufzeichnungen");
 
     /// <summary>Windows device name (e.g. \\.\DISPLAY1) of the monitor for the ride view; null = first non-primary monitor.</summary>
     public string? RideMonitor { get; set; }
@@ -36,7 +35,7 @@ public sealed class AppSettings
     /// <summary>Show the pulse of the original recording while replaying it (only if it contains pulse data).</summary>
     public bool ReplayShowOriginalPulse { get; set; } = true;
 
-    public string GpxDirectory { get; set; } = Path.Combine(AppContext.BaseDirectory, "GPX");
+    public string GpxDirectory { get; set; } = Path.Combine(AppPaths.DataFolder, "GPX");
     public double RiderWeightKg { get; set; } = 135;
     public double BikeWeightKg { get; set; } = 11;
     /// <summary>Percentage of the real gradient that is ridden (100 = original, 50 = half as steep).</summary>
@@ -52,9 +51,9 @@ public sealed class AppSettings
     {
         try
         {
-            if (File.Exists(FilePath))
+            if (File.Exists(AppPaths.SettingsFile))
             {
-                var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(FilePath)) ?? new AppSettings();
+                var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(AppPaths.SettingsFile)) ?? new AppSettings();
                 // Rewrite so options added in newer versions show up in the file with their defaults.
                 try { loaded.Save(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
                 return loaded;
@@ -71,7 +70,11 @@ public sealed class AppSettings
         return settings;
     }
 
-    public void Save() => File.WriteAllText(FilePath, JsonSerializer.Serialize(this, JsonOptions));
+    public void Save()
+    {
+        Directory.CreateDirectory(AppPaths.SettingsFolder);
+        File.WriteAllText(AppPaths.SettingsFile, JsonSerializer.Serialize(this, JsonOptions));
+    }
 
     /// <summary>Takes over the ride values (weights, gearing, grade factor, resistances, power limit) of <paramref name="other"/>.</summary>
     public void CopyRideValuesFrom(AppSettings other)

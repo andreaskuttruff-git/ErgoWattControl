@@ -1,0 +1,71 @@
+<!-- German texts for Theme.xml (strings of the WiX 5 HyperlinkTheme, translated, plus the app-specific ones). -->
+<WixLocalization Culture="de-de" Language="1031" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+  <String Id="Caption" Value="[WixBundleName] Setup" />
+  <String Id="Title" Value="[WixBundleName] [WixBundleVersion]" />
+  <String Id="CheckingForUpdatesLabel" Value="Suche nach Updates" />
+  <String Id="UpdateButton" Value="&amp;Auf Version [WixStdBAUpdateAvailable] aktualisieren" />
+  <String Id="InstallHeader" Value="Willkommen" />
+  <String Id="InstallMessage" Value="Das Setup installiert [WixBundleName]. Klicke auf Installieren oder Abbrechen." />
+  <String Id="InstallMessageOptions" Value="Das Setup installiert [WixBundleName]. Klicke auf Installieren, Optionen oder Abbrechen." />
+  <String Id="InstallText" Value="Steuerung für das Daum ergo_bike 8008 TRS: freies Training, Strecken (GPX) fahren, Aufzeichnungen nachfahren, Trainingsprogramme, Aufzeichnung und Export für Strava &amp; Co.&#xA;&#xA;Die App wird für dich installiert (%LocalAppData%\Programs\ErgoWattControl). Fehlt die .NET 10 Desktop Runtime, wird sie mitinstalliert.&#xA;&#xA;Windows fragt nach Administratorrechten." />
+  <String Id="DesktopShortcutCheckbox" Value="&amp;Verknüpfung auf dem Desktop anlegen" />
+  <String Id="InstallVersion" Value="Version [WixBundleVersion]" />
+  <String Id="ConfirmCancelMessage" Value="Setup wirklich abbrechen?" />
+  <String Id="ExecuteUpgradeRelatedBundleMessage" Value="Vorherige Version" />
+  <String Id="HelpHeader" Value="Hilfe zum Setup" />
+  <String Id="HelpText" Value="/install | /repair | /uninstall | /layout [Ordner] – installieren, reparieren, deinstallieren&#xA;   oder eine vollständige Kopie des Setups im Ordner anlegen. Standard: installieren.&#xA;&#xA;/passive | /quiet – nur Fortschritt bzw. gar keine Oberfläche, keine Rückfragen.&#xA;&#xA;/norestart – keinen Neustart versuchen.&#xA;/log log.txt – Protokoll in diese Datei (Standard: %TEMP%)." />
+  <String Id="HelpCloseButton" Value="&amp;Schließen" />
+  <String Id="InstallLicenseLinkText" Value="[WixBundleName] &lt;a href=&quot;#&quot;&gt;Lizenzbedingungen&lt;/a&gt;." />
+  <String Id="InstallAcceptCheckbox" Value="Ich &amp;stimme den Lizenzbedingungen zu" />
+  <String Id="InstallOptionsButton" Value="&amp;Optionen" />
+  <String Id="InstallInstallButton" Value="&amp;Installieren" />
+  <String Id="InstallCancelButton" Value="Abbre&amp;chen" />
+  <String Id="OptionsHeader" Value="Setup-Optionen" />
+  <String Id="OptionsLocationLabel" Value="Installationsordner:" />
+  <String Id="OptionsBrowseButton" Value="&amp;Durchsuchen" />
+  <String Id="OptionsOkButton" Value="&amp;OK" />
+  <String Id="OptionsCancelButton" Value="Abbre&amp;chen" />
+  <String Id="ProgressHeader" Value="Installation läuft" />
+  <String Id="ProgressLabel" Value="Aktuell:" />
+  <String Id="OverallProgressPackageText" Value="Wird vorbereitet …" />
+  <String Id="ProgressCancelButton" Value="Abbre&amp;chen" />
+  <String Id="ModifyHeader" Value="Installation ändern" />
+  <String Id="ModifyRepairButton" Value="&amp;Reparieren" />
+  <String Id="ModifyUninstallButton" Value="&amp;Deinstallieren" />
+  <String Id="ModifyCancelButton" Value="Abbre&amp;chen" />
+  <String Id="SuccessHeader" Value="Setup erfolgreich" />
+  <String Id="SuccessCacheHeader" Value="Zwischenspeichern abgeschlossen" />
+  <String Id="SuccessInstallHeader" Value="Installation abgeschlossen" />
+  <String Id="SuccessLayoutHeader" Value="Kopie des Setups angelegt" />
+  <String Id="SuccessModifyHeader" Value="Änderung abgeschlossen" />
+  <String Id="SuccessRepairHeader" Value="Reparatur abgeschlossen" />
+  <String Id="SuccessUninstallHeader" Value="Deinstallation abgeschlossen" />
+  <String Id="SuccessUnsafeUninstallHeader" Value="Deinstallation abgeschlossen" />
+  <String Id="SuccessStartText" Value="Möchtest du ErgoWattControl jetzt starten? Ohne angeschlossenes Ergometer kannst du die App im Demo-Modus ausprobieren – ein simulierter Fahrer tritt dann für dich." />
+  <String Id="LaunchDemoCheckbox" Value="Im &amp;Demo-Modus starten (ohne Ergometer)" />
+  <String Id="SuccessLaunchButton" Value="&amp;Starten" />
+  <String Id="SuccessRestartText" Value="Bitte starte den Computer neu, bevor du die Software benutzt." />
+  <String Id="SuccessUninstallRestartText" Value="Bitte starte den Computer neu, um die Deinstallation abzuschließen." />
+  <String Id="SuccessRestartButton" Value="&amp;Neu starten" />
+  <String Id="SuccessCloseButton" Value="S&amp;chließen" />
+  <String Id="FailureHeader" Value="Setup fehlgeschlagen" />
+  <String Id="FailureCacheHeader" Value="Zwischenspeichern fehlgeschlagen" />
+  <String Id="FailureInstallHeader" Value="Installation fehlgeschlagen" />
+  <String Id="FailureLayoutHeader" Value="Kopie des Setups fehlgeschlagen" />
+  <String Id="FailureModifyHeader" Value="Änderung fehlgeschlagen" />
+  <String Id="FailureRepairHeader" Value="Reparatur fehlgeschlagen" />
+  <String Id="FailureUninstallHeader" Value="Deinstallation fehlgeschlagen" />
+  <String Id="FailureUnsafeUninstallHeader" Value="Deinstallation fehlgeschlagen" />
+  <String Id="FailureHyperlinkLogText" Value="Beim Setup ist ein Fehler aufgetreten. Details stehen in der &lt;a href=&quot;#&quot;&gt;Protokolldatei&lt;/a&gt;." />
+  <String Id="FailureRestartText" Value="Bitte starte den Computer neu, um das Zurücksetzen abzuschließen." />
+  <String Id="FailureRestartButton" Value="&amp;Neu starten" />
+  <String Id="FailureCloseButton" Value="S&amp;chließen" />
+  <String Id="FilesInUseTitle" Value="Dateien in Verwendung" />
+  <String Id="FilesInUseLabel" Value="Diese Programme benutzen Dateien, die aktualisiert werden müssen:" />
+  <String Id="FilesInUseNetfxCloseRadioButton" Value="Programme &amp;schließen." />
+  <String Id="FilesInUseCloseRadioButton" Value="Programme &amp;schließen und danach neu starten." />
+  <String Id="FilesInUseDontCloseRadioButton" Value="Programme &amp;nicht schließen. Ein Neustart ist dann nötig." />
+  <String Id="FilesInUseRetryButton" Value="&amp;Wiederholen" />
+  <String Id="FilesInUseIgnoreButton" Value="&amp;Ignorieren" />
+  <String Id="FilesInUseExitButton" Value="&amp;Beenden" />
+</WixLocalization>

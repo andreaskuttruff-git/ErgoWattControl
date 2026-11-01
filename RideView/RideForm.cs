@@ -26,17 +26,17 @@ public sealed class RideForm : Form
     private string? _programFile;
     /// <summary>Settings for the running route or replay when the start dialog changed them for this run; null = the saved ones.</summary>
     private AppSettings? _runSettings;
-    // The "Training beenden" dialog is open while the ride keeps running behind it (closing via ✕ or "Beenden").
+    // The "ErgoWattControl beenden" dialog is open while the ride keeps running behind it (closing via ✕ or "Beenden").
     private bool _closeDialogOpen;
     private readonly RouteProfile _profile = new() { Dock = DockStyle.Fill, Visible = false };
     private readonly Label _powerCaption = CreateValueCaption("LEISTUNG");
     private ToolStripMenuItem _menuRouteStart = null!;
-    private ToolStripMenuItem _menuRouteEnd = null!;
     private ReplaySession? _replay;
     private readonly WorkoutProfile _workoutProfile = new() { Dock = DockStyle.Fill, Visible = false };
     private ToolStripMenuItem _menuReplayStart = null!;
     private ToolStripMenuItem _menuProgramStart = null!;
-    private ToolStripMenuItem _menuReplayEnd = null!;
+    /// <summary>Ends whatever runs: route, replay, program or the recording of a free training.</summary>
+    private ToolStripMenuItem _menuTrainingEnd = null!;
 
     /// <summary>A route or a replayed training sets the power; free training is controlled by the rider.</summary>
     private bool Guided => _route is not null || _replay is not null;
@@ -72,6 +72,7 @@ public sealed class RideForm : Form
     {
         _settings = settings;
         Text = "Ergo Watt Control";
+        Icon = AppIcon.Value;
         FormBorderStyle = FormBorderStyle.None;
         StartPosition = FormStartPosition.Manual;
         BackColor = Background;
@@ -201,7 +202,7 @@ public sealed class RideForm : Form
         foreach (var b in new[] { _btnRecord, btnRideView })
         {
             b.AutoSize = true;
-            // Buttons only grow by default; the record button must shrink back after "■ Wiederholung beenden".
+            // Buttons only grow by default; the record button must shrink back after "■ Training beenden".
             b.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             b.Margin = new Padding(6, 3, 6, 0);
             ApplyOutlineStyle(b);
@@ -247,16 +248,13 @@ public sealed class RideForm : Form
         menuButton.Width = 48;
         var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 14) };
         _menuRouteStart = new ToolStripMenuItem("Strecke fahren …", null, (_, _) => StartRoute());
-        _menuRouteEnd = new ToolStripMenuItem("Strecke beenden", null, (_, _) => EndRoute(completed: false)) { Enabled = false };
-        _menuReplayStart = new ToolStripMenuItem("Training wiederholen …", null, (_, _) => StartReplay());
-        _menuProgramStart = new ToolStripMenuItem("Programm wiederholen …", null, (_, _) => StartProgram());
-        _menuReplayEnd = new ToolStripMenuItem("Wiederholung beenden", null, (_, _) => EndReplay(completed: false)) { Enabled = false };
+        _menuReplayStart = new ToolStripMenuItem("Aufzeichnung nachfahren …", null, (_, _) => StartReplay());
+        _menuProgramStart = new ToolStripMenuItem("Trainingsprogramm starten …", null, (_, _) => StartProgram());
+        _menuTrainingEnd = new ToolStripMenuItem("Training beenden", null, (_, _) => EndTraining()) { Enabled = false };
         menu.Items.Add(_menuRouteStart);
-        menu.Items.Add(_menuRouteEnd);
-        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(_menuReplayStart);
         menu.Items.Add(_menuProgramStart);
-        menu.Items.Add(_menuReplayEnd);
+        menu.Items.Add(_menuTrainingEnd);
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Aufzeichnung exportieren …", null, (_, _) => OpenExport());
         menu.Items.Add(new ToolStripSeparator());
@@ -510,20 +508,27 @@ public sealed class RideForm : Form
             RenameRecordingForm.Ask(this, saved);
     }
 
-    /// <summary>Free training: start/stop recording. Route: recording runs automatically, the button ends the route.</summary>
+    /// <summary>Free training: start/stop recording. Route, replay, program: recording runs automatically, the button ends the training.</summary>
     private void UpdateRecordButton()
     {
-        _btnRecord.Text = _route is not null ? "■ Strecke beenden"
-            : _replay is not null ? "■ Wiederholung beenden"
+        _btnRecord.Text = Guided ? "■ Training beenden"
             : _recorder is null ? "● Aufnahme" : "■ Stop";
         _btnRecord.ForeColor = _recorder is null ? Color.White : Color.OrangeRed;
+        _menuTrainingEnd.Enabled = Guided || _recorder is not null;
     }
 
-    private void SetGuidedMenus()
-    {
+    private void SetGuidedMenus() =>
         _menuRouteStart.Enabled = _menuReplayStart.Enabled = _menuProgramStart.Enabled = !Guided;
-        _menuRouteEnd.Enabled = _route is not null;
-        _menuReplayEnd.Enabled = _replay is not null;
+
+    /// <summary>Menu "Training beenden": ends the route or replay, or stops the free training's recording like "■ Stop".</summary>
+    private void EndTraining()
+    {
+        if (_route is not null)
+            EndRoute(completed: false);
+        else if (_replay is not null)
+            EndReplay(completed: false);
+        else if (_recorder is not null)
+            FinishFreeRecording();
     }
 
     private void StartReplay()
@@ -571,7 +576,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            ShowLoadError("Das Training", "Training wiederholen", csvPath, ex);
+            ShowLoadError("Die Aufzeichnung", "Aufzeichnung nachfahren", csvPath, ex);
             return;
         }
         BeginReplay(workout, customName: null, programFile: null);
@@ -639,7 +644,7 @@ public sealed class RideForm : Form
                 : $"{replay.AveragePulse:0}"));
         facts.Add(("Energie", $"{recorded.EnergyKJ:0} kJ"));
         facts.Add(("Umdrehungen", $"{recorded.Revolutions:0}"));
-        using var summary = new SummaryForm(completed ? "Training beendet" : "Wiederholung beendet",
+        using var summary = new SummaryForm(completed ? "Training abgeschlossen" : "Training beendet",
             completed ? $"Geschafft – {replay.Workout.Name}" : replay.Workout.Name, facts, recorded.FilePath);
         summary.ShowDialog(this);
     }
@@ -655,12 +660,11 @@ public sealed class RideForm : Form
         : _replay is not null ? (_programFile is not null ? "programm" : "training")
         : "ansicht";
 
-    /// <summary>Shows why a route or training could not be loaded and keeps the full exception in Fehler.log next to the exe.</summary>
+    /// <summary>Shows why a route or training could not be loaded and keeps the full exception in Fehler.log.</summary>
     private void ShowLoadError(string what, string caption, string path, Exception ex)
     {
-        var log = Path.Combine(AppContext.BaseDirectory, "Fehler.log");
-        try { File.AppendAllText(log, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {path}\r\n{ex}\r\n\r\n"); }
-        catch (Exception) { }
+        AppPaths.Log(path, ex);
+        var log = AppPaths.LogFile;
         var reason = string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : $"{ex.GetType().Name}: {ex.Message}";
         MessageBox.Show(this, $"{what} konnte nicht geladen werden:\n{reason}\n\nDetails: {log}", caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
@@ -740,7 +744,7 @@ public sealed class RideForm : Form
         facts.Add(("Energie", $"{recorded.EnergyKJ:0} kJ"));
         facts.Add(("Umdrehungen", $"{recorded.Revolutions:0}"));
 
-        using var summary = new SummaryForm(completed ? "Ziel erreicht" : "Strecke beendet",
+        using var summary = new SummaryForm(completed ? "Ziel erreicht" : "Training beendet",
             completed ? $"Ziel erreicht – {route.Route.Name}" : route.Route.Name, facts, recorded.FilePath);
         summary.ShowDialog(this);
     }

@@ -1,0 +1,18 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <!-- Setup.exe: installs the .NET 10 Desktop Runtime if it is missing, then the app MSI. -->
+  <PropertyGroup>
+    <OutputType>Bundle</OutputType>
+    <OutputName>ErgoWattControl-Setup</OutputName>
+    <Version Condition="'$(Version)' == ''">1.0.0</Version>
+    <!-- Runtime installer; Setup\build-setup.ps1 downloads it from Microsoft. -->
+    <DotNetRuntime Condition="'$(DotNetRuntime)' == ''">$(MSBuildThisFileDirectory)..\redist\windowsdesktop-runtime-win-x64.exe</DotNetRuntime>
+    <DefineConstants>Version=$(Version);DotNetRuntime=$(DotNetRuntime)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Netfx.wixext" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Installer\ErgoWattControl.Installer.wixproj" />
+  </ItemGroup>
+</Project>

@@ -1,6 +1,6 @@
 # Trainingsprogramme
 
-Alle Programme lassen sich in der App über **☰ → Programm wiederholen …** fahren. Der Dialog listet sie auf und
+Alle Programme lassen sich in der App über **☰ → Trainingsprogramm starten …** fahren. Der Dialog listet sie auf und
 zeigt zum ausgewählten Programm den Leistungsverlauf (aus den Daten gezeichnet), Dauer, Ø- und Maximalleistung und die Beschreibung; „Start“ (oder ein
 Doppelklick) startet es direkt. Während der Fahrt verschiebst du das ganze Profil mit + / − oder dem Mausrad in
 5-W-Schritten.

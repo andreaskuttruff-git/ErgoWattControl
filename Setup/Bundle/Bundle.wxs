@@ -1,0 +1,37 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal"
+     xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
+  <Bundle Name="ErgoWattControl" Manufacturer="Andreas Kuttruff" Version="$(var.Version)" IconSourceFile="..\..\ErgoWattControl.ico"
+          UpgradeCode="97c66cd3-140f-4415-b845-6dabe92981f2"
+          AboutUrl="https://github.com/andreaskuttruff-git/ErgoWattControl"
+          HelpUrl="https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html">
+    <!-- Own theme (Theme.xml/.wxl): German, with a screenshot, the desktop-shortcut option and the demo choice. -->
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication Theme="hyperlinkLicense" ThemeFile="Theme.xml" LocalizationFile="Theme.wxl"
+                                              LicenseUrl="" SuppressOptionsUI="yes" />
+      <Payload SourceFile="startfenster.png" />
+      <Payload SourceFile="..\..\ErgoWattControl.ico" Name="ErgoWattControl.ico" />
+    </BootstrapperApplication>
+
+    <!-- Checkbox values (the theme binds named checkboxes to these variables); DesktopShortcut=0 also works on the
+         command line for silent installs. -->
+    <Variable Name="DesktopShortcut" Type="numeric" Value="1" bal:Overridable="yes" />
+    <Variable Name="LaunchDemo" Type="numeric" Value="0" />
+    <!-- "Starten" on the last page; the app reads -demo:1 / -demo:0. -->
+    <Variable Name="LaunchTarget" Value="[LocalAppDataFolder]Programs\ErgoWattControl\ErgoWattControl.exe" />
+    <Variable Name="LaunchArguments" Value="-demo:[LaunchDemo]" />
+
+    <!-- Highest installed .NET 10 Desktop Runtime (x64); empty if there is none. -->
+    <netfx:DotNetCoreSearch RuntimeType="desktop" Platform="x64" MajorVersion="10" Variable="DotNetDesktop10" />
+
+    <Chain>
+      <ExePackage Id="DotNetDesktopRuntime10" DisplayName=".NET 10 Desktop Runtime (x64)"
+                  SourceFile="$(var.DotNetRuntime)" Name="redist\windowsdesktop-runtime-win-x64.exe"
+                  DetectCondition="DotNetDesktop10" PerMachine="yes" Permanent="yes" Vital="yes" Cache="remove"
+                  InstallArguments="/install /quiet /norestart" />
+      <MsiPackage SourceFile="$(var.ErgoWattControl.Installer.TargetPath)">
+        <MsiProperty Name="DESKTOPSHORTCUT" Value="[DesktopShortcut]" />
+      </MsiPackage>
+    </Chain>
+  </Bundle>
+</Wix>

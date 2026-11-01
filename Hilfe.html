@@ -55,8 +55,8 @@
   <a href="#tasten">Tasten und Maus</a>
   <a href="#frei">Freies Training</a>
   <a href="#strecke">Strecke fahren</a>
-  <a href="#training">Training wiederholen</a>
-  <a href="#programm">Programm wiederholen</a>
+  <a href="#training">Aufzeichnung nachfahren</a>
+  <a href="#programm">Trainingsprogramm starten</a>
   <a href="#ftp">FTP und Rampentest</a>
   <a href="#laufeinstellungen">Einstellungen für einen Lauf</a>
   <a href="#beenden">Aufnahme beenden, umbenennen, verwerfen</a>
@@ -85,7 +85,7 @@
   <tr><td><b>PULS</b> (rot)</td><td>Herzfrequenz vom Brustgurt bzw. Ohrclip des Cockpits.</td></tr>
   <tr><td><b>RPM</b>, <b>km/h</b>, <b>ZEIT</b></td><td>Trittfrequenz, Geschwindigkeit und Fahrzeit. Ein <span style="color:var(--red)">▲</span> neben RPM heißt „schneller treten“, ein ▼ „langsamer treten“.</td></tr>
   <tr><td>Oberer Graph</td><td>Leistung (gelb) und Trittfrequenz (blau) der letzten 10 Minuten. Die <b>blaugraue Fläche</b> ist der Trittfrequenzbereich, in dem die Wirbelstrombremse die eingestellte Leistung halten kann (z. B. 40–160 RPM bis 150 W, 50–160 RPM bis 250 W). Sie gehört zur blauen Linie.</td></tr>
-  <tr><td>Unterer Graph</td><td>Puls der letzten 10 Minuten. Beim Streckenfahren steht hier das Höhenprofil, beim Wiederholen der Leistungsverlauf.</td></tr>
+  <tr><td>Unterer Graph</td><td>Puls der letzten 10 Minuten. Beim Streckenfahren steht hier das Höhenprofil, bei Aufzeichnungen und Programmen der Leistungsverlauf.</td></tr>
   <tr><td>Untere Zeile</td><td>Strecke, Energie und Kurbelumdrehungen der laufenden Aufnahme, die Aufnahme-Taste, <b>Fahransicht</b> und der Verbindungsstatus.</td></tr>
 </table>
 
@@ -107,7 +107,7 @@
 <p><b>● Aufnahme</b> (oder <kbd>Enter</kbd>) startet die Aufzeichnung, <b>■ Stop</b> beendet sie. Danach fragt ein Dialog nach dem Dateinamen – siehe <a href="#beenden">Aufnahme beenden</a>.</p>
 
 <h2 id="strecke">Strecke fahren</h2>
-<p><b>☰ → Strecke fahren …</b> zeigt die GPX-Dateien aus dem Streckenordner (<code>GPX\</code> neben der exe). Zur markierten Strecke siehst du das Höhenprofil (eingefärbt nach Steigung, der steilste Anstieg ist markiert), Länge, Höhenmeter, maximale Steigung und die Leistung, die sie im 1. Gang bei 60 RPM kostet. Liegt die über deiner Wattgrenze, steht das in Rot da. <b>Andere Datei …</b> holt eine GPX-Datei aus einem anderen Ordner.</p>
+<p><b>☰ → Strecke fahren …</b> zeigt die GPX-Dateien aus dem Streckenordner (<code>Dokumente\ErgoWattControl\GPX</code>, siehe <a href="#dateien">Dateien und Ordner</a>). Zur markierten Strecke siehst du das Höhenprofil (eingefärbt nach Steigung, der steilste Anstieg ist markiert), Länge, Höhenmeter, maximale Steigung und die Leistung, die sie im 1. Gang bei 60 RPM kostet. Liegt die über deiner Wattgrenze, steht das in Rot da. <b>GPX-Datei aus anderem Ordner …</b> holt eine Strecke von woanders.</p>
 <p>Während der Fahrt berechnet die App die Bremsleistung aus Steigung, Gewicht (Fahrer + Rad), Roll- und Luftwiderstand und der virtuellen Geschwindigkeit – die ergibt sich aus Trittfrequenz × Gang. Du schaltest wie draußen: höherer Gang = schneller und schwerer.</p>
 <figure><img src="Hilfe-Bilder/strecke_auswahl.png" alt="Startdialog „Strecke fahren“: Höhenprofil mit dem steilsten Anstieg, Kennzahlen und Dateiname."><figcaption>Startdialog „Strecke fahren“: Höhenprofil mit dem steilsten Anstieg, Kennzahlen und Dateiname.</figcaption></figure>
 <figure style="max-width:900px"><img src="Hilfe-Bilder/fahransicht_strecke.png" alt="Unterwegs auf der Strecke: Gang statt Watt, darunter das Höhenprofil mit der aktuellen Position und dem Abschnitt der nächsten 2 km. ▼ neben RPM: langsamer treten."><figcaption>Unterwegs auf der Strecke: Gang statt Watt, darunter das Höhenprofil mit der aktuellen Position und dem Abschnitt der nächsten 2 km. ▼ neben RPM: langsamer treten.</figcaption></figure>
@@ -116,22 +116,24 @@
   <li>28 Gänge, Übersetzung <b>MTB</b> (kleinere Gänge, am Berg langsam kurbeln möglich) oder <b>Rennrad</b>.</li>
   <li>Der <b>Steigungsfaktor</b> macht alle Steigungen flacher (50 % = halb so steil) – so werden bergige Strecken fahrbar.</li>
   <li>Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst. Am Ziel endet die Fahrt mit einer Zusammenfassung.</li>
-  <li><b>☰ → Strecke beenden</b> bricht vorzeitig ab.</li>
+  <li><b>■ Training beenden</b> (unten) oder <b>☰ → Training beenden</b> bricht vorzeitig ab.</li>
 </ul>
 
-<h2 id="training">Training wiederholen</h2>
-<p><b>☰ → Training wiederholen …</b> listet deine Aufzeichnungen, die neueste zuerst. Zur markierten siehst du den Verlauf (Leistung und auf Wunsch den Puls von damals), Dauer, Ø- und Maximalleistung.</p>
+<h2 id="training">Aufzeichnung nachfahren</h2>
+<p><b>☰ → Aufzeichnung nachfahren …</b> listet deine Aufzeichnungen, die neueste zuerst. Zur markierten siehst du den Verlauf (Leistung und auf Wunsch den Puls von damals), Dauer, Ø- und Maximalleistung.</p>
 <ul>
   <li><b>Aufzeichnung einer Strecke:</b> wird wieder als Strecke gefahren – mit der in der Aufzeichnung gespeicherten Strecke und ihren Einstellungen (Gewicht, Übersetzung, …), die du für diesen Lauf ändern kannst.</li>
   <li><b>Freies Training oder Programm:</b> folgt dem aufgezeichneten Leistungsverlauf. Die Zeit läuft nur, solange du trittst; <kbd>↑</kbd> <kbd>↓</kbd> verschieben das ganze Profil.</li>
   <li><b>Puls vom Original einblenden</b> zeigt während der Fahrt den Puls von damals zum Vergleich.</li>
-  <li>Ältere Aufzeichnungen im CSV-Format lassen sich weiter wiederholen.</li>
+  <li>Ältere Aufzeichnungen im CSV-Format lassen sich weiter nachfahren.</li>
+  <li><b>Aufzeichnung aus anderem Ordner …</b> öffnet eine Aufzeichnung von woanders, z. B. von einem USB-Stick.</li>
+  <li><b>■ Training beenden</b> (unten) oder <b>☰ → Training beenden</b> bricht vorzeitig ab.</li>
 </ul>
-<figure><img src="Hilfe-Bilder/training_auswahl.png" alt="Startdialog „Training wiederholen“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen."><figcaption>Startdialog „Training wiederholen“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen.</figcaption></figure>
+<figure><img src="Hilfe-Bilder/training_auswahl.png" alt="Startdialog „Aufzeichnung nachfahren“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen."><figcaption>Startdialog „Aufzeichnung nachfahren“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen.</figcaption></figure>
 
-<h2 id="programm">Programm wiederholen</h2>
-<p><b>☰ → Programm wiederholen …</b> listet die Trainingsprogramme mit Leistungsverlauf, Dauer und Beschreibung.</p>
-<figure><img src="Hilfe-Bilder/programm_auswahl.png" alt="Startdialog „Programm wiederholen“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar."><figcaption>Startdialog „Programm wiederholen“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar.</figcaption></figure>
+<h2 id="programm">Trainingsprogramm starten</h2>
+<p><b>☰ → Trainingsprogramm starten …</b> listet die Trainingsprogramme mit Leistungsverlauf, Dauer und Beschreibung.</p>
+<figure><img src="Hilfe-Bilder/programm_auswahl.png" alt="Startdialog „Trainingsprogramm starten“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar."><figcaption>Startdialog „Trainingsprogramm starten“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar.</figcaption></figure>
 <h3>P01–P44: Programme aus dem Handbuch</h3>
 <p>Die wattgesteuerten Festprogramme des 8008 TRS (Leistungstests WHO/BAL, Intervall, Pyramide, Berge, Fahrtspiele, Mannschafts-Tempotraining, Ausdauer, Cool-down) mit festen Wattwerten. Sie sind aus den Grafiken des Handbuchs abgelesen. Die Pulsprogramme (29–38) und Höhenprofile (39–41) fehlen, weil die App nur Watt steuert.</p>
 <h3>S00–S07: Programme nach aktueller Trainingswissenschaft</h3>
@@ -159,7 +161,7 @@
 </ol>
 
 <h2 id="laufeinstellungen">Einstellungen für einen Lauf</h2>
-<p>Die Startdialoge von <b>Training wiederholen</b> und <b>Programm wiederholen</b> zeigen die Einstellungen, die für den Lauf wirken, und lassen sie <b>nur für diesen Lauf</b> ändern:</p>
+<p>Die Startdialoge von <b>Aufzeichnung nachfahren</b> und <b>Trainingsprogramm starten</b> zeigen die Einstellungen, die für den Lauf wirken, und lassen sie <b>nur für diesen Lauf</b> ändern:</p>
 <ul>
   <li>Bei Leistungsverläufen (Programme, freie Trainings) nur die <b>Wattgrenze</b>.</li>
   <li>Bei einer Strecken-Aufzeichnung zusätzlich Gewichte, Steigungsfaktor, Übersetzung, Startgang, Roll- und Luftwiderstand – vorbelegt mit den Werten, mit denen sie aufgezeichnet wurde.</li>
@@ -175,7 +177,8 @@
   <tr><td><b>Weiterfahren</b></td><td>Nur beim Schließen der App: zurück, die Aufnahme läuft weiter.</td></tr>
 </table>
 <figure style="max-width:700px"><img src="Hilfe-Bilder/training_beenden.png" alt="Der Dialog beim Schließen der App während einer Aufnahme."><figcaption>Der Dialog beim Schließen der App während einer Aufnahme.</figcaption></figure>
-<p>Schließt du die App während einer Aufnahme oder einer Strecke/Wiederholung (✕ oder <b>☰ → Beenden</b>), erscheint derselbe Dialog als „Training beenden“; OK speichert und beendet die App. Den Dateinamen einer Strecke, eines Trainings oder Programms kannst du schon im Startdialog ändern.</p>
+<p><b>☰ → Training beenden</b> beendet, was gerade läuft: eine Strecke, eine nachgefahrene Aufzeichnung oder ein Programm – oder im freien Training die Aufnahme, wie <b>■ Stop</b>.</p>
+<p>Schließt du die App während einer Aufnahme oder eines Trainings (✕ oder <b>☰ → Beenden</b>), erscheint derselbe Dialog als „ErgoWattControl beenden“; OK speichert und beendet die App. Den Dateinamen einer Strecke, eines Trainings oder Programms kannst du schon im Startdialog ändern.</p>
 
 <h2 id="export">Aufzeichnungen exportieren</h2>
 <p><b>☰ → Aufzeichnung exportieren …</b> wandelt Aufzeichnungen für andere Programme um. Links eine oder mehrere Aufzeichnungen markieren (mehrere mit <kbd>Strg</kbd>- oder <kbd>⇧</kbd>-Klick), rechts die Formate ankreuzen und den Zielordner wählen, dann <b>Exportieren</b>.</p>
@@ -199,24 +202,27 @@
   <tr><td>Strecke fahren</td><td>Fahrer- und Radgewicht, Steigungsfaktor, Übersetzung, Startgang.</td></tr>
   <tr><td>Wattgrenze</td><td>Höchste Leistung, die die App einstellt. Das Cockpit 8008/8080 erlaubt bis 800 W, andere 400 W.</td></tr>
 </table>
-<p>Weitere Werte stehen in der <code>settings.json</code> neben der exe, darunter die Muster der Dateinamen:</p>
+<p>Weitere Werte stehen in der <code>settings.json</code> (siehe <a href="#dateien">Dateien und Ordner</a>), darunter die Muster der Dateinamen:</p>
 <table>
   <tr><th>Einstellung</th><th>Für</th><th>Vorgabe</th></tr>
-  <tr><td><code>FileNameTraining</code></td><td>freies Training und wiederholte Aufzeichnung</td><td><code>Training_{Datum}_{Uhrzeit}</code></td></tr>
+  <tr><td><code>FileNameTraining</code></td><td>freies Training und nachgefahrene Aufzeichnung</td><td><code>Training_{Datum}_{Uhrzeit}</code></td></tr>
   <tr><td><code>FileNameRoute</code></td><td>Strecke fahren</td><td><code>Strecke_{Strecke}_{Datum}_{Uhrzeit}</code></td></tr>
-  <tr><td><code>FileNameProgram</code></td><td>Programm wiederholen</td><td><code>Prog_{Programm}_{Datum}_{Uhrzeit}</code></td></tr>
+  <tr><td><code>FileNameProgram</code></td><td>Trainingsprogramm starten</td><td><code>Prog_{Programm}_{Datum}_{Uhrzeit}</code></td></tr>
 </table>
 <p>Platzhalter: <code>{Datum}</code>, <code>{Uhrzeit}</code>, <code>{Strecke}</code>, <code>{Training}</code>, <code>{Programm}</code>. Außerdem: <code>RollingResistance</code> (Rollwiderstand, 0,010) und <code>DragAreaM2</code> (Luftwiderstandsfläche cw·A, 0,55 m²).</p>
 
 <h2 id="dateien">Dateien und Ordner</h2>
+<p>Die App speichert ihre Daten in den üblichen Windows-Ordnern – unabhängig davon, wo sie installiert ist:</p>
 <table>
-  <tr><th>Neben der exe</th><th>Inhalt</th></tr>
-  <tr><td><code>settings.json</code></td><td>Einstellungen; wird beim ersten Start angelegt.</td></tr>
-  <tr><td><code>Aufzeichnungen\</code></td><td>Aufzeichnungen (Standard-Ablageordner).</td></tr>
-  <tr><td><code>GPX\</code></td><td>Strecken für „Strecke fahren“.</td></tr>
-  <tr><td><code>Programme\</code></td><td>Die mitgelieferten Programme. Sie stecken in der exe; beim Start schreibt die App fehlende oder veränderte Dateien neu – Änderungen an diesen Dateien werden also überschrieben. Eigene Programme unter anderem Namen bleiben erhalten.</td></tr>
-  <tr><td><code>Fehler.log</code></td><td>Details, wenn eine Datei nicht geladen oder geschrieben werden konnte.</td></tr>
+  <tr><th>Datei / Ordner</th><th>Ort</th><th>Inhalt</th></tr>
+  <tr><td><code>settings.json</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Einstellungen; wird beim ersten Start angelegt.</td></tr>
+  <tr><td><code>Fehler.log</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Details, wenn eine Datei nicht geladen oder geschrieben werden konnte.</td></tr>
+  <tr><td><code>Aufzeichnungen\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Aufzeichnungen (Standard-Ablageordner, in den Einstellungen änderbar).</td></tr>
+  <tr><td><code>GPX\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Strecken für „Strecke fahren“.</td></tr>
+  <tr><td><code>Programme\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Die mitgelieferten Programme. Sie stecken in der exe; beim Start schreibt die App fehlende oder veränderte Dateien neu – Änderungen an diesen Dateien werden also überschrieben. Eigene Programme unter anderem Namen bleiben erhalten.</td></tr>
 </table>
+<p><b>Portabel:</b> Liegt neben der exe eine <code>settings.json</code>, bleibt alles im Programmordner – Einstellungen, <code>Fehler.log</code>, <code>Aufzeichnungen\</code>, <code>GPX\</code> und <code>Programme\</code> liegen dann neben der exe. So laufen ältere Installationen und ZIP-Kopien unverändert weiter; für einen USB-Stick legst du einfach eine (auch leere) <code>settings.json</code> neben die exe.</p>
+<p><b>Setup:</b> Es installiert die App für den angemeldeten Benutzer nach <code>%LocalAppData%\Programs\ErgoWattControl</code>, mit Verknüpfung im Startmenü und – wenn angehakt – auf dem Desktop. Fehlt die .NET 10 Desktop Runtime, installiert es sie mit. Am Ende kannst du die App gleich starten, auf Wunsch im Demo-Modus. Beim Deinstallieren (Windows-Einstellungen → Apps) bleiben Einstellungen und Aufzeichnungen erhalten.</p>
 <h3>Aufzeichnungen (JSON)</h3>
 <p>Eine Aufzeichnung enthält die Art (Training, Strecke, Programm), Start und Ende, die Einstellungen beim Start, die Vorgabe (Strecke alle 10 m mit Höhe und Koordinaten bzw. den Leistungsverlauf) und pro Sekunde eine Zeile Messwerte: Soll- und Ist-Leistung, RPM, Puls, Geschwindigkeit, Strecke, Energie, Umdrehungen, bei Strecken auch Steigung und Gang. Die Datei wird alle 10 Sekunden vollständig neu geschrieben – bei einem Absturz oder Stromausfall fehlen höchstens diese Sekunden.</p>
 <h3>Eigene Programme</h3>
@@ -232,7 +238,7 @@
 <table>
   <tr><th>Aufruf</th><th>Wirkung</th></tr>
   <tr><td><code>ErgoWattControl.exe</code></td><td>Normalbetrieb mit dem Cockpit.</td></tr>
-  <tr><td><code>-demo [Datei]</code></td><td>Demo ohne Ergometer: ein simulierter Fahrer tritt mit etwa 75 RPM. Mit einer GPX-Datei startet diese Strecke sofort, mit einer Aufzeichnung oder einem Programm dessen Wiederholung.</td></tr>
+  <tr><td><code>-demo [Datei]</code></td><td>Demo ohne Ergometer: ein simulierter Fahrer tritt mit etwa 75 RPM. Mit einer GPX-Datei startet diese Strecke sofort, mit einer Aufzeichnung oder einem Programm wird dieses nachgefahren.</td></tr>
   <tr><td><code>-main</code></td><td>Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor (kombinierbar mit <code>-demo</code>).</td></tr>
   <tr><td><code>-help</code></td><td>Zeigt die Parameter.</td></tr>
 </table>
@@ -248,7 +254,7 @@
 <h3>Eine Strecke ist zu schwer</h3>
 <p>Steigungsfaktor verringern (z. B. 50 %), einen kleineren Gang wählen oder auf MTB-Übersetzung umstellen. Die Leistung wird in jedem Fall auf die Wattgrenze begrenzt.</p>
 <h3>Eine Datei lässt sich nicht laden</h3>
-<p>Die Meldung nennt den Grund; die vollständigen Details stehen in <code>Fehler.log</code> neben der exe.</p>
+<p>Die Meldung nennt den Grund; die vollständigen Details stehen in <code>Fehler.log</code> (in <code>%AppData%\ErgoWattControl</code>, bei portabler Nutzung neben der exe).</p>
 
 </main>
 </div>

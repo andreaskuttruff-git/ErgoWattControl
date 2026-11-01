@@ -63,7 +63,7 @@ public sealed class ReplayPickerForm : Form
     /// <param name="saveAsDefault">Stores the values shown as the new defaults in settings.json.</param>
     public static ReplayPickerForm ForPrograms(string directory, AppSettings current, Action<AppSettings> saveAsDefault)
     {
-        var form = new ReplayPickerForm("Programm wiederholen", programFile => AppSettings.BuildFileName(current.FileNameProgram, DateTime.Now, programFile),
+        var form = new ReplayPickerForm("Trainingsprogramm starten", programFile => AppSettings.BuildFileName(current.FileNameProgram, DateTime.Now, programFile),
             current, programs: true, showPulse: false, saveAsDefault);
         var failed = new List<string>();
         foreach (var file in Files(directory, "*.json").Order(StringComparer.OrdinalIgnoreCase))
@@ -87,7 +87,7 @@ public sealed class ReplayPickerForm : Form
     /// <param name="saveAsDefault">Stores the ride values shown as the new defaults in settings.json.</param>
     public static ReplayPickerForm ForRecordings(AppSettings current, Action<AppSettings> saveAsDefault)
     {
-        var form = new ReplayPickerForm("Training wiederholen", name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
+        var form = new ReplayPickerForm("Aufzeichnung nachfahren", name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
             current, programs: false, current.ReplayShowOriginalPulse, saveAsDefault);
         var directory = current.RecordingDirectory;
         foreach (var file in Files(directory, "*.json").Concat(Files(directory, "*.csv")).OrderByDescending(File.GetLastWriteTime))
@@ -184,7 +184,7 @@ public sealed class ReplayPickerForm : Form
         if (!_programs)
         {
             // Recordings may also lie elsewhere (an older folder, a USB stick).
-            var other = new Button { Text = "Andere Datei …", Dock = DockStyle.Bottom, Height = 36 };
+            var other = new Button { Text = "Aufzeichnung aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
             other.Click += (_, _) => PickOtherFile(directory);
             listPanel.Controls.Add(other);
         }

@@ -84,6 +84,7 @@ public static class HelpWindow
         var form = new Form
         {
             Text = "ErgoWattControl – Hilfe",
+            Icon = AppIcon.Value,
             StartPosition = FormStartPosition.Manual,
             Bounds = new Rectangle(area.X + (area.Width - size.Width) / 2, area.Y + (area.Height - size.Height) / 2, size.Width, size.Height),
             MinimumSize = new Size(500, 400),

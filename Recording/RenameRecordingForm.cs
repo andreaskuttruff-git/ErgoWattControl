@@ -15,7 +15,7 @@ public sealed class RenameRecordingForm : Form
     public RenameRecordingForm(string savedFile, bool closingApp = false)
     {
         _fileName = new RecordingNameBox(Path.GetFileNameWithoutExtension(savedFile));
-        Text = closingApp ? "Training beenden" : "Aufnahme gespeichert";
+        Text = closingApp ? "ErgoWattControl beenden" : "Aufnahme gespeichert";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;

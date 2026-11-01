@@ -13,3 +13,7 @@ Aufzeichnungen/
 GPX/
 *.csv
 *.gpx
+
+# Setup build output and the downloaded .NET runtime
+Setup/out/
+Setup/redist/

@@ -1,0 +1,12 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <!-- The app as an MSI, installed per user (the app writes settings and recordings next to the exe). -->
+  <PropertyGroup>
+    <OutputName>ErgoWattControl</OutputName>
+    <Version Condition="'$(Version)' == ''">1.0.0</Version>
+    <!-- Output of "dotnet publish" of the app; Setup\build-setup.ps1 fills it. -->
+    <AppDir Condition="'$(AppDir)' == ''">$(MSBuildThisFileDirectory)..\out\app</AppDir>
+    <DefineConstants>Version=$(Version);AppDir=$(AppDir)</DefineConstants>
+    <!-- Per-user files under LocalAppData use file key paths; the HKCU key-path rules don't fit a whole app folder. -->
+    <SuppressIces>ICE38;ICE64;ICE91</SuppressIces>
+  </PropertyGroup>
+</Project>
