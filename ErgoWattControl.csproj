@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
     <PackageReference Include="System.IO.Ports" Version="10.0.0" />
   </ItemGroup>
 
@@ -18,6 +19,18 @@
     <Compile Remove="Programme\**" />
     <None Remove="Programme\**" />
     <EmbeddedResource Include="Programme\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
+    <!-- User help (F1 / menu "Hilfe"), shown from the exe in the help window (HelpWindow) -->
+    <None Remove="Hilfe.html;Hilfe-Bilder\**" />
+    <EmbeddedResource Include="Hilfe.html" LogicalName="Hilfe/Hilfe.html" />
+    <EmbeddedResource Include="Hilfe-Bilder\*.png" LogicalName="Hilfe/Hilfe-Bilder/%(Filename)%(Extension)" />
   </ItemGroup>
+
+  <!-- The WebView2 package also references its WPF control; a WinForms app doesn't need it (and it drags in a
+       WindowsBase version conflict, warning MSB3277). -->
+  <Target Name="DropWebView2Wpf" BeforeTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Reference Remove="@(Reference)" Condition="'%(Filename)' == 'Microsoft.Web.WebView2.Wpf'" />
+    </ItemGroup>
+  </Target>
 
 </Project>

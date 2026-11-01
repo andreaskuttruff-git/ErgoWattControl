@@ -63,6 +63,7 @@ static class Program
         }
         ProgramFiles.Install();
         Application.Run(new RideForm(AppSettings.Load(), demo, demoRoute, mainScreen));
+        HelpWindow.Close();
     }
 
     /// <summary>

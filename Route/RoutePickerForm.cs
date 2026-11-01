@@ -34,6 +34,7 @@ public sealed class RoutePickerForm : Form
         StartPosition = FormStartPosition.CenterParent;
         ClientSize = new Size(1180, 680);
         Font = new Font("Segoe UI", 11);
+        HelpWindow.Attach(this, "strecke");
 
         if (Directory.Exists(settings.GpxDirectory))
             _files.AddRange(Directory.GetFiles(settings.GpxDirectory, "*.gpx").Order(StringComparer.OrdinalIgnoreCase));

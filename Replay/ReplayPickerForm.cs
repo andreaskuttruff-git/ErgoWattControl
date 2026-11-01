@@ -123,6 +123,7 @@ public sealed class ReplayPickerForm : Form
         _current = current;
         _saveAsDefault = saveAsDefault;
         _programs = programs;
+        HelpWindow.Attach(this, programs ? "programm" : "training");
         Text = title;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;

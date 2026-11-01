@@ -13,6 +13,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 - **Trainingsprogramme** (JSON mit Beschreibung und Leistungsprofil), fahrbar über „Programm wiederholen“. Sie sind in die exe eingebettet; beim Start schreibt die App fehlende oder veränderte Dateien nach `Programme\` neben der exe (Änderungen dort werden also überschrieben, eigene Programme mit anderem Namen bleiben erhalten). Der Auswahldialog zeichnet zum markierten Programm den Leistungsverlauf und zeigt die Beschreibung (Details und Quellen in `Programme\LIESMICH.md`):
   - `P01`–`P44`: die wattgesteuerten Festprogramme des 8008 TRS aus dem Handbuch (1–28, Cool-down 42–44)
   - `S00`–`S07`: Programme nach aktueller Trainingswissenschaft – Rampentest zur FTP-Bestimmung, Grundlage, 4×4, 4×8, 30/15, Unterschwelle, 10×1 min, 3×20 s, jeweils für FTP 150/200/250 W
+- **Hilfe** für Fahrer in einem eigenen Fenster (WebView2): F1 öffnet sie beim Abschnitt zur aktuellen Ansicht bzw. zum offenen Dialog, ☰ → Hilfe am Anfang. `Hilfe.html` und `Hilfe-Bilder\` sind in die exe eingebettet; ohne WebView2-Laufzeit öffnet sich die Hilfe im Browser
 - **Demo-Modus** ohne Ergometer: `ErgoWattControl.exe --demo [strecke.gpx]`
 - **Start auf dem Hauptbildschirm** statt auf dem Fahrer-Monitor: `ErgoWattControl.exe -main` (kombinierbar mit `-demo`)
 

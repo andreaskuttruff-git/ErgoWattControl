@@ -259,6 +259,7 @@ public sealed class RideForm : Form
         menu.Items.Add(_menuReplayEnd);
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Einstellungen …", null, (_, _) => OpenSettings());
+        menu.Items.Add(new ToolStripMenuItem("Hilfe", null, (_, _) => HelpWindow.Show(this, "start")) { ShortcutKeyDisplayString = "F1" });
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Beenden", null, (_, _) => Close());
         menuButton.Click += (_, _) => menu.Show(menuButton, new Point(0, menuButton.Height));
@@ -308,6 +309,9 @@ public sealed class RideForm : Form
             case Keys.NumPad0:
             case Keys.Insert:
                 FitTo(RiderScreen());
+                return true;
+            case Keys.F1:
+                HelpWindow.Show(this, HelpSection);
                 return true;
         }
         var step = keyData switch
@@ -637,6 +641,11 @@ public sealed class RideForm : Form
             completed ? $"Geschafft – {replay.Workout.Name}" : replay.Workout.Name, facts, recorded.FilePath);
         summary.ShowDialog(this);
     }
+
+    /// <summary>F1: the help section for what is on screen now.</summary>
+    private string HelpSection => _route is not null ? "strecke"
+        : _replay is not null ? (_programFile is not null ? "programm" : "training")
+        : "ansicht";
 
     /// <summary>Shows why a route or training could not be loaded and keeps the full exception in Fehler.log next to the exe.</summary>
     private void ShowLoadError(string what, string caption, string path, Exception ex)

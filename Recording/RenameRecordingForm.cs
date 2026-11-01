@@ -24,6 +24,7 @@ public sealed class RenameRecordingForm : Form
         AutoSizeMode = AutoSizeMode.GrowAndShrink;
         Padding = new Padding(16);
         Font = new Font("Segoe UI", 11);
+        HelpWindow.Attach(this, "beenden");
 
         var layout = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill };
         var folder = new Label

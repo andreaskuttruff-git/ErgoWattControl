@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ErgoWattControl – Hilfe</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #161616; --panel: #202020; --line: #333; --text: #e6e6e6; --muted: #a0a0a0;
+    --gold: #ffd200; --blue: #4cc3ff; --red: #ff7a6e; --green: #78dc78;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 "Segoe UI", system-ui, sans-serif; }
+  header { padding: 28px 32px 18px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; color: var(--gold); font-size: 28px; }
+  header p { margin: 6px 0 0; color: var(--muted); }
+  .wrap { display: grid; grid-template-columns: 250px 1fr; max-width: 1200px; }
+  nav { position: sticky; top: 0; align-self: start; padding: 20px 16px 20px 32px; max-height: 100vh; overflow-y: auto; }
+  nav a { display: block; padding: 4px 0 4px 10px; border-left: 3px solid transparent; color: var(--muted); text-decoration: none; font-size: 15px; }
+  nav a:hover { color: var(--gold); }
+  nav a.active { color: var(--gold); border-left-color: var(--gold); font-weight: 600; }
+  main { padding: 8px 32px 60px; min-width: 0; }
+  h2 { color: var(--gold); margin: 36px 0 10px; padding-top: 6px; border-top: 1px solid var(--line); font-size: 22px; }
+  h3 { color: var(--blue); margin: 22px 0 6px; font-size: 17px; }
+  a { color: var(--blue); }
+  code, kbd { font-family: Consolas, monospace; font-size: 14px; }
+  code { background: var(--panel); padding: 1px 5px; border-radius: 3px; }
+  kbd { background: #2b2b2b; border: 1px solid #555; border-bottom-width: 2px; padding: 0 6px; border-radius: 4px; }
+  pre { background: var(--panel); padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; }
+  figure { margin: 14px 0 18px; }
+  figure img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
+  figure img { cursor: zoom-in; }
+  #zoom { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; cursor: zoom-out; z-index: 10; }
+  #zoom.open { display: flex; }
+  #zoom img { max-width: 96vw; max-height: 96vh; border: 1px solid var(--line); border-radius: 6px; }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .note { border-left: 3px solid var(--gold); background: var(--panel); padding: 10px 14px; margin: 12px 0; }
+  .warn { border-left-color: var(--red); }
+  @media (max-width: 800px) { .wrap { grid-template-columns: 1fr; } nav { position: static; max-height: none; padding: 16px; } main { padding: 0 16px 40px; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>ErgoWattControl – Hilfe</h1>
+  <p>Steuerung für das Daum ergo_bike 8008 TRS über die serielle Schnittstelle</p>
+</header>
+<div class="wrap">
+<nav>
+  <a href="#start">Erste Schritte</a>
+  <a href="#ansicht">Die Fahransicht</a>
+  <a href="#tasten">Tasten und Maus</a>
+  <a href="#frei">Freies Training</a>
+  <a href="#strecke">Strecke fahren</a>
+  <a href="#training">Training wiederholen</a>
+  <a href="#programm">Programm wiederholen</a>
+  <a href="#ftp">FTP und Rampentest</a>
+  <a href="#laufeinstellungen">Einstellungen für einen Lauf</a>
+  <a href="#beenden">Aufnahme beenden, umbenennen, verwerfen</a>
+  <a href="#einstellungen">Einstellungen</a>
+  <a href="#dateien">Dateien und Ordner</a>
+  <a href="#parameter">Startparameter</a>
+  <a href="#probleme">Wenn etwas nicht klappt</a>
+</nav>
+<main>
+
+<h2 id="start">Erste Schritte</h2>
+<ol>
+  <li>Ergometer einschalten und das Cockpit per RS232-Kabel (bzw. USB-RS232-Adapter) mit dem PC verbinden.</li>
+  <li><code>ErgoWattControl.exe</code> starten. Die App verbindet sich am eingestellten COM-Port; unten rechts steht der Verbindungsstatus.</li>
+  <li>Beim ersten Start unter <b>☰ → Einstellungen</b> den COM-Port wählen und mit <b>Verbindung testen</b> prüfen; dort auch Gewicht und Wattgrenze eintragen.</li>
+  <li>Losfahren: im freien Training die Leistung mit <kbd>↑</kbd> <kbd>↓</kbd> oder dem Mausrad einstellen – oder über das Menü <b>☰</b> eine Strecke, ein Training oder ein Programm wählen.</li>
+</ol>
+<div class="note">Das Fenster öffnet auf dem Fahrer-Monitor (dem ersten Nebenmonitor). <b>Fahransicht</b> bzw. <kbd>Einfg</kbd> / <kbd>0</kbd> auf dem Ziffernblock legt es jederzeit dorthin.</div>
+
+<h2 id="ansicht">Die Fahransicht</h2>
+<figure style="max-width:900px"><img src="Hilfe-Bilder/fahransicht.png" alt="Freies Training mit laufender Aufnahme: 160 W eingestellt, Trittfrequenz 78 im erlaubten Bereich (blaugraue Fläche)."><figcaption>Freies Training mit laufender Aufnahme: 160 W eingestellt, Trittfrequenz 78 im erlaubten Bereich (blaugraue Fläche).</figcaption></figure>
+<table>
+  <tr><th>Bereich</th><th>Bedeutung</th></tr>
+  <tr><td><b>LEISTUNG</b> (gelb)</td><td>Vorgegebene Leistung in Watt, mit <b>−</b> / <b>+</b> daneben. Weicht die tatsächliche Leistung mehr als 5 W ab, steht darüber <code>[Ist … W]</code>.</td></tr>
+  <tr><td><b>PULS</b> (rot)</td><td>Herzfrequenz vom Brustgurt bzw. Ohrclip des Cockpits.</td></tr>
+  <tr><td><b>RPM</b>, <b>km/h</b>, <b>ZEIT</b></td><td>Trittfrequenz, Geschwindigkeit und Fahrzeit. Ein <span style="color:var(--red)">▲</span> neben RPM heißt „schneller treten“, ein ▼ „langsamer treten“.</td></tr>
+  <tr><td>Oberer Graph</td><td>Leistung (gelb) und Trittfrequenz (blau) der letzten 10 Minuten. Die <b>blaugraue Fläche</b> ist der Trittfrequenzbereich, in dem die Wirbelstrombremse die eingestellte Leistung halten kann (z. B. 40–160 RPM bis 150 W, 50–160 RPM bis 250 W). Sie gehört zur blauen Linie.</td></tr>
+  <tr><td>Unterer Graph</td><td>Puls der letzten 10 Minuten. Beim Streckenfahren steht hier das Höhenprofil, beim Wiederholen der Leistungsverlauf.</td></tr>
+  <tr><td>Untere Zeile</td><td>Strecke, Energie und Kurbelumdrehungen der laufenden Aufnahme, die Aufnahme-Taste, <b>Fahransicht</b> und der Verbindungsstatus.</td></tr>
+</table>
+
+<h2 id="tasten">Tasten und Maus</h2>
+<p>Die Tasten wirken immer, egal welches Element gerade den Fokus hat. Der Ziffernblock funktioniert mit und ohne NumLock – praktisch mit einer Funk-Tastatur am Lenker.</p>
+<table>
+  <tr><th>Taste</th><th>Freies Training</th><th>Strecke</th><th>Training / Programm</th></tr>
+  <tr><td><kbd>↑</kbd> <kbd>+</kbd> <kbd>8</kbd> · Mausrad hoch</td><td>+5 W</td><td>1 Gang höher</td><td>ganzes Profil +5 W</td></tr>
+  <tr><td><kbd>↓</kbd> <kbd>−</kbd> <kbd>2</kbd> · Mausrad runter</td><td>−5 W</td><td>1 Gang tiefer</td><td>ganzes Profil −5 W</td></tr>
+  <tr><td><kbd>Bild ↑</kbd> <kbd>9</kbd></td><td>+25 W</td><td>5 Gänge höher</td><td>Profil +25 W</td></tr>
+  <tr><td><kbd>Bild ↓</kbd> <kbd>3</kbd></td><td>−25 W</td><td>5 Gänge tiefer</td><td>Profil −25 W</td></tr>
+  <tr><td><kbd>Enter</kbd></td><td>Aufnahme starten / stoppen</td><td colspan="2">– (die Aufnahme läuft automatisch)</td></tr>
+  <tr><td><kbd>Einfg</kbd> <kbd>0</kbd></td><td colspan="3">Fenster auf den Fahrer-Monitor legen</td></tr>
+  <tr><td><kbd>F1</kbd></td><td colspan="3">Diese Hilfe, gleich beim passenden Abschnitt – auch in jedem Dialog</td></tr>
+</table>
+
+<h2 id="frei">Freies Training</h2>
+<p>Ohne Strecke oder Programm stellst du die Leistung selbst ein (25 W bis zur Wattgrenze, in 5-W-Schritten). Die Bremse hält die Leistung unabhängig von der Trittfrequenz.</p>
+<p><b>● Aufnahme</b> (oder <kbd>Enter</kbd>) startet die Aufzeichnung, <b>■ Stop</b> beendet sie. Danach fragt ein Dialog nach dem Dateinamen – siehe <a href="#beenden">Aufnahme beenden</a>.</p>
+
+<h2 id="strecke">Strecke fahren</h2>
+<p><b>☰ → Strecke fahren …</b> zeigt die GPX-Dateien aus dem Streckenordner (<code>GPX\</code> neben der exe). Zur markierten Strecke siehst du das Höhenprofil (eingefärbt nach Steigung, der steilste Anstieg ist markiert), Länge, Höhenmeter, maximale Steigung und die Leistung, die sie im 1. Gang bei 60 RPM kostet. Liegt die über deiner Wattgrenze, steht das in Rot da. <b>Andere Datei …</b> holt eine GPX-Datei aus einem anderen Ordner.</p>
+<p>Während der Fahrt berechnet die App die Bremsleistung aus Steigung, Gewicht (Fahrer + Rad), Roll- und Luftwiderstand und der virtuellen Geschwindigkeit – die ergibt sich aus Trittfrequenz × Gang. Du schaltest wie draußen: höherer Gang = schneller und schwerer.</p>
+<figure><img src="Hilfe-Bilder/strecke_auswahl.png" alt="Startdialog „Strecke fahren“: Höhenprofil mit dem steilsten Anstieg, Kennzahlen und Dateiname."><figcaption>Startdialog „Strecke fahren“: Höhenprofil mit dem steilsten Anstieg, Kennzahlen und Dateiname.</figcaption></figure>
+<figure style="max-width:900px"><img src="Hilfe-Bilder/fahransicht_strecke.png" alt="Unterwegs auf der Strecke: Gang statt Watt, darunter das Höhenprofil mit der aktuellen Position und dem Abschnitt der nächsten 2 km. ▼ neben RPM: langsamer treten."><figcaption>Unterwegs auf der Strecke: Gang statt Watt, darunter das Höhenprofil mit der aktuellen Position und dem Abschnitt der nächsten 2 km. ▼ neben RPM: langsamer treten.</figcaption></figure>
+<figure style="max-width:620px"><img src="Hilfe-Bilder/zusammenfassung.png" alt="Zusammenfassung am Ende einer Strecke."><figcaption>Zusammenfassung am Ende einer Strecke.</figcaption></figure>
+<ul>
+  <li>28 Gänge, Übersetzung <b>MTB</b> (kleinere Gänge, am Berg langsam kurbeln möglich) oder <b>Rennrad</b>.</li>
+  <li>Der <b>Steigungsfaktor</b> macht alle Steigungen flacher (50 % = halb so steil) – so werden bergige Strecken fahrbar.</li>
+  <li>Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst. Am Ziel endet die Fahrt mit einer Zusammenfassung.</li>
+  <li><b>☰ → Strecke beenden</b> bricht vorzeitig ab.</li>
+</ul>
+
+<h2 id="training">Training wiederholen</h2>
+<p><b>☰ → Training wiederholen …</b> listet deine Aufzeichnungen, die neueste zuerst. Zur markierten siehst du den Verlauf (Leistung und auf Wunsch den Puls von damals), Dauer, Ø- und Maximalleistung.</p>
+<ul>
+  <li><b>Aufzeichnung einer Strecke:</b> wird wieder als Strecke gefahren – mit der in der Aufzeichnung gespeicherten Strecke und ihren Einstellungen (Gewicht, Übersetzung, …), die du für diesen Lauf ändern kannst.</li>
+  <li><b>Freies Training oder Programm:</b> folgt dem aufgezeichneten Leistungsverlauf. Die Zeit läuft nur, solange du trittst; <kbd>↑</kbd> <kbd>↓</kbd> verschieben das ganze Profil.</li>
+  <li><b>Puls vom Original einblenden</b> zeigt während der Fahrt den Puls von damals zum Vergleich.</li>
+  <li>Ältere Aufzeichnungen im CSV-Format lassen sich weiter wiederholen.</li>
+</ul>
+<figure><img src="Hilfe-Bilder/training_auswahl.png" alt="Startdialog „Training wiederholen“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen."><figcaption>Startdialog „Training wiederholen“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen.</figcaption></figure>
+
+<h2 id="programm">Programm wiederholen</h2>
+<p><b>☰ → Programm wiederholen …</b> listet die Trainingsprogramme mit Leistungsverlauf, Dauer und Beschreibung.</p>
+<figure><img src="Hilfe-Bilder/programm_auswahl.png" alt="Startdialog „Programm wiederholen“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar."><figcaption>Startdialog „Programm wiederholen“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar.</figcaption></figure>
+<h3>P01–P44: Programme aus dem Handbuch</h3>
+<p>Die wattgesteuerten Festprogramme des 8008 TRS (Leistungstests WHO/BAL, Intervall, Pyramide, Berge, Fahrtspiele, Mannschafts-Tempotraining, Ausdauer, Cool-down) mit festen Wattwerten. Sie sind aus den Grafiken des Handbuchs abgelesen. Die Pulsprogramme (29–38) und Höhenprofile (39–41) fehlen, weil die App nur Watt steuert.</p>
+<h3>S00–S07: Programme nach aktueller Trainingswissenschaft</h3>
+<table>
+  <tr><th>Programm</th><th>Hauptteil</th><th>Wofür</th></tr>
+  <tr><td>S00 Rampentest</td><td>+20 W pro Minute bis zur Erschöpfung</td><td>FTP bestimmen</td></tr>
+  <tr><td>S01 Grundlage 60 min</td><td>55 min bei 65 % FTP</td><td>Grundlagenausdauer – der Großteil des Trainings</td></tr>
+  <tr><td>S02 Norwegisch 4×4</td><td>4 × 4 min bei 108 %</td><td>VO₂max (Helgerud 2007)</td></tr>
+  <tr><td>S03 Seiler 4×8</td><td>4 × 8 min bei 98 %</td><td>VO₂max und Schwelle (Seiler 2013)</td></tr>
+  <tr><td>S04 Rønnestad 30/15</td><td>3 × 13 × (30 s 125 % / 15 s locker)</td><td>VO₂max, Leistung über 20 min</td></tr>
+  <tr><td>S05 Unterschwelle 5×8</td><td>5 × 8 min bei 90 %</td><td>Schwellentraining mit wenig Ermüdung</td></tr>
+  <tr><td>S06 Gibala 10×1 min</td><td>10 × 1 min bei 115 %</td><td>zeitsparendes Intervalltraining</td></tr>
+  <tr><td>S07 Sprint 3×20 s</td><td>3 × 20 s bei 200 %</td><td>Minimalprogramm, 10 min</td></tr>
+</table>
+<p>Jedes S-Programm gibt es für FTP 150, 200 und 250 W. Ein typischer Wochenaufbau: zwei harte Einheiten (S02–S06), der Rest locker (S01). Quellen und Details stehen in <code>Programme\LIESMICH.md</code> im Projekt.</p>
+<div class="note warn">Vor dem Einstieg in hochintensives Training empfehlen die Fachgesellschaften bei Vorerkrankungen, Übergewicht oder längerer Pause einen ärztlichen Check, gegebenenfalls mit Belastungs-EKG.</div>
+
+<h2 id="ftp">FTP und Rampentest</h2>
+<p>Die <b>FTP</b> (Functional Threshold Power) ist die Leistung, die du etwa eine Stunde halten kannst. So bestimmst du sie:</p>
+<ol>
+  <li><b>S00 Rampentest</b> fahren: 5 min bei 100 W, danach jede Minute +20 W.</li>
+  <li>Abbrechen, wenn du die Trittfrequenz nicht mehr halten kannst.</li>
+  <li>FTP ≈ <b>75 % der letzten Stufe, die du eine volle Minute gehalten hast</b> (Beispiel: 260 W geschafft → FTP ≈ 195 W).</li>
+  <li>Die S-Programme mit der nächstgelegenen Stufe wählen und bei Bedarf mit <kbd>↑</kbd> <kbd>↓</kbd> anpassen.</li>
+</ol>
+
+<h2 id="laufeinstellungen">Einstellungen für einen Lauf</h2>
+<p>Die Startdialoge von <b>Training wiederholen</b> und <b>Programm wiederholen</b> zeigen die Einstellungen, die für den Lauf wirken, und lassen sie <b>nur für diesen Lauf</b> ändern:</p>
+<ul>
+  <li>Bei Leistungsverläufen (Programme, freie Trainings) nur die <b>Wattgrenze</b>.</li>
+  <li>Bei einer Strecken-Aufzeichnung zusätzlich Gewichte, Steigungsfaktor, Übersetzung, Startgang, Roll- und Luftwiderstand – vorbelegt mit den Werten, mit denen sie aufgezeichnet wurde.</li>
+</ul>
+<p><b>Als Standard speichern</b> übernimmt die angezeigten Werte in die <code>settings.json</code>; sie gelten dann auch für neue Strecken und im Einstellungsdialog.</p>
+
+<h2 id="beenden">Aufnahme beenden, umbenennen, verwerfen</h2>
+<p>Nach <b>■ Stop</b> im freien Training fragt ein Dialog nach dem Dateinamen; vorgeschlagen ist der bisherige Name.</p>
+<table>
+  <tr><th>Knopf</th><th>Wirkung</th></tr>
+  <tr><td><b>OK</b></td><td>Speichert unter dem Namen im Feld (unverändert = bisheriger Name).</td></tr>
+  <tr><td><b>Verwerfen</b></td><td>Löscht die Aufnahme, ohne weitere Nachfrage.</td></tr>
+  <tr><td><b>Weiterfahren</b></td><td>Nur beim Schließen der App: zurück, die Aufnahme läuft weiter.</td></tr>
+</table>
+<figure style="max-width:700px"><img src="Hilfe-Bilder/training_beenden.png" alt="Der Dialog beim Schließen der App während einer Aufnahme."><figcaption>Der Dialog beim Schließen der App während einer Aufnahme.</figcaption></figure>
+<p>Schließt du die App während einer Aufnahme oder einer Strecke/Wiederholung (✕ oder <b>☰ → Beenden</b>), erscheint derselbe Dialog als „Training beenden“; OK speichert und beendet die App. Den Dateinamen einer Strecke, eines Trainings oder Programms kannst du schon im Startdialog ändern.</p>
+
+<h2 id="einstellungen">Einstellungen</h2>
+<p><b>☰ → Einstellungen …</b></p>
+<figure style="max-width:670px"><img src="Hilfe-Bilder/einstellungen.png" alt="Der Einstellungsdialog."><figcaption>Der Einstellungsdialog.</figcaption></figure>
+<table>
+  <tr><th>Feld</th><th>Bedeutung</th></tr>
+  <tr><td>COM-Port</td><td>Schnittstelle des Cockpits. <b>Aktualisieren</b> liest die Ports neu ein (z. B. nach dem Einstecken eines USB-Adapters), <b>Verbindung testen</b> prüft, ob ein Cockpit antwortet.</td></tr>
+  <tr><td>Ablageordner</td><td>Wohin die Aufzeichnungen geschrieben werden.</td></tr>
+  <tr><td>Fahransicht auf</td><td>Monitor für die Fahransicht; <b>Identifizieren</b> zeigt auf jedem Monitor seine Nummer.</td></tr>
+  <tr><td>Strecke fahren</td><td>Fahrer- und Radgewicht, Steigungsfaktor, Übersetzung, Startgang.</td></tr>
+  <tr><td>Wattgrenze</td><td>Höchste Leistung, die die App einstellt. Das Cockpit 8008/8080 erlaubt bis 800 W, andere 400 W.</td></tr>
+</table>
+<p>Weitere Werte stehen in der <code>settings.json</code> neben der exe, darunter die Muster der Dateinamen:</p>
+<table>
+  <tr><th>Einstellung</th><th>Für</th><th>Vorgabe</th></tr>
+  <tr><td><code>FileNameTraining</code></td><td>freies Training und wiederholte Aufzeichnung</td><td><code>Training_{Datum}_{Uhrzeit}</code></td></tr>
+  <tr><td><code>FileNameRoute</code></td><td>Strecke fahren</td><td><code>Strecke_{Strecke}_{Datum}_{Uhrzeit}</code></td></tr>
+  <tr><td><code>FileNameProgram</code></td><td>Programm wiederholen</td><td><code>Prog_{Programm}_{Datum}_{Uhrzeit}</code></td></tr>
+</table>
+<p>Platzhalter: <code>{Datum}</code>, <code>{Uhrzeit}</code>, <code>{Strecke}</code>, <code>{Training}</code>, <code>{Programm}</code>. Außerdem: <code>RollingResistance</code> (Rollwiderstand, 0,010) und <code>DragAreaM2</code> (Luftwiderstandsfläche cw·A, 0,55 m²).</p>
+
+<h2 id="dateien">Dateien und Ordner</h2>
+<table>
+  <tr><th>Neben der exe</th><th>Inhalt</th></tr>
+  <tr><td><code>settings.json</code></td><td>Einstellungen; wird beim ersten Start angelegt.</td></tr>
+  <tr><td><code>Aufzeichnungen\</code></td><td>Aufzeichnungen (Standard-Ablageordner).</td></tr>
+  <tr><td><code>GPX\</code></td><td>Strecken für „Strecke fahren“.</td></tr>
+  <tr><td><code>Programme\</code></td><td>Die mitgelieferten Programme. Sie stecken in der exe; beim Start schreibt die App fehlende oder veränderte Dateien neu – Änderungen an diesen Dateien werden also überschrieben. Eigene Programme unter anderem Namen bleiben erhalten.</td></tr>
+  <tr><td><code>Fehler.log</code></td><td>Details, wenn eine Datei nicht geladen oder geschrieben werden konnte.</td></tr>
+</table>
+<h3>Aufzeichnungen (JSON)</h3>
+<p>Eine Aufzeichnung enthält die Art (Training, Strecke, Programm), Start und Ende, die Einstellungen beim Start, die Vorgabe (Strecke alle 10 m mit Höhe und Koordinaten bzw. den Leistungsverlauf) und pro Sekunde eine Zeile Messwerte: Soll- und Ist-Leistung, RPM, Puls, Geschwindigkeit, Strecke, Energie, Umdrehungen, bei Strecken auch Steigung und Gang. Die Datei wird alle 10 Sekunden vollständig neu geschrieben – bei einem Absturz oder Stromausfall fehlen höchstens diese Sekunden.</p>
+<h3>Eigene Programme</h3>
+<p>Ein Programm ist eine JSON-Datei in <code>Programme\</code>:</p>
+<pre>{
+  "Name": "Mein Programm",
+  "Beschreibung": "Text für den Auswahldialog",
+  "Profil": [ [0, 100], [300, 150], [600, 100], [900, 100] ]
+}</pre>
+<p><code>Profil</code> sind Paare aus Sekunde und Watt; die Leistung gilt bis zum nächsten Punkt, der letzte Punkt markiert das Ende. Wähle einen Dateinamen, der nicht mit einem mitgelieferten Programm übereinstimmt.</p>
+
+<h2 id="parameter">Startparameter</h2>
+<table>
+  <tr><th>Aufruf</th><th>Wirkung</th></tr>
+  <tr><td><code>ErgoWattControl.exe</code></td><td>Normalbetrieb mit dem Cockpit.</td></tr>
+  <tr><td><code>-demo [Datei]</code></td><td>Demo ohne Ergometer: ein simulierter Fahrer tritt mit etwa 75 RPM. Mit einer GPX-Datei startet diese Strecke sofort, mit einer Aufzeichnung oder einem Programm dessen Wiederholung.</td></tr>
+  <tr><td><code>-main</code></td><td>Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor (kombinierbar mit <code>-demo</code>).</td></tr>
+  <tr><td><code>-help</code></td><td>Zeigt die Parameter.</td></tr>
+</table>
+
+<h2 id="probleme">Wenn etwas nicht klappt</h2>
+<h3>„Verbinde …“ bleibt stehen</h3>
+<ul>
+  <li>Ist das Ergometer eingeschaltet und das Kabel am richtigen Port? In den Einstellungen <b>Verbindung testen</b>.</li>
+  <li>Nach einem Cockpit-Reset verbindet sich die App von selbst neu.</li>
+</ul>
+<h3>Die Leistung kommt nicht an / ▲ neben RPM</h3>
+<p>Die Wirbelstrombremse kann eine Leistung nur in einem bestimmten Trittfrequenzbereich halten (blaugraue Fläche im Graphen). Bei hoher Leistung musst du schneller treten – über 250 W mindestens 60 RPM, über 500 W mindestens 100 RPM.</p>
+<h3>Eine Strecke ist zu schwer</h3>
+<p>Steigungsfaktor verringern (z. B. 50 %), einen kleineren Gang wählen oder auf MTB-Übersetzung umstellen. Die Leistung wird in jedem Fall auf die Wattgrenze begrenzt.</p>
+<h3>Eine Datei lässt sich nicht laden</h3>
+<p>Die Meldung nennt den Grund; die vollständigen Details stehen in <code>Fehler.log</code> neben der exe.</p>
+
+</main>
+</div>
+<div id="zoom" title="Klicken oder Esc schließt"><img alt=""></div>
+<script>
+  // Click on a screenshot: show it full size over the page; a click or Esc closes it (works in the help window,
+  // which has no back button).
+  (function () {
+    const zoom = document.getElementById('zoom'), big = zoom.querySelector('img');
+    document.querySelectorAll('figure img').forEach(img => img.addEventListener('click', () => {
+      big.src = img.src; big.alt = img.alt; zoom.classList.add('open');
+    }));
+    zoom.addEventListener('click', () => zoom.classList.remove('open'));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') zoom.classList.remove('open'); });
+  })();
+
+  // Marks the section being read in the table of contents: the last heading that has scrolled past the top,
+  // or the last section once the page is scrolled to the end (short final sections never reach the top).
+  (function () {
+    const links = [...document.querySelectorAll('nav a')];
+    const sections = links.map(a => document.getElementById(a.getAttribute('href').slice(1)));
+    let current = null;
+    function update() {
+      let index = 0;
+      sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= 120) index = i; });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) index = sections.length - 1;
+      const link = links[index];
+      if (link === current) return;
+      current?.classList.remove('active');
+      link.classList.add('active');
+      current = link;
+      // Keep the marked entry visible in the side bar – scrolling only the side bar, never the page.
+      const nav = link.parentElement;
+      if (link.offsetTop < nav.scrollTop) nav.scrollTop = link.offsetTop;
+      else if (link.offsetTop + link.offsetHeight > nav.scrollTop + nav.clientHeight) nav.scrollTop = link.offsetTop + link.offsetHeight - nav.clientHeight;
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    window.addEventListener('hashchange', update);
+    update();
+  })();
+</script>
+</body>
+</html>
