@@ -34,6 +34,8 @@ static class Program
     static void Main(string[] args)
     {
         ApplicationConfiguration.Initialize();
+        // All dialogs dark like the ride view (and the Windows dark title bar); MessageBox stays as Windows draws it.
+        Application.SetColorMode(SystemColorMode.Dark);
 
         bool demo = false, mainScreen = false;
         string? demoRoute = null;
@@ -84,7 +86,7 @@ static class Program
         };
         var layout = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.TopDown, Dock = DockStyle.Fill };
         if (error is not null)
-            layout.Controls.Add(new Label { Text = error, AutoSize = true, ForeColor = Color.Firebrick, Font = new Font("Segoe UI", 10, FontStyle.Bold), Margin = new Padding(0, 0, 0, 12) });
+            layout.Controls.Add(new Label { Text = error, AutoSize = true, ForeColor = DialogColors.Warning, Font = new Font("Segoe UI", 10, FontStyle.Bold), Margin = new Padding(0, 0, 0, 12) });
         layout.Controls.Add(new Label { Text = HelpText, AutoSize = true, Font = new Font("Consolas", 10) });
         var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0), Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
         layout.Controls.Add(ok);

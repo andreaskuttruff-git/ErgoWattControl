@@ -125,7 +125,7 @@ public sealed class RoutePickerForm : Form
             Fact("Max. Steigung:", $"{route.MaxGrade * 100:0.0} %" +
                 (_settings.GradeFactorPercent < 100 ? $"   (gefahren mit {_settings.GradeFactorPercent} %: {peak.GradePercent:0.0} %)" : ""));
             Fact("Max. Leistung:", overLimit ? $"{peakText}\nÜber deiner Wattgrenze von {_maxWatt} W – dort wird auf {_maxWatt} W begrenzt." : peakText,
-                overLimit ? Color.Firebrick : null);
+                overLimit ? DialogColors.Warning : null);
             Fact("Gewicht:", $"{_settings.RiderWeightKg:0} kg Fahrer + {_settings.BikeWeightKg:0} kg Rad");
             Fact("Einstellungen:", $"Steigungsfaktor {_settings.GradeFactorPercent} %,  {_settings.Gearing}-Übersetzung,  Startgang {_settings.StartGear}");
             _profile.SetRoute(route);
@@ -140,7 +140,7 @@ public sealed class RoutePickerForm : Form
         {
             Route = null;
             _profile.Visible = false;
-            Fact("Nicht lesbar:", string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : ex.Message, Color.Firebrick);
+            Fact("Nicht lesbar:", string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : ex.Message, DialogColors.Warning);
             _start.Enabled = false;
         }
         _facts.ResumeLayout();

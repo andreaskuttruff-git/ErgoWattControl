@@ -154,7 +154,7 @@ public sealed class ReplayPickerForm : Form
         details.Controls.Add(_showPulse);
         {
             // Docked to the bottom in this order: caption above the values, the button below them.
-            var saved = new Label { AutoSize = true, Anchor = AnchorStyles.Left, ForeColor = Color.ForestGreen, Margin = new Padding(8, 6, 0, 0) };
+            var saved = new Label { AutoSize = true, Anchor = AnchorStyles.Left, ForeColor = DialogColors.Ok, Margin = new Padding(8, 6, 0, 0) };
             var saveAsDefault = new Button { Text = "Als Standard speichern", AutoSize = true, Margin = new Padding(0, 4, 0, 0) };
             saveAsDefault.Click += (_, _) =>
             {
@@ -192,6 +192,9 @@ public sealed class ReplayPickerForm : Form
         Controls.Add(buttons);
 
         _list.Items.AddRange([.. _entries.Select(e => e.Title)]);
+        // Until something is selected (or if nothing can be): the current settings.
+        _rideSettings.Show(_current, route: false);
+        _rideSettingsCaption.Text = "Einstellungen – für diesen Lauf änderbar";
         if (_entries.Count == 0)
             _description.Text = $"Im Ordner {directory} liegen keine {what}.";
         else
