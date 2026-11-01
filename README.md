@@ -6,6 +6,8 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 ⬇️ **[Download der aktuellen Version](https://github.com/andreaskuttruff-git/ErgoWattControl/releases/latest)** – **Setup** (installiert bei Bedarf die .NET 10 Desktop Runtime mit, dann die App für den angemeldeten Benutzer) oder **ZIP** zum Entpacken (braucht die [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)).
 
+![ErgoWattControl – Fahransicht im freien Training](Hilfe-Bilder/fahransicht.png)
+
 ## Funktionen
 
 - **Freies Training:** Wattvorgabe in 5-W-Schritten (Tasten ↑↓ + −, Mausrad, Bild ↑↓ ±25 W), Live-Daten von Leistung, RPM, Puls, Geschwindigkeit, Zeit
