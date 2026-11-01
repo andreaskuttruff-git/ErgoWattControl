@@ -12,4 +12,12 @@
     <PackageReference Include="System.IO.Ports" Version="10.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Training programs for "Programm wiederholen", shipped inside the exe and written to Programme\ at start
+         (ProgramFiles); the generator tool below them is a project of its own -->
+    <Compile Remove="Programme\**" />
+    <None Remove="Programme\**" />
+    <EmbeddedResource Include="Programme\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
+  </ItemGroup>
+
 </Project>
