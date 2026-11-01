@@ -60,6 +60,7 @@
   <a href="#ftp">FTP und Rampentest</a>
   <a href="#laufeinstellungen">Einstellungen für einen Lauf</a>
   <a href="#beenden">Aufnahme beenden, umbenennen, verwerfen</a>
+  <a href="#export">Aufzeichnungen exportieren</a>
   <a href="#einstellungen">Einstellungen</a>
   <a href="#dateien">Dateien und Ordner</a>
   <a href="#parameter">Startparameter</a>
@@ -175,6 +176,17 @@
 </table>
 <figure style="max-width:700px"><img src="Hilfe-Bilder/training_beenden.png" alt="Der Dialog beim Schließen der App während einer Aufnahme."><figcaption>Der Dialog beim Schließen der App während einer Aufnahme.</figcaption></figure>
 <p>Schließt du die App während einer Aufnahme oder einer Strecke/Wiederholung (✕ oder <b>☰ → Beenden</b>), erscheint derselbe Dialog als „Training beenden“; OK speichert und beendet die App. Den Dateinamen einer Strecke, eines Trainings oder Programms kannst du schon im Startdialog ändern.</p>
+
+<h2 id="export">Aufzeichnungen exportieren</h2>
+<p><b>☰ → Aufzeichnung exportieren …</b> wandelt Aufzeichnungen für andere Programme um. Links eine oder mehrere Aufzeichnungen markieren (mehrere mit <kbd>Strg</kbd>- oder <kbd>⇧</kbd>-Klick), rechts die Formate ankreuzen und den Zielordner wählen, dann <b>Exportieren</b>.</p>
+<figure style="max-width:900px"><img src="Hilfe-Bilder/export.png" alt="Der Dialog „Aufzeichnung exportieren“."><figcaption>Der Dialog „Aufzeichnung exportieren“.</figcaption></figure>
+<table>
+  <tr><th>Format</th><th>Wofür</th></tr>
+  <tr><td><b>FIT</b></td><td>Zum Hochladen bei Strava, Garmin Connect, intervals.icu oder TrainingPeaks. Enthält Leistung, Trittfrequenz, Puls, Geschwindigkeit und Strecke. Eine <b>Strecke</b> wird als <b>virtuelle Fahrt</b> exportiert – mit der Position der gefahrenen Strecke, sodass die Plattform sie auf der Karte zeigt, sie aber nicht als echte Ausfahrt wertet. Alle anderen Aufzeichnungen erscheinen als <b>Indoor-Training</b>.</td></tr>
+  <tr><td><b>CSV</b></td><td>Für Excel: Semikolon und Dezimalkomma, öffnet direkt im deutschen Excel. Eine Zeile pro Sekunde mit Uhrzeit und allen Messwerten.</td></tr>
+</table>
+<p>Die Dateien heißen wie die Aufzeichnung, mit der Endung <code>.fit</code> bzw. <code>.csv</code>. Vorgabe für den Zielordner ist <code>Export\</code> im Ablageordner; Formate und Ordner merkt sich die App. Bei Strava lädst du die FIT-Datei unter <b>Hochladen → Datei</b> hoch, bei Garmin Connect unter <b>Importieren → Daten</b>.</p>
+<p>Exportiert werden die Aufzeichnungen im JSON-Format; ältere CSV-Aufzeichnungen öffnen sich ohnehin direkt in Excel.</p>
 
 <h2 id="einstellungen">Einstellungen</h2>
 <p><b>☰ → Einstellungen …</b></p>

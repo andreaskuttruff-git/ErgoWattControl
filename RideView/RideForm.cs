@@ -258,6 +258,8 @@ public sealed class RideForm : Form
         menu.Items.Add(_menuProgramStart);
         menu.Items.Add(_menuReplayEnd);
         menu.Items.Add(new ToolStripSeparator());
+        menu.Items.Add("Aufzeichnung exportieren …", null, (_, _) => OpenExport());
+        menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Einstellungen …", null, (_, _) => OpenSettings());
         menu.Items.Add(new ToolStripMenuItem("Hilfe", null, (_, _) => HelpWindow.Show(this, "start")) { ShortcutKeyDisplayString = "F1" });
         menu.Items.Add(new ToolStripSeparator());
@@ -640,6 +642,12 @@ public sealed class RideForm : Form
         using var summary = new SummaryForm(completed ? "Training beendet" : "Wiederholung beendet",
             completed ? $"Geschafft – {replay.Workout.Name}" : replay.Workout.Name, facts, recorded.FilePath);
         summary.ShowDialog(this);
+    }
+
+    private void OpenExport()
+    {
+        using var dialog = new ExportForm(_settings);
+        dialog.ShowDialog(this);
     }
 
     /// <summary>F1: the help section for what is on screen now.</summary>

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Garmin.FIT.Sdk" Version="21.218.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4314.35" />
     <PackageReference Include="System.IO.Ports" Version="10.0.0" />
   </ItemGroup>

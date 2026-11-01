@@ -28,6 +28,11 @@ public sealed class AppSettings
     public string FileNameRoute { get; set; } = "Strecke_{Strecke}_{Datum}_{Uhrzeit}";
     public string FileNameProgram { get; set; } = "Prog_{Programm}_{Datum}_{Uhrzeit}";
 
+    /// <summary>"Aufzeichnung exportieren": formats ticked last time and the target folder (null = Export\ in the recording folder).</summary>
+    public bool ExportFit { get; set; } = true;
+    public bool ExportCsv { get; set; }
+    public string? ExportDirectory { get; set; }
+
     /// <summary>Show the pulse of the original recording while replaying it (only if it contains pulse data).</summary>
     public bool ReplayShowOriginalPulse { get; set; } = true;
 
