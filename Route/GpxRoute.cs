@@ -13,8 +13,12 @@ public sealed class GpxRoute
     private const double SmoothingWindow = 75;
 
     private readonly double[] _elevation;
+    private readonly double[] _lat;
+    private readonly double[] _lon;
 
     public string Name { get; }
+    /// <summary>The GPX file the route was loaded from (or originally came from, for a route stored with a recording).</summary>
+    public string? FilePath { get; }
     public double TotalDistance { get; }
     public double Ascent { get; }
     public double MaxGrade { get; }
@@ -23,10 +27,13 @@ public sealed class GpxRoute
     public double MinElevation { get; }
     public double MaxElevation { get; }
 
-    private GpxRoute(string name, double[] elevation)
+    private GpxRoute(string name, string? filePath, double[] elevation, double[] lat, double[] lon)
     {
         Name = name;
+        FilePath = filePath;
         _elevation = elevation;
+        _lat = lat;
+        _lon = lon;
         TotalDistance = (elevation.Length - 1) * Step;
         MinElevation = elevation.Min();
         MaxElevation = elevation.Max();
@@ -66,6 +73,8 @@ public sealed class GpxRoute
 
         var count = (int)(cumulative[^1] / Step) + 1;
         var raw = new double[count];
+        var lat = new double[count];
+        var lon = new double[count];
         var j = 0;
         for (var i = 0; i < count; i++)
         {
@@ -75,6 +84,8 @@ public sealed class GpxRoute
             var span = cumulative[j + 1] - cumulative[j];
             var f = span > 0 ? Math.Clamp((d - cumulative[j]) / span, 0, 1) : 0;
             raw[i] = points[j].Ele + f * (points[j + 1].Ele - points[j].Ele);
+            lat[i] = points[j].Lat + f * (points[j + 1].Lat - points[j].Lat);
+            lon[i] = points[j].Lon + f * (points[j + 1].Lon - points[j].Lon);
         }
 
         var half = (int)(SmoothingWindow / Step / 2);
@@ -89,8 +100,26 @@ public sealed class GpxRoute
             smooth[i] = sum / (to - from + 1);
         }
 
-        return new GpxRoute(Path.GetFileNameWithoutExtension(path), smooth);
+        return new GpxRoute(Path.GetFileNameWithoutExtension(path), path, smooth, lat, lon);
     }
+
+    /// <summary>A route stored with a recording (see <see cref="Points"/>): already resampled and smoothed.</summary>
+    public static GpxRoute FromPoints(string name, string? filePath, IReadOnlyList<double[]> points)
+    {
+        if (points.Count < 2 || points.Any(p => p.Length < 2))
+            throw new InvalidDataException("Die gespeicherte Strecke ist unvollständig.");
+        for (var i = 0; i < points.Count; i++)
+        {
+            if (Math.Abs(points[i][0] - i * Step) > 0.5)
+                throw new InvalidDataException($"Die gespeicherte Strecke hat nicht alle {Step:0} m einen Punkt.");
+        }
+        double Value(double[] p, int index) => p.Length > index ? p[index] : 0;
+        return new GpxRoute(name, filePath, [.. points.Select(p => p[1])], [.. points.Select(p => Value(p, 2))], [.. points.Select(p => Value(p, 3))]);
+    }
+
+    /// <summary>The resampled route as ridden: every <see cref="Step"/> m the smoothed elevation and the position.</summary>
+    public IEnumerable<(double Distance, double Elevation, double Lat, double Lon)> Points() =>
+        _elevation.Select((e, i) => (i * Step, e, _lat[i], _lon[i]));
 
     public double ElevationAt(double distance)
     {

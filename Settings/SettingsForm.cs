@@ -100,7 +100,7 @@ public sealed class SettingsForm : Form
         Tip(_cmbPorts, "Serielle Schnittstelle, an der das Cockpit hängt (Update-Kabel bzw. USB-RS232-Adapter).\nNach dem Speichern verbindet sich die App sofort neu.");
         Tip(btnRefresh, "Liste der COM-Ports neu einlesen, z. B. nach dem Einstecken eines USB-Adapters.");
         Tip(btnTest, "Prüft, ob am gewählten Port ein Cockpit antwortet. Ändert nichts am Cockpit.");
-        Tip(_txtFolder, "Ordner für die CSV-Aufzeichnungen.\nDie Dateinamen legen FileNameFreeTraining und FileNameRoute in der settings.json fest.");
+        Tip(_txtFolder, "Ordner für die Aufzeichnungen.\nDie Dateinamen legen FileNameTraining, FileNameRoute und FileNameProgram in der settings.json fest.");
         Tip(btnBrowse, "Ablageordner auswählen.");
         Tip(btnOpen, "Ablageordner im Explorer öffnen.");
         Tip(_cmbMonitor, "Monitor, auf den der Button \"Fahransicht\" das Fenster legt.\n\"Automatisch\" nimmt den ersten Monitor, der nicht der Hauptmonitor ist.");

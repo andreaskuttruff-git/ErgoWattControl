@@ -88,7 +88,7 @@ public sealed class RenameRecordingForm : Form
             return savedFile;
         try
         {
-            var target = CsvRecorder.UniquePath(Path.Combine(Path.GetDirectoryName(savedFile)!, name + ".csv"));
+            var target = JsonRecorder.UniquePath(Path.Combine(Path.GetDirectoryName(savedFile)!, name + Path.GetExtension(savedFile)));
             File.Move(savedFile, target);
             return target;
         }

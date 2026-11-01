@@ -10,11 +10,11 @@ static class Program
           ErgoWattControl.exe
               Normalbetrieb: verbindet sich mit dem Cockpit am eingestellten COM-Port.
 
-          ErgoWattControl.exe -demo [GPX- oder CSV-Datei]
+          ErgoWattControl.exe -demo [GPX-Datei oder Aufzeichnung]
               Demo-Modus ohne Cockpit: ein simulierter Fahrer (ca. 75 RPM) ersetzt das
               Ergometer, die serielle Schnittstelle wird nicht benutzt.
               Mit GPX-Datei startet diese Strecke sofort, ohne Übersicht;
-              mit einer Aufzeichnung (CSV) wird dieses Training wiederholt.
+              mit einer Aufzeichnung (JSON/CSV) oder einem Programm wird dieses wiederholt.
               Beispiel: ErgoWattControl.exe -demo "GPX\Tour.gpx"
 
           ErgoWattControl.exe -main
@@ -29,7 +29,7 @@ static class Program
         Einstellungen: settings.json neben der exe (wird beim ersten Start angelegt).
         """;
 
-    /// <param name="args">"-demo [gpx/csv]": simulated cockpit, optionally starting a route or replay; "-main": open on the primary monitor; "-help": usage.</param>
+    /// <param name="args">"-demo [gpx/json/csv]": simulated cockpit, optionally starting a route or replay; "-main": open on the primary monitor; "-help": usage.</param>
     [STAThread]
     static void Main(string[] args)
     {
@@ -59,6 +59,7 @@ static class Program
                     return;
             }
         }
+        ProgramFiles.Install();
         Application.Run(new RideForm(AppSettings.Load(), demo, demoRoute, mainScreen));
     }
 

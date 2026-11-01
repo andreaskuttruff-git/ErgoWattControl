@@ -19,13 +19,14 @@ public sealed class AppSettings
     public int MaxWattLimit { get; set; } = ErgoController.AbsoluteMaxWatt;
 
     /// <summary>
-    /// CSV file name patterns per recording type (without .csv). Placeholders:
-    /// {Datum} = yyyy-MM-dd, {Uhrzeit} = HH-mm-ss, {Strecke} = GPX file name, {Training} = replayed recording.
+    /// File name patterns per recording type (without extension). Placeholders:
+    /// {Datum} = yyyy-MM-dd, {Uhrzeit} = HH-mm-ss, {Strecke} = GPX file name, {Training} = replayed recording,
+    /// {Programm} = program file name (e.g. S02_FTP200_Norwegisch_4x4).
+    /// Training covers free training and replaying a recording: both are the rider's own training.
     /// </summary>
-    public string FileNameFreeTraining { get; set; } = "Training_{Datum}_{Uhrzeit}";
+    public string FileNameTraining { get; set; } = "Training_{Datum}_{Uhrzeit}";
     public string FileNameRoute { get; set; } = "Strecke_{Strecke}_{Datum}_{Uhrzeit}";
-    /// <summary>Replaying a recorded training; {Training} = name of the replayed recording.</summary>
-    public string FileNameReplay { get; set; } = "Wiederholung_{Datum}_{Uhrzeit}";
+    public string FileNameProgram { get; set; } = "Prog_{Programm}_{Datum}_{Uhrzeit}";
 
     /// <summary>Show the pulse of the original recording while replaying it (only if it contains pulse data).</summary>
     public bool ReplayShowOriginalPulse { get; set; } = true;
@@ -67,23 +68,44 @@ public sealed class AppSettings
 
     public void Save() => File.WriteAllText(FilePath, JsonSerializer.Serialize(this, JsonOptions));
 
+    /// <summary>Takes over the ride values (weights, gearing, grade factor, resistances, power limit) of <paramref name="other"/>.</summary>
+    public void CopyRideValuesFrom(AppSettings other)
+    {
+        RiderWeightKg = other.RiderWeightKg;
+        BikeWeightKg = other.BikeWeightKg;
+        GradeFactorPercent = other.GradeFactorPercent;
+        Gearing = other.Gearing;
+        StartGear = other.StartGear;
+        RollingResistance = other.RollingResistance;
+        DragAreaM2 = other.DragAreaM2;
+        MaxWattLimit = other.MaxWattLimit;
+    }
+
+    /// <summary>A copy of the current values, e.g. to store with a recording.</summary>
+    public AppSettings Snapshot() => JsonSerializer.Deserialize<AppSettings>(JsonSerializer.Serialize(this))!;
+
     /// <summary>Fills a file name pattern; characters not allowed in file names are replaced by "_".</summary>
+    /// <param name="route">Route, replayed recording or program that {Strecke}, {Training} and {Programm} stand for.</param>
     public static string BuildFileName(string pattern, DateTime time, string? route)
     {
         var name = pattern
             .Replace("{Datum}", time.ToString("yyyy-MM-dd"))
             .Replace("{Uhrzeit}", time.ToString("HH-mm-ss"))
             .Replace("{Strecke}", route ?? "")
-            .Replace("{Training}", route ?? "");
+            .Replace("{Training}", route ?? "")
+            .Replace("{Programm}", route ?? "");
         return SanitizeFileName(name) ?? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}";
     }
 
-    /// <summary>Replaces characters not allowed in file names by "_" and drops a typed ".csv"; null if nothing is left.</summary>
+    /// <summary>Replaces characters not allowed in file names by "_" and drops a typed ".json"/".csv"; null if nothing is left.</summary>
     public static string? SanitizeFileName(string name)
     {
         name = name.Trim();
-        if (name.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-            name = name[..^4];
+        foreach (var extension in new[] { JsonRecorder.Extension, ".csv" })
+        {
+            if (name.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+                name = name[..^extension.Length];
+        }
         foreach (var c in Path.GetInvalidFileNameChars())
             name = name.Replace(c, '_');
         return string.IsNullOrWhiteSpace(name) ? null : name;
