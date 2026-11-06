@@ -5,11 +5,14 @@ namespace ErgoWattControl;
 public sealed class SettingsForm : Form
 {
     private readonly ErgoController _controller;
+    private readonly ComboBox _cmbDevice = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 260 };
     private readonly ComboBox _cmbPorts = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
     private readonly Label _lblTest = new() { AutoSize = true, MaximumSize = new Size(420, 0), Anchor = AnchorStyles.Left, Margin = new Padding(3) };
     private readonly TextBox _txtFolder = new() { Width = 330 };
     private readonly ComboBox _cmbMonitor = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 330 };
 
+    /// <summary>Id of the chosen kind of ergometer (<see cref="ErgometerTypes"/>).</summary>
+    public string Device => ((DeviceItem)_cmbDevice.SelectedItem!).Id;
     public string? PortName => _cmbPorts.SelectedItem as string;
     public string RecordingDirectory => _txtFolder.Text.Trim();
     public string? RideMonitor => (_cmbMonitor.SelectedItem as MonitorItem)?.DeviceName;
@@ -31,6 +34,11 @@ public sealed class SettingsForm : Form
     public string Gearing => (string)_cmbGearing.SelectedItem!;
 
     private sealed record MonitorItem(string? DeviceName, string Text)
+    {
+        public override string ToString() => Text;
+    }
+
+    private sealed record DeviceItem(string Id, string Text)
     {
         public override string ToString() => Text;
     }
@@ -61,26 +69,34 @@ public sealed class SettingsForm : Form
 
         var grid = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill };
         // Anchoring only Left (not Top) centres each control vertically in its row, so labels, fields and buttons line up.
-        grid.Controls.Add(RowLabel("COM-Port:"), 0, 0);
-        grid.Controls.Add(Row(_cmbPorts, btnRefresh, btnTest), 1, 0);
-        grid.Controls.Add(_lblTest, 1, 1);
-        grid.Controls.Add(RowLabel("Ablageordner:"), 0, 2);
-        grid.Controls.Add(Row(_txtFolder, btnBrowse, btnOpen), 1, 2);
-        grid.Controls.Add(RowLabel("Fahransicht auf:"), 0, 3);
-        grid.Controls.Add(Row(_cmbMonitor, btnIdentify), 1, 3);
-        grid.Controls.Add(RowLabel("Strecke fahren:"), 0, 4);
+        grid.Controls.Add(RowLabel("Gerät:"), 0, 0);
+        grid.Controls.Add(Row(_cmbDevice), 1, 0);
+        // Connection fields of the Daum cockpit; other kinds of device bring their own (none for the demo).
+        var portLabel = RowLabel("COM-Port:");
+        var portRow = Row(_cmbPorts, btnRefresh, btnTest);
+        grid.Controls.Add(portLabel, 0, 1);
+        grid.Controls.Add(portRow, 1, 1);
+        grid.Controls.Add(_lblTest, 1, 2);
+        grid.Controls.Add(RowLabel("Ablageordner:"), 0, 3);
+        grid.Controls.Add(Row(_txtFolder, btnBrowse, btnOpen), 1, 3);
+        grid.Controls.Add(RowLabel("Fahransicht auf:"), 0, 4);
+        grid.Controls.Add(Row(_cmbMonitor, btnIdentify), 1, 4);
+        grid.Controls.Add(RowLabel("Strecke fahren:"), 0, 5);
         grid.Controls.Add(Row(
-            Unit("Fahrer"), _numRider, Unit("kg   Rad"), _numBike, Unit("kg   Steigung"), _numGradeFactor, Unit("%")), 1, 4);
-        grid.Controls.Add(Row(Unit("Übersetzung"), _cmbGearing, Unit("   Startgang"), _numStartGear), 1, 5);
-        var hardware = controller.CockpitType is { } type
-            ? $"W   (Cockpit {DaumCockpit.DescribeType(type)}: max. {controller.HardwareMaxWatt} W)"
-            : $"W   (Cockpit-Typ noch unbekannt, bis dahin max. {controller.HardwareMaxWatt} W)";
-        grid.Controls.Add(RowLabel("Wattgrenze:"), 0, 6);
-        grid.Controls.Add(Row(_numMaxWatt, Unit(hardware)), 1, 6);
+            Unit("Fahrer"), _numRider, Unit("kg   Rad"), _numBike, Unit("kg   Steigung"), _numGradeFactor, Unit("%")), 1, 5);
+        grid.Controls.Add(Row(Unit("Übersetzung"), _cmbGearing, Unit("   Startgang"), _numStartGear), 1, 6);
+        grid.Controls.Add(RowLabel("Wattgrenze:"), 0, 7);
+        grid.Controls.Add(Row(_numMaxWatt, Unit($"W   ({controller.Capabilities.Info})")), 1, 7);
         var buttons = Row(btnOk, btnCancel);
         buttons.Anchor = AnchorStyles.Right;
         buttons.Margin = new Padding(3, 18, 3, 3);
-        grid.Controls.Add(buttons, 1, 7);
+        grid.Controls.Add(buttons, 1, 8);
+
+        _cmbDevice.Items.AddRange([.. ErgometerTypes.All.Select(t => new DeviceItem(t.Id, t.Name))]);
+        _cmbDevice.SelectedItem = _cmbDevice.Items.Cast<DeviceItem>().FirstOrDefault(d => d.Id == settings.Device) ?? _cmbDevice.Items[0];
+        void ShowDeviceFields() => portLabel.Visible = portRow.Visible = _lblTest.Visible = Device == ErgometerTypes.DaumRs232;
+        _cmbDevice.SelectedIndexChanged += (_, _) => ShowDeviceFields();
+        ShowDeviceFields();
         Controls.Add(grid);
 
         _txtFolder.Text = settings.RecordingDirectory;
@@ -98,6 +114,7 @@ public sealed class SettingsForm : Form
             ?? _cmbMonitor.Items[0]; // saved monitor no longer connected
         btnIdentify.Click += (_, _) => Monitors.Identify(TimeSpan.FromSeconds(3));
 
+        Tip(_cmbDevice, "Welches Ergometer die App steuert.\nDemo: ein simulierter Fahrer zum Ausprobieren ohne Ergometer.\nNach dem Speichern verbindet sich die App sofort neu.");
         Tip(_cmbPorts, "Serielle Schnittstelle, an der das Cockpit hängt (Update-Kabel bzw. USB-RS232-Adapter).\nNach dem Speichern verbindet sich die App sofort neu.");
         Tip(btnRefresh, "Liste der COM-Ports neu einlesen, z. B. nach dem Einstecken eines USB-Adapters.");
         Tip(btnTest, "Prüft, ob am gewählten Port ein Cockpit antwortet. Ändert nichts am Cockpit.");
@@ -111,9 +128,9 @@ public sealed class SettingsForm : Form
         Tip(_numGradeFactor, "Wie steil die GPX-Strecke wirkt: 100 % = wie in echt, 50 % = alle Steigungen und Gefälle halb so steil.\nMacht bergige Strecken fahrbar, ohne an die Wattgrenze zu stoßen.");
         Tip(_cmbGearing, "Übersetzung der 28 virtuellen Gänge im Streckenmodus.\nMTB: kleinere Gänge (2,0–7,4 m pro Kurbelumdrehung), am Berg langsam kurbeln möglich.\nRennrad: Daum-Tabelle (3,7–9,3 m pro Kurbelumdrehung).");
         Tip(_numStartGear, "Gang, in dem eine Strecke beginnt (1 = leichtester, 28 = schwerster).");
-        Tip(_numMaxWatt, "Höchste Leistung, die die App einstellt – auch im Streckenmodus.\nDas Cockpit selbst begrenzt zusätzlich (8008/8080: 800 W, andere: 400 W); es gilt der kleinere Wert.");
+        Tip(_numMaxWatt, "Höchste Leistung, die die App einstellt – auch im Streckenmodus.\nDas Gerät selbst begrenzt zusätzlich (Daum 8008/8080: 800 W, andere Cockpits: 400 W); es gilt der kleinere Wert.");
         RefreshPorts(settings.PortName);
-        _lblTest.Text = controller.IsConnected ? $"Aktuell verbunden auf {controller.PortName}" : "Aktuell nicht verbunden";
+        _lblTest.Text = controller.IsConnected ? $"Aktuell verbunden: {controller.Device?.DisplayName}" : "Aktuell nicht verbunden";
 
         btnRefresh.Click += (_, _) => RefreshPorts(PortName);
         var testRunning = false;
@@ -129,7 +146,7 @@ public sealed class SettingsForm : Form
             // Not disabling the button: that would hand focus to the folder box, which then selects its whole text.
             testRunning = true;
             _lblTest.Text = $"Teste {port} …";
-            _lblTest.Text = await Task.Run(() => _controller.TestPort(port));
+            _lblTest.Text = await Task.Run(() => DaumErgometer.TestPort(port, _controller.Device as DaumErgometer));
             testRunning = false;
         };
         btnBrowse.Click += (_, _) =>

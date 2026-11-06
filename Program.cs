@@ -19,7 +19,7 @@ static class Program
 
           ErgoWattControl.exe -main
               Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor.
-              "Fahransicht" schiebt das Fenster wie gewohnt auf den Fahrer-Monitor.
+              "Fahransicht" bzw. Taste 0 schiebt das Fenster auf den Fahrer-Monitor.
               Kombinierbar: ErgoWattControl.exe -main -demo
 
           ErgoWattControl.exe -help

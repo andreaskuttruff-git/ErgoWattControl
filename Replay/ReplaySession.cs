@@ -49,7 +49,7 @@ public sealed class ReplaySession
     public int WattAt(double seconds) => Math.Clamp(Workout.WattAt(seconds) + Offset, _minWatt, _maxWatt);
 
     /// <summary>Advances by one cockpit sample. Returns a new target power when it changed, otherwise null.</summary>
-    public int? Update(RunData d, DateTime now)
+    public int? Update(ErgometerData d, DateTime now)
     {
         var dt = _lastUpdate is { } last && now - last <= MaxStep ? now - last : TimeSpan.Zero;
         _lastUpdate = now;

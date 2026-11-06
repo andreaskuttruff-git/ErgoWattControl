@@ -2,7 +2,8 @@ using System.IO.Ports;
 
 namespace ErgoWattControl;
 
-public sealed record RunData
+/// <summary>The cockpit's Run_Data telegram (0x40) as read; <see cref="DaumErgometer"/> turns it into <see cref="ErgometerData"/>.</summary>
+public sealed record DaumRunData
 {
     public int Program { get; init; }
     public int Person { get; init; }
@@ -131,7 +132,7 @@ public sealed class DaumCockpit : IDisposable
         return reply[2] * 5;
     }
 
-    public RunData ReadRunData()
+    public DaumRunData ReadRunData()
     {
         var r = Transact([0x40, Address], 19);
 
@@ -139,7 +140,7 @@ public sealed class DaumCockpit : IDisposable
         var timeRaw = r[10] | (r[11] << 8);
         var kjouleRaw = r[12] | (r[13] << 8);
 
-        return new RunData
+        return new DaumRunData
         {
             Program = r[2],
             Person = r[3],

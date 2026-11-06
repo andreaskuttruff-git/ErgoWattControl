@@ -8,6 +8,9 @@ public sealed class AppSettings
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
+    /// <summary>Kind of ergometer (<see cref="ErgometerTypes"/>); settings from before the device choice have none and mean the Daum cockpit.</summary>
+    public string Device { get; set; } = ErgometerTypes.DaumRs232;
+    /// <summary>COM port of the Daum cockpit.</summary>
     public string? PortName { get; set; }
     public string RecordingDirectory { get; set; } = Path.Combine(AppPaths.DataFolder, "Aufzeichnungen");
 

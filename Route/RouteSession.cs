@@ -80,7 +80,7 @@ public sealed class RouteSession
     public void Shift(int delta) => Gear = Math.Clamp(Gear + delta, MinGear, MaxGear);
 
     /// <summary>Advances the ride by one cockpit sample. Returns a new target power when it should be sent, otherwise null.</summary>
-    public int? Update(RunData d, DateTime now)
+    public int? Update(ErgometerData d, DateTime now)
     {
         var dt = _lastUpdate is { } last && now - last <= MaxStep ? now - last : TimeSpan.Zero;
         _lastUpdate = now;

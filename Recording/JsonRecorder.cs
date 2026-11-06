@@ -58,14 +58,16 @@ public sealed class JsonRecorder : IDisposable
 
     /// <param name="counting">false pauses the recording (route mode while not pedalling): no time, no rows.</param>
     /// <param name="route">Route values; distance and speed then come from the virtual ride instead of the cockpit.</param>
-    public void Write(RunData d, int targetWatt, bool counting = true, RouteRow? route = null)
+    public void Write(ErgometerData d, int targetWatt, bool counting = true, RouteRow? route = null)
     {
         var now = DateTime.Now;
         var dt = _lastSample is { } last && now - last <= MaxIntegrationStep ? now - last : TimeSpan.Zero;
         _lastSample = now;
 
-        DistanceKm = route?.PositionKm ?? _distance.Update(d.DistanceKm);
-        EnergyKJ = _energy.Update(d.EnergyKJ);
+        // Devices that don't count distance or energy themselves: integrate speed and power.
+        DistanceKm = route?.PositionKm
+            ?? (d.DistanceKm is { } km ? _distance.Update(km) : DistanceKm + (d.SpeedKmh ?? 0) * dt.TotalHours);
+        EnergyKJ = d.EnergyKJ is { } kj ? _energy.Update(kj) : EnergyKJ + d.Watt * dt.TotalSeconds / 1000;
         if (!counting)
             return;
         Elapsed += dt;
@@ -83,7 +85,7 @@ public sealed class JsonRecorder : IDisposable
             d.Watt,
             d.Rpm,
             d.Pulse,
-            Math.Round(route?.SpeedKmh ?? d.SpeedKmh, 1),
+            Math.Round(route?.SpeedKmh ?? d.SpeedKmh ?? 0, 1),
             Math.Round(DistanceKm, route is null ? 1 : 3),
             Math.Round(EnergyKJ, 1),
             (int)Revolutions,

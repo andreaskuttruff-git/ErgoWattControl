@@ -21,19 +21,29 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
   - `P01`–`P44`: die wattgesteuerten Festprogramme des 8008 TRS aus dem Handbuch (1–28, Cool-down 42–44)
   - `S00`–`S07`: Programme nach aktueller Trainingswissenschaft – Rampentest zur FTP-Bestimmung, Grundlage, 4×4, 4×8, 30/15, Unterschwelle, 10×1 min, 3×20 s, jeweils für FTP 150/200/250 W
 - **Hilfe** für Fahrer in einem eigenen Fenster (WebView2): F1 öffnet sie beim Abschnitt zur aktuellen Ansicht bzw. zum offenen Dialog, ☰ → Hilfe am Anfang. `Hilfe.html` und `Hilfe-Bilder\` sind in die exe eingebettet; ohne WebView2-Laufzeit öffnet sich die Hilfe im Browser
-- **Demo-Modus** ohne Ergometer: `ErgoWattControl.exe --demo [strecke.gpx]`
+- **Demo-Modus** ohne Ergometer: in den Einstellungen „Gerät: Demo“ oder `ErgoWattControl.exe --demo [strecke.gpx]`
 - **Start auf dem Hauptbildschirm** statt auf dem Fahrer-Monitor: `ErgoWattControl.exe -main` (kombinierbar mit `-demo`)
 
 ## Aufbau des Quellcodes
 
 | Ordner | Inhalt |
 |---|---|
-| `Cockpit/` | RS232-Protokoll (`DaumCockpit`), Verbindung/Neuverbinden (`ErgoController`), Drehzahlbereich der Bremse, Demo-Fahrer |
+| `Devices/` | Geräteschicht: `IErgometer` (Schnittstelle jedes Ergometers: Zielleistung setzen, Messwerte `ErgometerData`, Status, Fähigkeiten), `ErgoController` (geräteunabhängig: Zielleistung, Wattgrenze, Gerätewechsel), `ErgometerTypes` (Liste der Gerätearten) |
+| `Devices/Daum/` | Daum ergo_bike über RS232: Protokoll (`DaumCockpit`), Verbindung/Neuverbinden/Reset (`DaumErgometer`), Drehzahlbereich der Wirbelstrombremse |
+| `Devices/Demo/` | Simulierter Fahrer (`DemoErgometer`) |
 | `RideView/` | Fahransicht (`RideForm`), Verlaufsgraph, Mausrad, Zusammenfassung, Monitorauswahl |
 | `Recording/` | Aufzeichnung (`JsonRecorder`, Dateiformat `RecordingFile`), Umbenennen/Verwerfen |
 | `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
 | `Settings/` | `settings.json` und Einstellungsdialog |
+
+## Weitere Geräte anbinden
+
+Die Oberfläche spricht nur mit `ErgoController`, der nur mit `IErgometer`. Für ein neues Gerät (z. B. Bluetooth-Trainer mit FTMS, ANT+ FE-C):
+
+1. Klasse anlegen, die `IErgometer` implementiert: Verbindung im Hintergrund halten, `SetTargetPower` umsetzen, `DataReceived`/`StatusChanged` auslösen und in `Capabilities` angeben, was das Gerät kann (Maximalleistung, Wattraster, ggf. Drehzahlbereich der Bremse). Werte, die das Gerät nicht misst (Strecke, Energie …), bleiben `null` – die App rechnet sie dann selbst.
+2. In `ErgometerTypes` eintragen (Id für die `settings.json`, Anzeigename, Erzeugung).
+3. Falls das Gerät Verbindungsdaten braucht: Felder in `AppSettings` und im Einstellungsdialog ergänzen.
 
 ## Bauen
 
@@ -54,7 +64,7 @@ Ein Versions-Tag (`v1.2.3`) baut beides auf GitHub und legt ein Release mit Setu
 
 Datenordner: `settings.json` und `Fehler.log` in `%AppData%\ErgoWattControl`, Aufzeichnungen, GPX-Strecken und Programme in `Dokumente\ErgoWattControl`. **Portabel:** Liegt eine `settings.json` neben der exe, bleibt alles im Programmordner (so laufen ältere Installationen und ZIP-Kopien unverändert weiter).
 
-`settings.json` (wird beim ersten Start angelegt): COM-Port, Ablageordner, Monitor der Fahransicht, Gewichte, Übersetzung, Steigungsfaktor sowie die Dateinamen-Muster der Aufzeichnungen:
+`settings.json` (wird beim ersten Start angelegt): Gerät (`Device`: `DaumRs232` oder `Demo`), COM-Port, Ablageordner, Monitor der Fahransicht, Gewichte, Übersetzung, Steigungsfaktor sowie die Dateinamen-Muster der Aufzeichnungen:
 
 | Einstellung | Für | Vorgabe |
 |---|---|---|

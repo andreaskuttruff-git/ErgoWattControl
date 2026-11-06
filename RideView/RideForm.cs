@@ -60,13 +60,13 @@ public sealed class RideForm : Form
     private readonly Label _kj = CreateTotal();
     private readonly Label _revs = CreateTotal();
     private readonly Button _btnRecord = CreateButton("● Aufnahme", 16);
+    /// <summary>Switches between ride monitor and main monitor; named after where it moves the window.</summary>
+    private readonly Button _btnScreen = CreateButton("Fahransicht", 16);
     private readonly ToolTip _toolTip = new() { InitialDelay = 300, AutoPopDelay = 15000 };
     private readonly Label _status = new() { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 18), TextAlign = ContentAlignment.MiddleRight, AutoEllipsis = true };
 
-    private readonly DemoRider? _demo;
-
-    /// <param name="demo">Simulate the cockpit with a virtual rider instead of using the serial port (UI testing without the bike).</param>
-    /// <param name="demoRoute">In demo mode: GPX file to start riding immediately.</param>
+    /// <param name="demo">Use the demo ergometer (a simulated rider) whatever device the settings name.</param>
+    /// <param name="demoRoute">In demo mode: GPX file to start riding immediately, or a recording/program to replay.</param>
     /// <param name="startOnMainScreen">Open on the primary monitor instead of the ride monitor; "Fahransicht" still moves it there.</param>
     public RideForm(AppSettings settings, bool demo = false, string? demoRoute = null, bool startOnMainScreen = false)
     {
@@ -92,28 +92,18 @@ public sealed class RideForm : Form
             else FinishFreeRecording();
         };
         _controller.DataReceived += d => PostToUi(() => ShowData(d));
-        _controller.StatusChanged += (text, ok, detail) => PostToUi(() => ShowStatus(text, ok, detail));
-        if (demo)
+        _controller.StatusChanged += s => PostToUi(() => ShowStatus(s.Text, s.Connected, s.Detail));
+        Shown += (_, _) =>
         {
-            _demo = new DemoRider();
-            _controller.AssumeCockpitType(40);
-            var timer = new System.Windows.Forms.Timer { Interval = 1300 };
-            timer.Tick += (_, _) => ShowData(_demo.Next(_controller.TargetWatt));
-            FormClosed += (_, _) => timer.Dispose();
-            Shown += (_, _) =>
+            _controller.Use(demo ? new DemoErgometer() : ErgometerTypes.Create(_settings.Device, _settings));
+            if (demo && demoRoute is not null)
             {
-                ShowStatus("Demo-Modus (kein Cockpit)", true);
-                if (demoRoute is not null && !demoRoute.EndsWith(".gpx", StringComparison.OrdinalIgnoreCase))
-                    StartReplay(demoRoute);
-                else if (demoRoute is not null)
+                if (demoRoute.EndsWith(".gpx", StringComparison.OrdinalIgnoreCase))
                     StartRoute(demoRoute);
-                timer.Start();
-            };
-        }
-        else
-        {
-            Shown += (_, _) => _controller.Start(_settings.PortName);
-        }
+                else
+                    StartReplay(demoRoute);
+            }
+        };
         FormClosing += (_, e) =>
         {
             // The ✕ sits right next to the pulse display: don't let a stray click end a running training.
@@ -197,9 +187,11 @@ public sealed class RideForm : Form
         grid.Controls.Add(lowerGraph, 0, 3);
         grid.SetColumnSpan(lowerGraph, 2);
 
-        var btnRideView = CreateButton("Fahransicht", 16);
-        btnRideView.Click += (_, _) => FitTo(RiderScreen());
-        foreach (var b in new[] { _btnRecord, btnRideView })
+        _btnScreen.Click += (_, _) => ToggleScreen();
+        // Also at start and after dragging the window to another monitor.
+        Shown += (_, _) => UpdateScreenButton();
+        Move += (_, _) => UpdateScreenButton();
+        foreach (var b in new[] { _btnRecord, _btnScreen })
         {
             b.AutoSize = true;
             // Buttons only grow by default; the record button must shrink back after "■ Training beenden".
@@ -208,7 +200,7 @@ public sealed class RideForm : Form
             ApplyOutlineStyle(b);
         }
         var buttons = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Anchor = AnchorStyles.None, Margin = Padding.Empty };
-        buttons.Controls.AddRange([_btnRecord, btnRideView]);
+        buttons.Controls.AddRange([_btnRecord, _btnScreen]);
 
         // Equal side columns keep the button panel centred however long the texts left and right get.
         var footer = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1, Margin = Padding.Empty };
@@ -308,7 +300,8 @@ public sealed class RideForm : Form
                 return true;
             case Keys.NumPad0:
             case Keys.Insert:
-                FitTo(RiderScreen());
+            case Keys.D0:
+                ToggleScreen();
                 return true;
             case Keys.F1:
                 HelpWindow.Show(this, HelpSection);
@@ -369,7 +362,7 @@ public sealed class RideForm : Form
             $"{next}      {WorkoutProfile.Format(replay.Elapsed.TotalSeconds)} / {WorkoutProfile.Format(replay.Workout.Duration)}");
     }
 
-    private void ShowData(RunData d)
+    private void ShowData(ErgometerData d)
     {
         if (_replay is { } replay)
         {
@@ -400,15 +393,16 @@ public sealed class RideForm : Form
         _pulse.Text = d.Pulse > 0 ? d.Pulse.ToString() : "--";
         _rpm.Text = d.Rpm.ToString();
         // Outside this window the brake cannot hold the power; only flag it while actually pedalling.
-        var rpmRange = RpmRange.For(d.Watt);
-        var tooSlow = d.Rpm > 0 && d.Rpm < rpmRange.Min;
-        var tooFast = d.Rpm > rpmRange.Max;
+        // Devices without such a window (CadenceRange null) show no band and no arrows.
+        (int Min, int Max)? rpmRange = _controller.Capabilities.CadenceRange?.Invoke(d.Watt);
+        var tooSlow = rpmRange is { } slow && d.Rpm > 0 && d.Rpm < slow.Min;
+        var tooFast = rpmRange is { } fast && d.Rpm > fast.Max;
         _rpm.ForeColor = _rpmCaption.ForeColor = tooSlow || tooFast ? Color.OrangeRed : RpmColor;
         _rpmHint.Text = tooSlow ? "▲" : tooFast ? "▼" : "";
-        _speed.Text = _route is { } r ? $"{r.SpeedKmh:0}" : d.SpeedKmh.ToString();
+        _speed.Text = _route is { } r ? $"{r.SpeedKmh:0}" : d.SpeedKmh is { } kmh ? $"{kmh:0}" : "--";
         // While recording, show the recording's own duration (free training: keeps running through pauses;
         // route: pedalling time only); otherwise the cockpit's pedaling time.
-        var time = _recorder?.Elapsed ?? (Guided ? TimeSpan.Zero : TimeSpan.FromSeconds(d.TimeSeconds));
+        var time = _recorder?.Elapsed ?? (Guided ? TimeSpan.Zero : TimeSpan.FromSeconds(d.TimeSeconds ?? 0));
         _time.Text = $"{time:h\\:mm\\:ss}";
         _powerGraph.Add([d.Watt, d.Rpm], rpmRange);
         _pulseGraph.Add(d.Pulse);
@@ -462,9 +456,9 @@ public sealed class RideForm : Form
 
     private void StartRecording()
     {
-        if (!_controller.IsConnected && _demo is null)
+        if (!_controller.IsConnected)
         {
-            MessageBox.Show(this, "Das Cockpit ist noch nicht verbunden.", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(this, "Das Ergometer ist noch nicht verbunden.", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
         try
@@ -755,6 +749,8 @@ public sealed class RideForm : Form
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
         var monitorChanged = dialog.RideMonitor != _settings.RideMonitor;
+        var deviceChanged = dialog.Device != _settings.Device || dialog.PortName != _settings.PortName;
+        _settings.Device = dialog.Device;
         _settings.PortName = dialog.PortName;
         _settings.RecordingDirectory = dialog.RecordingDirectory;
         _settings.RideMonitor = dialog.RideMonitor;
@@ -775,7 +771,9 @@ public sealed class RideForm : Form
         {
             MessageBox.Show(this, $"Einstellungen konnten nicht gespeichert werden:\n{ex.Message}", "Einstellungen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-        _controller.ChangePort(_settings.PortName);
+        // A new device (or port) takes over at once; the target power carries over.
+        if (deviceChanged)
+            _controller.Use(ErgometerTypes.Create(_settings.Device, _settings));
         if (monitorChanged)
         {
             MaximumSize = Monitors.MaxRideViewSize(RiderScreen());
@@ -784,6 +782,22 @@ public sealed class RideForm : Form
     }
 
     private Screen RiderScreen() => Monitors.RideScreen(_settings.RideMonitor);
+
+    private bool OnRiderScreen => Screen.FromControl(this).DeviceName == RiderScreen().DeviceName;
+
+    /// <summary>Key 0 and the button: from the ride monitor to the main monitor and back (nothing to switch with a single monitor).</summary>
+    private void ToggleScreen()
+    {
+        FitTo(OnRiderScreen ? Screen.PrimaryScreen! : RiderScreen());
+        UpdateScreenButton();
+    }
+
+    /// <summary>The button says where it takes the window.</summary>
+    private void UpdateScreenButton()
+    {
+        var single = RiderScreen().DeviceName == Screen.PrimaryScreen!.DeviceName;
+        _btnScreen.Text = OnRiderScreen && !single ? "Hauptbildschirm" : "Fahransicht";
+    }
 
     private void FitTo(Screen screen)
     {

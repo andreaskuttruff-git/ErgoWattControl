@@ -3,91 +3,54 @@ using System.Collections.Concurrent;
 namespace ErgoWattControl;
 
 /// <summary>
-/// Owns the cockpit connection on a background thread: connects automatically, keeps retrying while the
-/// cockpit is off or unplugged, polls live data and restores free training + target power after a cockpit reset.
-/// Events are raised on that background thread.
+/// The Daum ergo_bike cockpit over RS232 (<see cref="DaumCockpit"/>) as an <see cref="IErgometer"/>. A background
+/// thread connects automatically, keeps retrying while the cockpit is off or unplugged, polls live data and restores
+/// free training + target power after a cockpit reset. Events are raised on that thread.
 /// </summary>
-public sealed class ErgoController : IDisposable
+public sealed class DaumErgometer : IErgometer
 {
-    public const int MinWatt = 25;
-    /// <summary>Highest limit a user can set; the cockpit type may allow less.</summary>
-    public const int AbsoluteMaxWatt = 800;
-
     private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(3);
     private static readonly TimeSpan PollDelay = TimeSpan.FromMilliseconds(400);
 
     private readonly ConcurrentQueue<int> _wattRequests = new();
     private readonly ManualResetEventSlim _wake = new();
+    private readonly string? _portName;
     private Thread? _thread;
     private volatile bool _running;
-    private volatile bool _portChanged;
-    private volatile string? _portName;
     private volatile int _targetWatt = 100;
+    private volatile ErgometerCapabilities _capabilities = CapabilitiesFor(null, known: false);
     private string? _lastStatus;
 
-    public event Action<RunData>? DataReceived;
-    /// <summary>Short status text, whether connected, and the full technical error message (null when there is none).</summary>
-    public event Action<string, bool, string?>? StatusChanged;
+    public event Action<ErgometerData>? DataReceived;
+    public event Action<ErgometerStatus>? StatusChanged;
 
-    private volatile int _hardwareMaxWatt = DaumCockpit.MaxWattForType(null);
-    private volatile int _userLimitWatt = AbsoluteMaxWatt;
+    public DaumErgometer(string? portName) => _portName = portName;
 
-    public int TargetWatt => _targetWatt;
-    /// <summary>Effective upper limit: the lower of what the cockpit type allows and the user's limit.</summary>
-    public int MaxWatt => Math.Min(_hardwareMaxWatt, _userLimitWatt);
-    public int HardwareMaxWatt => _hardwareMaxWatt;
-    /// <summary>Cockpit type from Get_Version; null until known or if the cockpit does not answer the query.</summary>
-    public byte? CockpitType { get; private set; }
+    public string DisplayName => $"Daum ({_portName ?? "kein Port"})";
+    public string? PortName => _portName;
+    public ErgometerCapabilities Capabilities => _capabilities;
     public bool IsConnected { get; private set; }
     public byte CockpitAddress { get; private set; }
-    public string? PortName => _portName;
 
-    public void Start(string? portName)
+    public void Start()
     {
-        _portName = portName;
         _running = true;
         _thread = new Thread(Run) { IsBackground = true, Name = "Cockpit" };
         _thread.Start();
     }
 
-    public void ChangePort(string? portName)
+    public void SetTargetPower(int watt)
     {
-        if (portName == _portName)
-            return;
-        _portName = portName;
-        _portChanged = true;
-        _wake.Set();
-    }
-
-    /// <summary>Sets the user's power limit; a target above it is lowered immediately.</summary>
-    public void SetUserLimit(int watt)
-    {
-        _userLimitWatt = Math.Clamp(watt, MinWatt, AbsoluteMaxWatt);
-        if (_targetWatt > MaxWatt)
-            SetTargetWatt(MaxWatt);
-    }
-
-    /// <summary>Demo mode has no cockpit to ask, so it pretends to be the given type.</summary>
-    public void AssumeCockpitType(byte type)
-    {
-        CockpitType = type;
-        _hardwareMaxWatt = DaumCockpit.MaxWattForType(type);
-    }
-
-    /// <summary>Clamps to the allowed range in 5 W steps and returns the value actually requested.</summary>
-    public int SetTargetWatt(int watt)
-    {
-        watt = Math.Clamp((int)Math.Round(watt / 5.0) * 5, MinWatt, MaxWatt);
         _targetWatt = watt;
         _wattRequests.Enqueue(watt);
-        return watt;
     }
 
-    /// <summary>Checks whether a cockpit answers on <paramref name="portName"/> without disturbing the running connection.</summary>
-    public string TestPort(string portName)
+    /// <summary>Checks whether a cockpit answers on <paramref name="portName"/> without disturbing a running connection.</summary>
+    /// <param name="running">The connection in use, if any: its own port is reported from its state instead of opened again.</param>
+    public static string TestPort(string portName, DaumErgometer? running)
     {
-        if (IsConnected && portName == _portName)
-            return $"OK – Cockpit verbunden (Adresse {CockpitAddress})";
+        if (running is { IsConnected: true } && portName == running.PortName)
+            return $"OK – Cockpit verbunden (Adresse {running.CockpitAddress})";
         try
         {
             using var cockpit = new DaumCockpit(portName);
@@ -97,7 +60,7 @@ public sealed class ErgoController : IDisposable
         }
         catch (UnauthorizedAccessException)
         {
-            return portName == _portName
+            return portName == running?.PortName
                 ? "Port wird gerade von der App für Verbindungsversuche benutzt."
                 : "Port ist belegt (läuft noch ein anderes Programm?)";
         }
@@ -107,11 +70,20 @@ public sealed class ErgoController : IDisposable
         }
     }
 
+    /// <summary>What a cockpit of this type allows; the cadence window is the eddy-current brake's (<see cref="RpmRange"/>).</summary>
+    private static ErgometerCapabilities CapabilitiesFor(byte? type, bool known)
+    {
+        var max = DaumCockpit.MaxWattForType(type);
+        var info = type is { } t ? $"Cockpit {DaumCockpit.DescribeType(t)}: max. {max} W"
+            : known ? $"Cockpit-Typ nicht abfragbar: max. {max} W"
+            : $"Cockpit-Typ noch unbekannt, bis dahin max. {max} W";
+        return new ErgometerCapabilities(max, 5, RpmRange.For, info);
+    }
+
     private void Run()
     {
         while (_running)
         {
-            _portChanged = false;
             _wake.Reset();
             var port = _portName;
 
@@ -132,8 +104,7 @@ public sealed class ErgoController : IDisposable
                 InitializeCockpit(cockpit);
                 CockpitAddress = cockpit.Address;
                 IsConnected = true;
-                var type = CockpitType is { } t ? $"Cockpit-Typ {DaumCockpit.DescribeType(t)}" : "Cockpit-Typ unbekannt";
-                Report($"Verbunden auf {port}", true, $"{type}, Gerätegrenze {HardwareMaxWatt} W, eingestellte Grenze {_userLimitWatt} W");
+                Report($"Verbunden auf {port}", true, _capabilities.Info);
                 Poll(cockpit);
             }
             catch (Exception ex) when (_running)
@@ -149,7 +120,7 @@ public sealed class ErgoController : IDisposable
                 IsConnected = false;
                 if (cockpit is not null)
                 {
-                    if (!_running || _portChanged)
+                    if (!_running)
                     {
                         try { cockpit.StopProgram(); } catch { /* best effort */ }
                     }
@@ -157,7 +128,7 @@ public sealed class ErgoController : IDisposable
                 }
             }
 
-            if (_running && !_portChanged)
+            if (_running)
                 _wake.Wait(RetryDelay);
         }
     }
@@ -166,16 +137,15 @@ public sealed class ErgoController : IDisposable
     {
         try
         {
-            AssumeCockpitType(cockpit.GetCockpitType());
+            _capabilities = CapabilitiesFor(cockpit.GetCockpitType(), known: true);
         }
         catch (TimeoutException)
         {
             // Older cockpits don't know Get_Version: stay with the safe 400 W.
-            CockpitType = null;
-            _hardwareMaxWatt = DaumCockpit.MaxWattForType(null);
+            _capabilities = CapabilitiesFor(null, known: true);
         }
-        if (_targetWatt > MaxWatt)
-            _targetWatt = MaxWatt;
+        if (_targetWatt > _capabilities.MaxWatt)
+            _targetWatt = _capabilities.MaxWatt;
     }
 
     private void InitializeCockpit(DaumCockpit cockpit)
@@ -189,7 +159,7 @@ public sealed class ErgoController : IDisposable
     private void Poll(DaumCockpit cockpit)
     {
         var wattMismatchCount = 0;
-        while (_running && !_portChanged)
+        while (_running)
         {
             if (_wattRequests.TryDequeue(out var watt))
             {
@@ -214,7 +184,17 @@ public sealed class ErgoController : IDisposable
                 wattMismatchCount = 0;
             }
 
-            DataReceived?.Invoke(data);
+            DataReceived?.Invoke(new ErgometerData
+            {
+                Watt = data.Watt,
+                Rpm = data.Rpm,
+                Pulse = data.Pulse,
+                Pedaling = data.Pedaling,
+                SpeedKmh = data.SpeedKmh,
+                DistanceKm = data.DistanceKm,
+                EnergyKJ = data.EnergyKJ,
+                TimeSeconds = data.TimeSeconds,
+            });
             _wake.Wait(PollDelay);
         }
     }
@@ -224,7 +204,7 @@ public sealed class ErgoController : IDisposable
         if (text == _lastStatus)
             return;
         _lastStatus = text;
-        StatusChanged?.Invoke(text, ok, detail);
+        StatusChanged?.Invoke(new ErgometerStatus(text, ok, detail));
     }
 
     private static string Describe(Exception ex) => ex switch

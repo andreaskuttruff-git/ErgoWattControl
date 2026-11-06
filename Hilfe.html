@@ -71,11 +71,11 @@
 <h2 id="start">Erste Schritte</h2>
 <ol>
   <li>Ergometer einschalten und das Cockpit per RS232-Kabel (bzw. USB-RS232-Adapter) mit dem PC verbinden.</li>
-  <li><code>ErgoWattControl.exe</code> starten. Die App verbindet sich am eingestellten COM-Port; unten rechts steht der Verbindungsstatus.</li>
-  <li>Beim ersten Start unter <b>☰ → Einstellungen</b> den COM-Port wählen und mit <b>Verbindung testen</b> prüfen; dort auch Gewicht und Wattgrenze eintragen.</li>
+  <li><code>ErgoWattControl.exe</code> starten. Die App verbindet sich mit dem eingestellten Gerät; unten rechts steht der Verbindungsstatus.</li>
+  <li>Beim ersten Start unter <b>☰ → Einstellungen</b> als Gerät „Daum ergo_bike (RS232)“ und den COM-Port wählen und mit <b>Verbindung testen</b> prüfen; dort auch Gewicht und Wattgrenze eintragen. Ohne Ergometer zum Ausprobieren: Gerät „Demo“.</li>
   <li>Losfahren: im freien Training die Leistung mit <kbd>↑</kbd> <kbd>↓</kbd> oder dem Mausrad einstellen – oder über das Menü <b>☰</b> eine Strecke, ein Training oder ein Programm wählen.</li>
 </ol>
-<div class="note">Das Fenster öffnet auf dem Fahrer-Monitor (dem ersten Nebenmonitor). <b>Fahransicht</b> bzw. <kbd>Einfg</kbd> / <kbd>0</kbd> auf dem Ziffernblock legt es jederzeit dorthin.</div>
+<div class="note">Das Fenster öffnet auf dem Fahrer-Monitor (dem ersten Nebenmonitor). Der Knopf unten schaltet zwischen Fahrer-Monitor und Hauptbildschirm hin und her und heißt nach dem Ziel: <b>Hauptbildschirm</b> auf dem Fahrer-Monitor, <b>Fahransicht</b> sonst. Dasselbe macht <kbd>0</kbd> (auch auf dem Ziffernblock) bzw. <kbd>Einfg</kbd>.</div>
 
 <h2 id="ansicht">Die Fahransicht</h2>
 <figure style="max-width:900px"><img src="Hilfe-Bilder/fahransicht.png" alt="Freies Training mit laufender Aufnahme: 160 W eingestellt, Trittfrequenz 78 im erlaubten Bereich (blaugraue Fläche)."><figcaption>Freies Training mit laufender Aufnahme: 160 W eingestellt, Trittfrequenz 78 im erlaubten Bereich (blaugraue Fläche).</figcaption></figure>
@@ -86,7 +86,7 @@
   <tr><td><b>RPM</b>, <b>km/h</b>, <b>ZEIT</b></td><td>Trittfrequenz, Geschwindigkeit und Fahrzeit. Ein <span style="color:var(--red)">▲</span> neben RPM heißt „schneller treten“, ein ▼ „langsamer treten“.</td></tr>
   <tr><td>Oberer Graph</td><td>Leistung (gelb) und Trittfrequenz (blau) der letzten 10 Minuten. Die <b>blaugraue Fläche</b> ist der Trittfrequenzbereich, in dem die Wirbelstrombremse die eingestellte Leistung halten kann (z. B. 40–160 RPM bis 150 W, 50–160 RPM bis 250 W). Sie gehört zur blauen Linie.</td></tr>
   <tr><td>Unterer Graph</td><td>Puls der letzten 10 Minuten. Beim Streckenfahren steht hier das Höhenprofil, bei Aufzeichnungen und Programmen der Leistungsverlauf.</td></tr>
-  <tr><td>Untere Zeile</td><td>Strecke, Energie und Kurbelumdrehungen der laufenden Aufnahme, die Aufnahme-Taste, <b>Fahransicht</b> und der Verbindungsstatus.</td></tr>
+  <tr><td>Untere Zeile</td><td>Strecke, Energie und Kurbelumdrehungen der laufenden Aufnahme, die Aufnahme-Taste, <b>Fahransicht</b>/<b>Hauptbildschirm</b> (Monitor wechseln) und der Verbindungsstatus.</td></tr>
 </table>
 
 <h2 id="tasten">Tasten und Maus</h2>
@@ -98,7 +98,7 @@
   <tr><td><kbd>Bild ↑</kbd> <kbd>9</kbd></td><td>+25 W</td><td>5 Gänge höher</td><td>Profil +25 W</td></tr>
   <tr><td><kbd>Bild ↓</kbd> <kbd>3</kbd></td><td>−25 W</td><td>5 Gänge tiefer</td><td>Profil −25 W</td></tr>
   <tr><td><kbd>Enter</kbd></td><td>Aufnahme starten / stoppen</td><td colspan="2">– (die Aufnahme läuft automatisch)</td></tr>
-  <tr><td><kbd>Einfg</kbd> <kbd>0</kbd></td><td colspan="3">Fenster auf den Fahrer-Monitor legen</td></tr>
+  <tr><td><kbd>0</kbd> <kbd>Einfg</kbd></td><td colspan="3">Fenster zwischen Fahrer-Monitor und Hauptbildschirm umschalten</td></tr>
   <tr><td><kbd>F1</kbd></td><td colspan="3">Diese Hilfe, gleich beim passenden Abschnitt – auch in jedem Dialog</td></tr>
 </table>
 
@@ -196,6 +196,7 @@
 <figure style="max-width:670px"><img src="Hilfe-Bilder/einstellungen.png" alt="Der Einstellungsdialog."><figcaption>Der Einstellungsdialog.</figcaption></figure>
 <table>
   <tr><th>Feld</th><th>Bedeutung</th></tr>
+  <tr><td>Gerät</td><td>Welches Ergometer die App steuert: <b>Daum ergo_bike (RS232)</b> oder <b>Demo</b> – ein simulierter Fahrer zum Ausprobieren ohne Ergometer. Nach dem Speichern verbindet sich die App sofort neu.</td></tr>
   <tr><td>COM-Port</td><td>Schnittstelle des Cockpits. <b>Aktualisieren</b> liest die Ports neu ein (z. B. nach dem Einstecken eines USB-Adapters), <b>Verbindung testen</b> prüft, ob ein Cockpit antwortet.</td></tr>
   <tr><td>Ablageordner</td><td>Wohin die Aufzeichnungen geschrieben werden.</td></tr>
   <tr><td>Fahransicht auf</td><td>Monitor für die Fahransicht; <b>Identifizieren</b> zeigt auf jedem Monitor seine Nummer.</td></tr>
@@ -238,7 +239,7 @@
 <table>
   <tr><th>Aufruf</th><th>Wirkung</th></tr>
   <tr><td><code>ErgoWattControl.exe</code></td><td>Normalbetrieb mit dem Cockpit.</td></tr>
-  <tr><td><code>-demo [Datei]</code></td><td>Demo ohne Ergometer: ein simulierter Fahrer tritt mit etwa 75 RPM. Mit einer GPX-Datei startet diese Strecke sofort, mit einer Aufzeichnung oder einem Programm wird dieses nachgefahren.</td></tr>
+  <tr><td><code>-demo [Datei]</code></td><td>Demo ohne Ergometer (wie „Gerät: Demo“ in den Einstellungen): ein simulierter Fahrer tritt mit etwa 75 RPM. Mit einer GPX-Datei startet diese Strecke sofort, mit einer Aufzeichnung oder einem Programm wird dieses nachgefahren.</td></tr>
   <tr><td><code>-main</code></td><td>Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor (kombinierbar mit <code>-demo</code>).</td></tr>
   <tr><td><code>-help</code></td><td>Zeigt die Parameter.</td></tr>
 </table>
