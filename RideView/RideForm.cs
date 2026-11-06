@@ -1,4 +1,4 @@
-namespace ErgoWattControl;
+﻿namespace ErgoWattControl;
 
 /// <summary>
 /// The application's only window: borderless, sized for the 1280x1024 monitor above the bike and readable from the saddle.
@@ -71,6 +71,7 @@ public sealed class RideForm : Form
     public RideForm(AppSettings settings, bool demo = false, string? demoRoute = null, bool startOnMainScreen = false)
     {
         _settings = settings;
+        _demoStart = demo;
         Text = "Ergo Watt Control";
         Icon = AppIcon.Value;
         FormBorderStyle = FormBorderStyle.None;
@@ -144,7 +145,8 @@ public sealed class RideForm : Form
         grid.RowStyles.Add(new RowStyle(SizeType.Percent, 8));
         grid.RowStyles.Add(new RowStyle(SizeType.Percent, 29));
         grid.RowStyles.Add(new RowStyle(SizeType.Percent, 29));
-        grid.RowStyles.Add(new RowStyle(SizeType.Percent, 9));
+        // The footer only needs the height of its buttons; everything else goes to the graphs.
+        grid.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
         grid.Controls.Add(CreatePowerCell(), 0, 0);
         var closeButton = CreateIconButton("Beenden", (g, pen, c) =>
@@ -179,7 +181,7 @@ public sealed class RideForm : Form
         grid.Controls.Add(_powerGraph, 0, 2);
         grid.SetColumnSpan(_powerGraph, 2);
         // Riding a route swaps the pulse graph for the elevation profile; the pulse stays visible as the big number.
-        var lowerGraph = new Panel { Dock = DockStyle.Fill, Margin = new Padding(10, 4, 10, 4) };
+        var lowerGraph = new Panel { Dock = DockStyle.Fill, Margin = new Padding(10, 4, 10, 0) };
         _pulseGraph.Margin = Padding.Empty;
         lowerGraph.Controls.Add(_pulseGraph);
         lowerGraph.Controls.Add(_profile);
@@ -196,18 +198,18 @@ public sealed class RideForm : Form
             b.AutoSize = true;
             // Buttons only grow by default; the record button must shrink back after "■ Training beenden".
             b.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            b.Margin = new Padding(6, 3, 6, 0);
+            b.Margin = new Padding(6, 8, 6, 0);
             ApplyOutlineStyle(b);
         }
         var buttons = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Anchor = AnchorStyles.None, Margin = Padding.Empty };
         buttons.Controls.AddRange([_btnRecord, _btnScreen]);
 
         // Equal side columns keep the button panel centred however long the texts left and right get.
-        var footer = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1, Margin = Padding.Empty };
+        var footer = new TableLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, ColumnCount = 3, RowCount = 1, Margin = Padding.Empty };
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-        var totals = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1, Margin = new Padding(0, 0, 30, 0) };
+        var totals = new TableLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, ColumnCount = 3, RowCount = 1, Margin = new Padding(0, 0, 50, 0) };
         for (var i = 0; i < 3; i++)
             totals.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 3));
         totals.Controls.Add(_km, 0, 0);
@@ -369,6 +371,7 @@ public sealed class RideForm : Form
             if (replay.Update(d, DateTime.Now) is { } replayWatt)
                 _controller.SetTargetWatt(replayWatt);
             _powerHint.Text = ReplayHint;
+            _workoutProfile.AddPulse(replay.Elapsed.TotalSeconds, d.Pulse);
             ShowReplay();
             // The recording starts with the first pedal stroke, like a route.
             if (_recorder is null && d.Rpm > 0 && !replay.Finished)
@@ -436,7 +439,7 @@ public sealed class RideForm : Form
     {
         _km.Text = $"{km:0.0} km";
         _kj.Text = $"{kj:0} kJ";
-        _revs.Text = $"{revolutions:0} Umdr.";
+        _revs.Text = $"{revolutions:0} U";
         _km.ForeColor = _kj.ForeColor = _revs.ForeColor = color;
     }
 
@@ -799,10 +802,25 @@ public sealed class RideForm : Form
         _btnScreen.Text = OnRiderScreen && !single ? "Hauptbildschirm" : "Fahransicht";
     }
 
+    /// <summary>Size of the small rider monitor at the ergometer (KellerPC); the demo shows the ride view in it.</summary>
+    private static readonly Size ErgometerMonitorSize = new(1280, 1024);
+
+    private readonly bool _demoStart;
+
+    /// <summary>Demo: started with -demo or the demo device chosen (before the device is created at Shown, from the settings).</summary>
+    private bool IsDemo => _controller.Device is { } device ? device is DemoErgometer : _demoStart || _settings.Device == ErgometerTypes.Demo;
+
     private void FitTo(Screen screen)
     {
         var area = screen.Bounds;
-        var size = new Size(Math.Min(area.Width, MaximumSize.Width), Math.Min(area.Height, MaximumSize.Height));
+        var max = MaximumSize;
+        // In the demo the ride view looks as on the ergometer's small monitor, also on a larger one.
+        if (IsDemo && screen.DeviceName == RiderScreen().DeviceName)
+        {
+            var monitor = Monitors.FromPhysical(screen, ErgometerMonitorSize);
+            max = new Size(Math.Min(max.Width, monitor.Width), Math.Min(max.Height, monitor.Height));
+        }
+        var size = new Size(Math.Min(area.Width, max.Width), Math.Min(area.Height, max.Height));
         Bounds = new Rectangle(area.X + (area.Width - size.Width) / 2, area.Y + (area.Height - size.Height) / 2, size.Width, size.Height);
     }
 

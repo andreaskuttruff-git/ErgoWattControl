@@ -64,6 +64,34 @@ public static partial class Monitors
         }
     }
 
+    /// <summary>
+    /// App pixels for the given number of real screen pixels on that monitor. The app is system-DPI aware, so on a
+    /// monitor with a different scaling Windows stretches it: 1280 app pixels are only 1024 real ones on a 100 %
+    /// monitor next to a 125 % main monitor.
+    /// </summary>
+    public static Size FromPhysical(Screen screen, Size physical)
+    {
+        var mode = new DevMode { dmSize = (short)System.Runtime.InteropServices.Marshal.SizeOf<DevMode>() };
+        if (!EnumDisplaySettings(screen.DeviceName, -1 /* ENUM_CURRENT_SETTINGS */, ref mode) || mode.dmPelsWidth <= 0 || mode.dmPelsHeight <= 0)
+            return physical;
+        return new Size(physical.Width * screen.Bounds.Width / mode.dmPelsWidth, physical.Height * screen.Bounds.Height / mode.dmPelsHeight);
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);
+
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private struct DevMode
+    {
+        [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)] public string dmDeviceName;
+        public short dmSpecVersion, dmDriverVersion, dmSize, dmDriverExtra;
+        public int dmFields, dmPositionX, dmPositionY, dmDisplayOrientation, dmDisplayFixedOutput;
+        public short dmColor, dmDuplex, dmYResolution, dmTTOption, dmCollate;
+        [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
+        public short dmLogPixels;
+        public int dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmDisplayFlags, dmDisplayFrequency, dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
+    }
+
     [GeneratedRegex(@"DISPLAY(\d+)$", RegexOptions.IgnoreCase)]
     private static partial Regex DisplayNumber();
 }
