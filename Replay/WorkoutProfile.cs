@@ -167,7 +167,7 @@ public sealed class WorkoutProfile : Control
     {
         const int lo = 60, hi = 180;
         float Y(int pulse) => area.Bottom - (float)(Math.Clamp(pulse, lo, hi) - lo) / (hi - lo) * area.Height;
-        using var pen = new Pen(Color.FromArgb(200, OriginalPulseLine), 2f);
+        using var pen = new Pen(Color.FromArgb(200, OriginalPulseLine), 5f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         PointF? prev = null;
         for (var x = XFor(area, from, to, start); x <= XFor(area, from, to, end); x += 2)
         {
@@ -200,7 +200,7 @@ public sealed class WorkoutProfile : Control
             return;
         const int lo = 60, hi = 180;
         float Y(int pulse) => area.Bottom - (float)(Math.Clamp(pulse, lo, hi) - lo) / (hi - lo) * area.Height;
-        using var pen = new Pen(PulseLine, 2f);
+        using var pen = new Pen(PulseLine, 5f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
         PointF? prev = null;
         var prevSeconds = double.NegativeInfinity;
         foreach (var (seconds, pulse) in _livePulse)
