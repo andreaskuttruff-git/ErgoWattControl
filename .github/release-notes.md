@@ -2,6 +2,11 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – in der App mit F1.
 
+### Neu in v1.3.0
+- **Eigene Trainingsprogramme:** JSON-Dateien im Ordner `CustomPrograms` (Dokumente\ErgoWattControl bzw. neben der exe) erscheinen mit ★ oben in der Programmliste. Die App legt dort ein JSON-Schema (für Prüfung und Vorschläge im Editor), eine Vorlage und `CLAUDE.md`/`AGENTS.md` ab, damit KI-Assistenten wie Claude Code oder Codex direkt Programme schreiben können. Fehlerhafte Dateien werden mit Grund angezeigt.
+- **Neues Programm S08 Schwellenblöcke 30 min** (FTP 150/200/250): 3 × 5 min bei 92 % FTP – Kraftausdauer in 30 min, knieschonend mit hoher Trittfrequenz
+- **Fahransicht:** über dem Puls steht, was gerade gefahren wird – Strecke, Programm oder Aufzeichnung
+
 ### Neu in v1.2.0
 - **Upload zu Garmin Connect und Strava:** im Exportdialog „Danach hochladen bei …“ – die Plattform öffnet sich in einem eingebauten Browserfenster und die FIT-Datei wird auf der Import-/Upload-Seite eingesetzt. Du meldest dich selbst an, die App speichert kein Kennwort. Plattformen, Anmelden/Abmelden und Prüfung der Anmeldung in den Einstellungen.
 - **Exportdialog:** Vorschau der Aufzeichnung (Leistung, Puls, Dauer, Strecke), Löschen in den Papierkorb (auch mit Entf), Tooltips für lange Namen
