@@ -6,7 +6,15 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 ⬇️ **[Download der aktuellen Version](https://github.com/andreaskuttruff-git/ErgoWattControl/releases/latest)** – **Setup** (installiert bei Bedarf die .NET 10 Desktop Runtime mit, dann die App für den angemeldeten Benutzer) oder **ZIP** zum Entpacken (braucht die [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)).
 
-![ErgoWattControl – Fahransicht im freien Training](Hilfe-Bilder/fahransicht.png)
+## Die Modi
+
+| Freies Training | Strecke fahren (GPX) |
+|---|---|
+| ![Freies Training: Wattvorgabe, Leistung/RPM und Puls der letzten 10 Minuten](Hilfe-Bilder/fahransicht.png) | ![Strecke fahren: Gang, Höhenprofil der ganzen Strecke und der nächsten 2 km mit Steigung](Hilfe-Bilder/fahransicht_strecke.png) |
+| Leistung in 5-W-Schritten vorgeben; oben Leistung und Trittfrequenz, unten der Puls. | Gang statt Watt: Die Bremsleistung folgt aus Steigung, Gewicht und Tempo. Unten das Höhenprofil – ganz und die nächsten 2 km. |
+| **Trainingsprogramm** | **Aufzeichnung nachfahren** |
+| ![Trainingsprogramm S08: Profil des ganzen Programms mit dem Puls, darunter die nächsten 10 Minuten](Hilfe-Bilder/fahransicht_programm.png) | ![Aufzeichnung nachfahren: Puls von damals (grün) und von heute (rot) über dem Leistungsverlauf](Hilfe-Bilder/fahransicht_aufzeichnung.png) |
+| Das Programm gibt die Leistung vor. Oben das ganze Programm mit deinem Puls, darunter die nächsten 10 Minuten mit dem nächsten Wechsel. | Eine frühere Fahrt als Vorgabe: Puls von damals (grün) neben dem von heute (rot) – so siehst du den Fortschritt. |
 
 ## Funktionen
 
