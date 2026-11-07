@@ -1,4 +1,4 @@
-using System.IO.Ports;
+﻿using System.IO.Ports;
 using System.Text.Json;
 
 namespace ErgoWattControl;
@@ -34,6 +34,19 @@ public sealed class AppSettings
     public bool ExportFit { get; set; } = true;
     public bool ExportCsv { get; set; }
     public string? ExportDirectory { get; set; }
+
+    /// <summary>Open Garmin Connect / Strava after exporting (FIT) to upload the files there (<see cref="UploadWindow"/>).</summary>
+    public bool ExportOpenGarmin { get; set; }
+    public bool ExportOpenStrava { get; set; }
+    /// <summary>Platforms switched on in the settings; only these get a checkbox in the export dialog.</summary>
+    public bool GarminEnabled { get; set; }
+    public bool StravaEnabled { get; set; }
+    /// <summary>Sign-in pages, used while not signed in (no saved session in the platform's window).</summary>
+    public string GarminLoginUrl { get; set; } = UploadService.GarminDefaultLoginUrl;
+    public string StravaLoginUrl { get; set; } = UploadService.StravaDefaultLoginUrl;
+    /// <summary>Upload pages, opened directly once signed in (Garmin: with "Daten speichern").</summary>
+    public string GarminImportUrl { get; set; } = UploadService.GarminDefaultImportUrl;
+    public string StravaUploadUrl { get; set; } = UploadService.StravaDefaultUploadUrl;
 
     /// <summary>Show the pulse of the original recording while replaying it (only if it contains pulse data).</summary>
     public bool ReplayShowOriginalPulse { get; set; } = true;

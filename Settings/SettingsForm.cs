@@ -1,10 +1,12 @@
-using System.IO.Ports;
+﻿using System.IO.Ports;
 
 namespace ErgoWattControl;
 
 public sealed class SettingsForm : Form
 {
     private readonly ErgoController _controller;
+    /// <summary>The saved settings (addresses for "Anmelden" and the sign-in check).</summary>
+    private readonly AppSettings _appSettings;
     private readonly ComboBox _cmbDevice = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 260 };
     private readonly ComboBox _cmbPorts = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
     private readonly Label _lblTest = new() { AutoSize = true, MaximumSize = new Size(420, 0), Anchor = AnchorStyles.Left, Margin = new Padding(3) };
@@ -33,6 +35,105 @@ public sealed class SettingsForm : Form
     private readonly ComboBox _cmbGearing = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
     public string Gearing => (string)_cmbGearing.SelectedItem!;
 
+    private readonly TextBox _txtGarminLogin = new() { Width = 560 };
+    private readonly TextBox _txtGarminImport = new() { Width = 560 };
+    private readonly TextBox _txtStravaLogin = new() { Width = 560 };
+    private readonly TextBox _txtStravaUpload = new() { Width = 560 };
+    /// <summary>Empty field = the platform's default address again.</summary>
+    public string GarminLoginUrl => OrDefault(_txtGarminLogin, UploadService.GarminDefaultLoginUrl);
+    public string GarminImportUrl => OrDefault(_txtGarminImport, UploadService.GarminDefaultImportUrl);
+    public string StravaLoginUrl => OrDefault(_txtStravaLogin, UploadService.StravaDefaultLoginUrl);
+    public string StravaUploadUrl => OrDefault(_txtStravaUpload, UploadService.StravaDefaultUploadUrl);
+
+    private static string OrDefault(TextBox box, string fallback) => string.IsNullOrWhiteSpace(box.Text) ? fallback : box.Text.Trim();
+
+    /// <summary>Switched-on upload platforms: only these get a checkbox in the export dialog.</summary>
+    private readonly CheckBox _chkGarmin = new() { Text = "Garmin Connect", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(3, 3, 12, 3) };
+    private readonly CheckBox _chkStrava = new() { Text = "Strava", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(3, 3, 12, 3) };
+    public bool GarminEnabled => _chkGarmin.Checked;
+    public bool StravaEnabled => _chkStrava.Checked;
+
+    /// <summary>
+    /// Three rows per upload platform: the switch (first column) with the sign-in address, the upload address,
+    /// Standard/Abmelden with the sign-in state. The addresses are greyed out while the platform is off.
+    /// </summary>
+    private void AddUploadRows(TableLayoutPanel grid, int row, UploadService service, CheckBox enabled, bool isEnabled, TextBox login, TextBox upload,
+        string uploadLabel, string loginUrl, string uploadUrl, string defaultLogin, string defaultUpload, string uploadPage)
+    {
+        var btnDefault = new Button { Text = "Standard", AutoSize = true };
+        var btnLogout = new Button { Text = "Abmelden", AutoSize = true };
+        var btnLogin = new Button { Text = "Anmelden", AutoSize = true };
+        var status = Unit("");
+        enabled.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+        enabled.Margin = new Padding(3, 8, 12, 3);
+        grid.Controls.Add(enabled, 0, row);
+        enabled.Checked = isEnabled;
+        // Labels and fields in a table of their own so the fields line up at any display scaling.
+        var block = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Margin = new Padding(0, 4, 0, 4), Anchor = AnchorStyles.Left };
+        block.Controls.Add(Unit("Anmeldung"), 0, 0);
+        block.Controls.Add(login, 1, 0);
+        block.Controls.Add(Unit(uploadLabel), 0, 1);
+        block.Controls.Add(upload, 1, 1);
+        var buttons = Row(btnDefault, btnLogout, btnLogin, status);
+        block.Controls.Add(buttons, 0, 2);
+        block.SetColumnSpan(buttons, 2);
+        login.Anchor = upload.Anchor = AnchorStyles.Left;
+        grid.Controls.Add(block, 1, row);
+        login.Text = loginUrl;
+        upload.Text = uploadUrl;
+
+        // "Anmelden" only makes sense without a (valid) saved sign-in.
+        void ShowState(string text)
+        {
+            status.Text = text;
+            btnLogin.Enabled = enabled.Checked && !service.HasSession;
+        }
+        void Enable()
+        {
+            login.Enabled = upload.Enabled = btnDefault.Enabled = enabled.Checked;
+            btnLogin.Enabled = enabled.Checked && !service.HasSession;
+        }
+        enabled.CheckedChanged += (_, _) => Enable();
+        Enable();
+        ShowState(service.HasSession ? "Anmeldung gespeichert" : "Nicht angemeldet");
+        Tip(enabled, $"Upload zu {service.Name} verwenden: Der Exportdialog bietet dann „Danach hochladen bei {service.Name}“ an.");
+
+        // Is the saved sign-in still valid? Checked in an invisible browser once the dialog is up.
+        Shown += async (_, _) =>
+        {
+            if (!service.HasSession)
+                return;
+            ShowState("Anmeldung gespeichert – wird geprüft …");
+            var valid = await UploadWindow.CheckSessionAsync(service, _appSettings, Handle);
+            if (IsDisposed)
+                return;
+            ShowState(valid switch
+            {
+                true => "Anmeldung gespeichert und gültig",
+                false => "Anmeldung abgelaufen – bitte neu anmelden",
+                null => "Anmeldung gespeichert (Prüfung nicht möglich)",
+            });
+        };
+        btnDefault.Click += (_, _) =>
+        {
+            login.Text = defaultLogin;
+            upload.Text = defaultUpload;
+        };
+        btnLogin.Click += (_, _) =>
+        {
+            // Modal: the settings wait until the sign-in window has closed.
+            ShowState(UploadWindow.SignIn(service, _appSettings, this) ? "Anmeldung gespeichert und gültig" : "Nicht angemeldet");
+        };
+        btnLogout.Click += (_, _) => ShowState(UploadWindow.SignOut(service)
+            ? "Abgemeldet – gespeicherte Anmeldung gelöscht"
+            : $"Abmelden nicht möglich, solange das {service.Name}-Fenster offen ist");
+        Tip(btnLogin, $"Öffnet die Anmeldeseite von {service.Name} im Browserfenster.\nNur ohne gespeicherte (gültige) Anmeldung.");
+        Tip(login, $"Anmeldeseite von {service.Name}. Wird geöffnet, solange keine Anmeldung gespeichert ist.");
+        Tip(upload, $"{uploadPage}. Wird nach der Anmeldung bzw. bei gespeicherter Anmeldung direkt geöffnet.");
+        Tip(btnDefault, $"Beide Adressen auf den Standard von {service.Name} zurücksetzen.");
+        Tip(btnLogout, $"Löscht die im {service.Name}-Fenster gespeicherte Anmeldung (Cookies) dieses Rechners.\nBeim nächsten Mal musst du dich neu anmelden.");
+    }
+
     private sealed record MonitorItem(string? DeviceName, string Text)
     {
         public override string ToString() => Text;
@@ -46,6 +147,7 @@ public sealed class SettingsForm : Form
     public SettingsForm(AppSettings settings, ErgoController controller)
     {
         _controller = controller;
+        _appSettings = settings;
         Text = "Einstellungen";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -87,10 +189,16 @@ public sealed class SettingsForm : Form
         grid.Controls.Add(Row(Unit("Übersetzung"), _cmbGearing, Unit("   Startgang"), _numStartGear), 1, 6);
         grid.Controls.Add(RowLabel("Wattgrenze:"), 0, 7);
         grid.Controls.Add(Row(_numMaxWatt, Unit($"W   ({controller.Capabilities.Info})")), 1, 7);
+        AddUploadRows(grid, 8, UploadService.Garmin, _chkGarmin, settings.GarminEnabled, _txtGarminLogin, _txtGarminImport, "Import",
+            settings.GarminLoginUrl, settings.GarminImportUrl, UploadService.GarminDefaultLoginUrl, UploadService.GarminDefaultImportUrl,
+            "Seite \"Daten importieren\" von Garmin Connect");
+        AddUploadRows(grid, 9, UploadService.Strava, _chkStrava, settings.StravaEnabled, _txtStravaLogin, _txtStravaUpload, "Upload",
+            settings.StravaLoginUrl, settings.StravaUploadUrl, UploadService.StravaDefaultLoginUrl, UploadService.StravaDefaultUploadUrl,
+            "Upload-Seite von Strava (\"Datei hochladen\")");
         var buttons = Row(btnOk, btnCancel);
         buttons.Anchor = AnchorStyles.Right;
         buttons.Margin = new Padding(3, 18, 3, 3);
-        grid.Controls.Add(buttons, 1, 8);
+        grid.Controls.Add(buttons, 1, 10);
 
         _cmbDevice.Items.AddRange([.. ErgometerTypes.All.Select(t => new DeviceItem(t.Id, t.Name))]);
         _cmbDevice.SelectedItem = _cmbDevice.Items.Cast<DeviceItem>().FirstOrDefault(d => d.Id == settings.Device) ?? _cmbDevice.Items[0];

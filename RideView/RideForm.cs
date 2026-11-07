@@ -763,6 +763,15 @@ public sealed class RideForm : Form
         _settings.StartGear = dialog.StartGear;
         _settings.Gearing = dialog.Gearing;
         _settings.MaxWattLimit = dialog.MaxWattLimit;
+        _settings.GarminLoginUrl = dialog.GarminLoginUrl;
+        _settings.GarminImportUrl = dialog.GarminImportUrl;
+        _settings.StravaLoginUrl = dialog.StravaLoginUrl;
+        _settings.StravaUploadUrl = dialog.StravaUploadUrl;
+        // Switching a platform on ticks its checkbox in the export dialog (it can be unticked there per export).
+        if (dialog.GarminEnabled && !_settings.GarminEnabled) _settings.ExportOpenGarmin = true;
+        if (dialog.StravaEnabled && !_settings.StravaEnabled) _settings.ExportOpenStrava = true;
+        _settings.GarminEnabled = dialog.GarminEnabled;
+        _settings.StravaEnabled = dialog.StravaEnabled;
         _controller.SetUserLimit(_settings.MaxWattLimit);
         if (_route is null)
             ShowTarget(_controller.TargetWatt);
