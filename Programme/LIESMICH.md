@@ -62,7 +62,7 @@ Benutzerhandbuch (S. 9–13). Dateinamen `P<Nr>_<Name>.json`.
 - **39–41 Höhenprofile (Hawaii, Roth, Lanzarote):** Die Grafik enthält nur Höhenmeter über Distanz, keine Koordinaten;
   für „Strecke fahren“ wäre eine GPX-Datei der Originalstrecke besser.
 
-## B. Programme nach aktueller Trainingswissenschaft (S00–S07)
+## B. Programme nach aktueller Trainingswissenschaft (S00–S08)
 
 Diese Programme folgen Trainingsformen, deren Wirkung in Studien belegt ist. Die Leistung ist auf deine **FTP** bezogen. FTP heißt Functional Threshold Power: die Leistung, die du etwa eine Stunde halten kannst. Jedes Programm liegt für FTP 150, 200 und 250 W vor (Dateinamen `S<Nr>_FTP<Wert>_<Name>.json`, zum Beispiel `S02_FTP200_Norwegisch_4x4.json`).
 
@@ -83,8 +83,9 @@ Diese Programme folgen Trainingsformen, deren Wirkung in Studien belegt ist. Die
 | S05 Unterschwelle 5×8 | 5 × 8 min, 1 min Pause | 90 % | Schwellentraining knapp unter der Laktatschwelle („Norwegian Method“, ca. 2–3 mmol/l): viel Umfang bei wenig Ermüdung | Bakken / Ingebrigtsen-Methode |
 | S06 Gibala 10×1 min | 10 × 1 min, 1 min Pause | 115 % | Zeitsparendes HIIT; auch bei Untrainierten und Übergewichtigen untersucht (Fitness, Blutzucker) | Little et al. 2010, 2011 |
 | S07 Sprint 3×20 s | 10 min gesamt, 3 × 20 s | 200 % | Minimalprogramm „One minute of intense exercise“ | Gillen et al. 2016 |
+| S08 Schwellenblöcke 30 min | 30 min gesamt, 3 × 5 min, 2 min Pause | 92 % | Kraftausdauer („Sweet Spot“) in kurzer Zeit; mit 85–95 RPM knieschonend, steigern über die Blocklänge | Allen & Coggan, Training and Racing with a Power Meter |
 
-Alle Programme außer S07 enthalten 13 min Aufwärmen und 10 min Ausfahren. S07 hat beides kürzer, wie in der Studie.
+Alle Programme außer S07 und S08 enthalten 13 min Aufwärmen und 10 min Ausfahren. S07 hat beides kürzer, wie in der Studie; S08 hat 8 min Einfahren und 3 min Ausfahren, damit es in 30 min passt.
 
 ### 3. Hinweise
 
@@ -107,6 +108,9 @@ Alle Programme außer S07 enthalten 13 min Aufwärmen und 10 min Ausfahren. S07 
 - Gillen J. B. et al. (2016): Twelve weeks of sprint interval training improves indices of cardiometabolic health similar to traditional endurance training despite a five-fold lower time commitment. *PLoS One* 11(4).
 - Weston M. et al. (2014): Effects of low-volume HIT on fitness in adults: a meta-analysis. *Sports Med* 44. https://link.springer.com/doi/10.1007/s40279-014-0180-z
 
+## C. Eigene Programme
+
+Eigene Programme gehören nicht in diesen Ordner, sondern nach `CustomPrograms` (unter `Dokumente\ErgoWattControl`, portabel neben der exe). Die App legt dort beim Start das JSON-Schema `Trainingsprogramm.schema.json` sowie `CLAUDE.md` und `AGENTS.md` (gleicher Inhalt aus `Schema/CLAUDE.md`) mit Anleitung für KI-Assistenten ab und beim ersten Mal die Vorlage `Beispiel_Eigenes_Programm.json`. Eigene Programme erscheinen mit ★ oben in der Programmliste; eine fehlerhafte Datei wird mit Grund unter „Nicht lesbar“ genannt.
 ## Neu erzeugen
 
 Die Profile entstehen in zwei Schritten: Python-Skripte schreiben sie als CSV (`Sekunden;Soll_W;Puls`), das Werkzeug

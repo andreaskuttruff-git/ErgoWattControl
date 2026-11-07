@@ -25,6 +25,9 @@
     <None Remove="Setup\**" />
     <Compile Remove="Setup\**" />
     <EmbeddedResource Include="Programme\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
+    <!-- JSON schema of a program (and an example) for the rider's own programs, written to CustomPrograms\ at start -->
+    <None Remove="Schema\**" />
+    <EmbeddedResource Include="Schema\*.json;Schema\CLAUDE.md" LogicalName="Schema/%(Filename)%(Extension)" />
     <!-- User help (F1 / menu "Hilfe"), shown from the exe in the help window (HelpWindow) -->
     <None Remove="Hilfe.html;Hilfe-Bilder\**" />
     <EmbeddedResource Include="Hilfe.html" LogicalName="Hilfe/Hilfe.html" />

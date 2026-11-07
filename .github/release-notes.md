@@ -30,5 +30,5 @@ Unter **☰ → Einstellungen** den COM-Port des Cockpits wählen. Ohne Ergomete
 ### Funktionen
 - Freies Training mit Wattvorgabe, Fahransicht für einen Monitor am Rad
 - Strecke fahren (GPX) mit Steigungssimulation und 28 Gängen
-- Aufzeichnungen nachfahren und Trainingsprogramme (Handbuch-Programme P01–P44, Programme nach aktueller Trainingswissenschaft S00–S07)
+- Aufzeichnungen nachfahren und Trainingsprogramme (Handbuch-Programme P01–P44, Programme nach aktueller Trainingswissenschaft S00–S08)
 - Aufzeichnung als JSON, Export als FIT (Strava, Garmin Connect, intervals.icu, TrainingPeaks) und CSV (Excel), Upload zu Garmin Connect und Strava aus der App

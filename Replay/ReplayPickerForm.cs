@@ -61,12 +61,39 @@ public sealed class ReplayPickerForm : Form
     /// <summary>The training programs (*.json) of <paramref name="directory"/>.</summary>
     /// <param name="current">The current settings: file name pattern and the power limit shown.</param>
     /// <param name="saveAsDefault">Stores the values shown as the new defaults in settings.json.</param>
-    public static ReplayPickerForm ForPrograms(string directory, AppSettings current, Action<AppSettings> saveAsDefault)
+    public static ReplayPickerForm ForPrograms(string directory, AppSettings current, Action<AppSettings> saveAsDefault) =>
+        ForPrograms(directory, null, current, saveAsDefault);
+
+    /// <summary>
+    /// The shipped programs of <paramref name="directory"/> and, listed first and marked with ★, the rider's own ones of
+    /// <paramref name="customDirectory"/>. A faulty own program is named with the reason, so it can be fixed.
+    /// </summary>
+    public static ReplayPickerForm ForPrograms(string directory, string? customDirectory, AppSettings current, Action<AppSettings> saveAsDefault)
     {
         var form = new ReplayPickerForm("Trainingsprogramm starten", programFile => AppSettings.BuildFileName(current.FileNameProgram, DateTime.Now, programFile),
             current, programs: true, showPulse: false, saveAsDefault);
+        form._customDirectory = customDirectory;
         var failed = new List<string>();
-        foreach (var file in Files(directory, "*.json").Order(StringComparer.OrdinalIgnoreCase))
+        if (customDirectory is not null)
+        {
+            // Deleted while the app runs? Created again (with schema and notes) – or quietly skipped if that fails.
+            ProgramFiles.EnsureCustomFolder(customDirectory);
+            foreach (var file in ProgramFiles.ProgramsIn(customDirectory).Order(StringComparer.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    var program = TrainingProgram.Load(file);
+                    var description = (string.IsNullOrWhiteSpace(program.Beschreibung) ? "" : program.Beschreibung + "\n\n")
+                        + $"Eigenes Programm: {file}";
+                    form._entries.Add(new Entry("★ " + program.Name, file, () => new Selection(program.ToWorkout(), description)));
+                }
+                catch (Exception ex) when (IsReadError(ex))
+                {
+                    failed.Add($"{Path.GetFileName(file)} – {ex.Message}");
+                }
+            }
+        }
+        foreach (var file in ProgramFiles.ProgramsIn(directory).Order(StringComparer.OrdinalIgnoreCase))
         {
             try
             {
@@ -81,6 +108,9 @@ public sealed class ReplayPickerForm : Form
         form.Fill(directory, "Programme (*.json)", failed);
         return form;
     }
+
+    /// <summary>Folder of the rider's own programs (programs dialog only); a button opens it.</summary>
+    private string? _customDirectory;
 
     /// <summary>The recordings (*.json, older ones *.csv) of the recording folder, newest first.</summary>
     /// <param name="current">The current settings: file name patterns, and the ride values where a recording stored none.</param>
@@ -143,7 +173,7 @@ public sealed class ReplayPickerForm : Form
         var nameRow = new FlowLayoutPanel { Dock = DockStyle.Bottom, AutoSize = true, WrapContents = false, Padding = new Padding(0, 8, 0, 0) };
         nameRow.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 12, 0) });
         nameRow.Controls.Add(_fileName);
-        _failed = failed.Count > 0 ? $"\nNicht lesbar: {string.Join(", ", failed)}" : "";
+        _failed = failed.Count > 0 ? $"\nNicht lesbar:\n  {string.Join("\n  ", failed)}" : "";
         _note.Text = ProfileNote + _failed;
         var graph = new Panel { Dock = DockStyle.Top, Height = 300, BackColor = DarkBack };
         graph.Controls.Add(_profile);
@@ -187,6 +217,25 @@ public sealed class ReplayPickerForm : Form
             var other = new Button { Text = "Aufzeichnung aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
             other.Click += (_, _) => PickOtherFile(directory);
             listPanel.Controls.Add(other);
+        }
+        else if (_customDirectory is { } custom)
+        {
+            // Own programs: open their folder (with the schema and an example to copy from).
+            var own = new Button { Text = "Ordner für eigene Programme öffnen", Dock = DockStyle.Bottom, Height = 36 };
+            own.Click += (_, _) =>
+            {
+                try
+                {
+                    Directory.CreateDirectory(custom);
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(custom) { UseShellExecute = true });
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+                {
+                    _note.Text = $"Ordner nicht zu öffnen: {ex.Message}";
+                }
+            };
+            new ToolTip().SetToolTip(own, $"{custom}\nEigene Programme (*.json) dort ablegen – sie stehen mit ★ oben in der Liste.\nAufbau: Trainingsprogramm.schema.json, Vorlage: Beispiel_Eigenes_Programm.json.");
+            listPanel.Controls.Add(own);
         }
         Controls.Add(details);
         Controls.Add(listPanel);

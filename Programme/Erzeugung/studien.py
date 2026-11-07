@@ -49,6 +49,10 @@ SESSIONS = [
     # Gillen et al. 2016: "one minute of intense exercise" - 3 x 20 s sprints in a 10-min session. The brake holds a
     # fixed power, so the sprint is set to 200 % FTP instead of all-out. 5 s steps for the 20 s sprints.
     (7, "Sprint_3x20s", 5, [(120, 0.40)] + repeat(3, (20, 2.00), (120, 0.40)) + [(60, 0.40)]),
+    # Threshold blocks for muscular endurance in 30 min, knee-friendly at a high cadence (85-95 rpm): 3 x 5 min at 92 % FTP
+    # ("sweet spot" 88-94 % FTP, Allen & Coggan), 2 min easy. Progress by lengthening the blocks, not by more watts.
+    (8, "Schwellenbloecke_30min", 15,
+     [(180, 0.45), (180, 0.60), (120, 0.73)] + repeat(3, (300, 0.92), (120, 0.53), last_off=False) + [(180, 0.45)]),
 ]
 RONNESTAD_SERIES = repeat(13, (30, 1.25), (15, 0.50))
 

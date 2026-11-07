@@ -57,6 +57,7 @@
   <a href="#strecke">Strecke fahren</a>
   <a href="#training">Aufzeichnung nachfahren</a>
   <a href="#programm">Trainingsprogramm starten</a>
+  <a href="#eigene-programme">Eigene Programme</a>
   <a href="#ftp">FTP und Rampentest</a>
   <a href="#laufeinstellungen">Einstellungen für einen Lauf</a>
   <a href="#beenden">Aufnahme beenden, umbenennen, verwerfen</a>
@@ -82,6 +83,7 @@
 <table>
   <tr><th>Bereich</th><th>Bedeutung</th></tr>
   <tr><td><b>LEISTUNG</b> (gelb)</td><td>Vorgegebene Leistung in Watt, mit <b>−</b> / <b>+</b> daneben. Weicht die tatsächliche Leistung mehr als 5 W ab, steht darüber <code>[Ist … W]</code>.</td></tr>
+  <tr><td>Oben rechts, über dem Puls</td><td>Was gerade gefahren wird: „Strecke: Name (km)“, „Programm: Name“ oder „Aufzeichnung: Name“; im Tooltip steht die Datei. Beim freien Training leer.</td></tr>
   <tr><td><b>PULS</b> (rot)</td><td>Herzfrequenz vom Brustgurt bzw. Ohrclip des Cockpits.</td></tr>
   <tr><td><b>RPM</b>, <b>km/h</b>, <b>ZEIT</b></td><td>Trittfrequenz, Geschwindigkeit und Fahrzeit. Ein <span style="color:var(--red)">▲</span> neben RPM heißt „schneller treten“, ein ▼ „langsamer treten“.</td></tr>
   <tr><td>Oberer Graph</td><td>Leistung (gelb) und Trittfrequenz (blau) der letzten 10 Minuten. Die <b>blaugraue Fläche</b> ist der Trittfrequenzbereich, in dem die Wirbelstrombremse die eingestellte Leistung halten kann (z. B. 40–160 RPM bis 150 W, 50–160 RPM bis 250 W). Sie gehört zur blauen Linie.</td></tr>
@@ -136,7 +138,7 @@
 <figure><img src="Hilfe-Bilder/programm_auswahl.png" alt="Startdialog „Trainingsprogramm starten“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar."><figcaption>Startdialog „Trainingsprogramm starten“: Leistungsverlauf, Beschreibung mit Quelle; bei Programmen ist nur die Wattgrenze einstellbar.</figcaption></figure>
 <h3>P01–P44: Programme aus dem Handbuch</h3>
 <p>Die wattgesteuerten Festprogramme des 8008 TRS (Leistungstests WHO/BAL, Intervall, Pyramide, Berge, Fahrtspiele, Mannschafts-Tempotraining, Ausdauer, Cool-down) mit festen Wattwerten. Sie sind aus den Grafiken des Handbuchs abgelesen. Die Pulsprogramme (29–38) und Höhenprofile (39–41) fehlen, weil die App nur Watt steuert.</p>
-<h3>S00–S07: Programme nach aktueller Trainingswissenschaft</h3>
+<h3>S00–S08: Programme nach aktueller Trainingswissenschaft</h3>
 <table>
   <tr><th>Programm</th><th>Hauptteil</th><th>Wofür</th></tr>
   <tr><td>S00 Rampentest</td><td>+20 W pro Minute bis zur Erschöpfung</td><td>FTP bestimmen</td></tr>
@@ -147,9 +149,27 @@
   <tr><td>S05 Unterschwelle 5×8</td><td>5 × 8 min bei 90 %</td><td>Schwellentraining mit wenig Ermüdung</td></tr>
   <tr><td>S06 Gibala 10×1 min</td><td>10 × 1 min bei 115 %</td><td>zeitsparendes Intervalltraining</td></tr>
   <tr><td>S07 Sprint 3×20 s</td><td>3 × 20 s bei 200 %</td><td>Minimalprogramm, 10 min</td></tr>
+  <tr><td>S08 Schwellenblöcke 30 min</td><td>3 × 5 min bei 92 %</td><td>Kraftausdauer in 30 min, knieschonend mit 85–95 RPM; steigern über die Dauer der Blöcke</td></tr>
 </table>
 <p>Jedes S-Programm gibt es für FTP 150, 200 und 250 W. Ein typischer Wochenaufbau: zwei harte Einheiten (S02–S06), der Rest locker (S01). Quellen und Details stehen in <code>Programme\LIESMICH.md</code> im Projekt.</p>
 <div class="note warn">Vor dem Einstieg in hochintensives Training empfehlen die Fachgesellschaften bei Vorerkrankungen, Übergewicht oder längerer Pause einen ärztlichen Check, gegebenenfalls mit Belastungs-EKG.</div>
+
+<h3 id="eigene-programme">Eigene Programme</h3>
+<p>Eigene Programme legst du im Ordner <code>CustomPrograms</code> ab: unter <code>Dokumente\ErgoWattControl\CustomPrograms</code>, bei der portablen Version neben der exe. Der Knopf <b>Ordner für eigene Programme öffnen</b> unter der Programmliste öffnet ihn. Eigene Programme stehen mit <b>★</b> oben in der Liste; die App überschreibt dort nie etwas.</p>
+<p>Ein Programm ist eine JSON-Datei mit <code>Name</code>, <code>Beschreibung</code> und <code>Profil</code>. Das Profil ist eine Liste von Punkten <code>[Sekunde, Watt]</code>: Die Leistung eines Punkts gilt bis zum nächsten, der letzte Punkt markiert das Ende.</p>
+<pre>{
+  "$schema": "./Trainingsprogramm.schema.json",
+  "Name": "Mein Intervall 3×2 min",
+  "Beschreibung": "5 min locker, 3 × 2 min zügig, 5 min locker.",
+  "Profil": [ [0, 80], [300, 140], [420, 80], [540, 140], [660, 80], [780, 140], [900, 80], [1200, 80] ]
+}</pre>
+<ul>
+  <li><b>Vorlage:</b> Beim ersten Start legt die App <code>Beispiel_Eigenes_Programm.json</code> in den Ordner – kopieren, umbenennen, anpassen.</li>
+  <li><b>Beschreibung des Formats:</b> <code>Trainingsprogramm.schema.json</code> im selben Ordner ist ein <b>JSON-Schema</b> – für JSON das, was eine XSD für XML ist. Mit der Zeile <code>"$schema": "./Trainingsprogramm.schema.json"</code> prüft ein Editor wie Visual Studio Code die Datei schon beim Schreiben und schlägt die Felder vor.</li>
+  <li><b>Mit einer KI erstellen:</b> Im Ordner liegen auch <code>CLAUDE.md</code> und <code>AGENTS.md</code> (gleicher Inhalt) mit Format, Regeln und Konventionen. Startest du dort einen KI-Assistenten wie Claude Code (liest <code>CLAUDE.md</code>) oder OpenAI Codex (liest <code>AGENTS.md</code>), weiß er sofort, wie ein Programm aussehen muss – du beschreibst nur das Training, z. B. „30 min mit 4 × 4 min bei 140 W“.</li>
+  <li><b>Regeln:</b> Der erste Punkt beginnt bei Sekunde 0, die Sekunden steigen, die Leistung liegt zwischen 0 und 800 W (das Cockpit regelt ab 25 W, die Wattgrenze aus den Einstellungen gilt zusätzlich).</li>
+  <li><b>Fehler:</b> Eine fehlerhafte Datei erscheint nicht in der Liste; unter „Nicht lesbar“ steht der Grund, z. B. „Profil, Punkt 3: Sekunde 200 muss größer sein als beim Punkt davor“ oder die Zeile mit dem JSON-Fehler.</li>
+</ul>
 
 <h2 id="ftp">FTP und Rampentest</h2>
 <p>Die <b>FTP</b> (Functional Threshold Power) ist die Leistung, die du etwa eine Stunde halten kannst. So bestimmst du sie:</p>
@@ -224,20 +244,16 @@
   <tr><td><code>Fehler.log</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Details, wenn eine Datei nicht geladen oder geschrieben werden konnte.</td></tr>
   <tr><td><code>Aufzeichnungen\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Aufzeichnungen (Standard-Ablageordner, in den Einstellungen änderbar).</td></tr>
   <tr><td><code>GPX\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Strecken für „Strecke fahren“.</td></tr>
-  <tr><td><code>Programme\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Die mitgelieferten Programme. Sie stecken in der exe; beim Start schreibt die App fehlende oder veränderte Dateien neu – Änderungen an diesen Dateien werden also überschrieben. Eigene Programme unter anderem Namen bleiben erhalten.</td></tr>
+  <tr><td><code>Programme\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Die mitgelieferten Programme. Sie stecken in der exe; beim Start schreibt die App fehlende oder veränderte Dateien neu – Änderungen an diesen Dateien werden also überschrieben.</td></tr>
+  <tr><td><code>CustomPrograms\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td><a href="#eigene-programme">Eigene Programme</a> (mit ★ in der Liste). Die App legt dort das JSON-Schema, <code>CLAUDE.md</code>/<code>AGENTS.md</code> für KI-Assistenten und einmal eine Vorlage ab; deine Dateien fasst sie nie an.</td></tr>
+  <tr><td><code>WebView2…\</code></td><td><code>%LocalAppData%\ErgoWattControl</code></td><td>Browserprofile des Hilfefensters und der Upload-Fenster (<code>WebView2-Garmin</code>, <code>WebView2-Strava</code> mit der gespeicherten Anmeldung). „Abmelden“ in den Einstellungen löscht das jeweilige Profil.</td></tr>
 </table>
-<p><b>Portabel:</b> Liegt neben der exe eine <code>settings.json</code>, bleibt alles im Programmordner – Einstellungen, <code>Fehler.log</code>, <code>Aufzeichnungen\</code>, <code>GPX\</code> und <code>Programme\</code> liegen dann neben der exe. So laufen ältere Installationen und ZIP-Kopien unverändert weiter; für einen USB-Stick legst du einfach eine (auch leere) <code>settings.json</code> neben die exe.</p>
+<p><b>Portabel:</b> Liegt neben der exe eine <code>settings.json</code>, bleibt alles im Programmordner – Einstellungen, <code>Fehler.log</code>, <code>Aufzeichnungen\</code>, <code>GPX\</code>, <code>Programme\</code> und <code>CustomPrograms\</code> liegen dann neben der exe. So laufen ältere Installationen und ZIP-Kopien unverändert weiter; für einen USB-Stick legst du einfach eine (auch leere) <code>settings.json</code> neben die exe.</p>
 <p><b>Setup:</b> Es installiert die App für den angemeldeten Benutzer nach <code>%LocalAppData%\Programs\ErgoWattControl</code>, mit Verknüpfung im Startmenü und – wenn angehakt – auf dem Desktop. Fehlt die .NET 10 Desktop Runtime, installiert es sie mit. Am Ende kannst du die App gleich starten, auf Wunsch im Demo-Modus. Beim Deinstallieren (Windows-Einstellungen → Apps) bleiben Einstellungen und Aufzeichnungen erhalten.</p>
 <h3>Aufzeichnungen (JSON)</h3>
 <p>Eine Aufzeichnung enthält die Art (Training, Strecke, Programm), Start und Ende, die Einstellungen beim Start, die Vorgabe (Strecke alle 10 m mit Höhe und Koordinaten bzw. den Leistungsverlauf) und pro Sekunde eine Zeile Messwerte: Soll- und Ist-Leistung, RPM, Puls, Geschwindigkeit, Strecke, Energie, Umdrehungen, bei Strecken auch Steigung und Gang. Die Datei wird alle 10 Sekunden vollständig neu geschrieben – bei einem Absturz oder Stromausfall fehlen höchstens diese Sekunden.</p>
 <h3>Eigene Programme</h3>
-<p>Ein Programm ist eine JSON-Datei in <code>Programme\</code>:</p>
-<pre>{
-  "Name": "Mein Programm",
-  "Beschreibung": "Text für den Auswahldialog",
-  "Profil": [ [0, 100], [300, 150], [600, 100], [900, 100] ]
-}</pre>
-<p><code>Profil</code> sind Paare aus Sekunde und Watt; die Leistung gilt bis zum nächsten Punkt, der letzte Punkt markiert das Ende. Wähle einen Dateinamen, der nicht mit einem mitgelieferten Programm übereinstimmt.</p>
+<p>Eigene Programme gehören nach <code>CustomPrograms\</code> – Aufbau, Regeln und Vorlage stehen unter <a href="#eigene-programme">Eigene Programme</a>.</p>
 
 <h2 id="parameter">Startparameter</h2>
 <table>

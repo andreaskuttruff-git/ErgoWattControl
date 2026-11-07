@@ -159,7 +159,10 @@ public sealed class RideForm : Form
         closeButton.Width = 48;
         closeButton.Click += (_, _) => Close();
         var pulseHeader = new Panel { Dock = DockStyle.Top, Height = 36 };
+        // What is being ridden (route, program, recording) – above the pulse, next to the close button.
+        pulseHeader.Controls.Add(_runName);
         pulseHeader.Controls.Add(closeButton);
+        _runNameTip.SetToolTip(_runName, "");
         _pulse.Dock = DockStyle.Fill;
         var pulseCell = new Panel { Dock = DockStyle.Fill, Margin = new Padding(10, 0, 10, 0) };
         pulseCell.Controls.Add(_pulse);
@@ -576,20 +579,40 @@ public sealed class RideForm : Form
             ShowLoadError("Die Aufzeichnung", "Aufzeichnung nachfahren", csvPath, ex);
             return;
         }
-        BeginReplay(workout, customName: null, programFile: null);
+        // A program given on the command line is recorded like one started from the dialog (Prog_… file name).
+        BeginReplay(workout, customName: null, programFile: workout.IsProgram && csvPath.Length > 0 ? Path.GetFileNameWithoutExtension(csvPath) : null);
     }
 
     private void StartProgram()
     {
         if (Guided)
             return;
-        using var picker = ReplayPickerForm.ForPrograms(ProgramFiles.Folder, _settings, SaveRideDefaults);
+        using var picker = ReplayPickerForm.ForPrograms(ProgramFiles.Folder, ProgramFiles.CustomFolder, _settings, SaveRideDefaults);
         if (picker.ShowDialog(this) == DialogResult.OK && picker.Workout is { } workout)
             BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideSettings);
     }
 
+    /// <summary>Name of the route, program or recording being ridden; empty in free training.</summary>
+    private readonly Label _runName = new()
+    {
+        Dock = DockStyle.Fill,
+        ForeColor = Color.FromArgb(200, 200, 200),
+        Font = new Font("Segoe UI", 13, FontStyle.Bold),
+        TextAlign = ContentAlignment.MiddleCenter,
+        AutoEllipsis = true,
+    };
+
+    private readonly ToolTip _runNameTip = new();
+
+    private void ShowRunName(string kind, string name, string? file)
+    {
+        _runName.Text = name.Length == 0 ? "" : $"{kind}: {name}";
+        _runNameTip.SetToolTip(_runName, file is null ? _runName.Text : $"{_runName.Text}\n{file}");
+    }
+
     private void BeginReplay(WorkoutRecording workout, string? customName, string? programFile, AppSettings? runSettings = null)
     {
+        ShowRunName(programFile is not null || workout.IsProgram ? "Programm" : "Aufzeichnung", workout.Name, workout.FilePath);
         StopRecording();
         _customFileName = customName;
         _programFile = programFile;
@@ -615,6 +638,7 @@ public sealed class RideForm : Form
         StopRecording();
         _replay = null;
         _programFile = null;
+        ShowRunName("", "", null);
         UseRunSettings(null);
         _workoutProfile.Visible = false;
         _pulseGraph.Visible = true;
@@ -694,6 +718,7 @@ public sealed class RideForm : Form
 
     private void BeginRoute(GpxRoute route, string? customName, AppSettings? runSettings = null)
     {
+        ShowRunName("Strecke", $"{route.Name} ({route.TotalDistance / 1000:0.0} km)", route.FilePath);
         StopRecording();
         _customFileName = customName;
         UseRunSettings(runSettings);
@@ -717,6 +742,7 @@ public sealed class RideForm : Form
         var recorded = _recorder;
         StopRecording();
         _route = null;
+        ShowRunName("", "", null);
         UseRunSettings(null);
         _profile.Visible = false;
         _pulseGraph.Visible = true;

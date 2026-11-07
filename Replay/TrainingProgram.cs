@@ -25,14 +25,43 @@ public sealed partial class TrainingProgram
 
     public static TrainingProgram Load(string path)
     {
-        var program = JsonSerializer.Deserialize<TrainingProgram>(File.ReadAllText(path), Options)
-            ?? throw new InvalidDataException("Die Datei ist leer.");
-        if (program.Profil.Length < 2 || program.Profil.Any(p => p.Length < 2))
-            throw new InvalidDataException("Das Programm enthält kein gültiges Leistungsprofil.");
+        TrainingProgram program;
+        try
+        {
+            program = JsonSerializer.Deserialize<TrainingProgram>(File.ReadAllText(path), Options)
+                ?? throw new InvalidDataException("Die Datei ist leer.");
+        }
+        catch (JsonException ex)
+        {
+            // Hand-written files: say where the JSON breaks (line from the parser, 0-based).
+            var where = ex.LineNumber is { } line ? $" (Zeile {line + 1})" : "";
+            throw new InvalidDataException($"Kein gültiges JSON{where}: {ex.Message.Split(". Path:")[0]}", ex);
+        }
+        Validate(program.Profil);
         program.FilePath = path;
         if (string.IsNullOrWhiteSpace(program.Name))
             program.Name = Path.GetFileNameWithoutExtension(path);
         return program;
+    }
+
+    /// <summary>The rules of Trainingsprogramm.schema.json, with messages that point to the faulty point.</summary>
+    private static void Validate(int[][] profil)
+    {
+        if (profil is null || profil.Length < 2)
+            throw new InvalidDataException("\"Profil\" braucht mindestens zwei Punkte [Sekunde, Watt] – der letzte markiert das Ende.");
+        for (var i = 0; i < profil.Length; i++)
+        {
+            var point = profil[i];
+            var where = $"Profil, Punkt {i + 1}";
+            if (point is null || point.Length != 2)
+                throw new InvalidDataException($"{where}: erwartet [Sekunde, Watt].");
+            if (i == 0 && point[0] != 0)
+                throw new InvalidDataException($"{where}: Der erste Punkt muss bei Sekunde 0 beginnen.");
+            if (i > 0 && point[0] <= profil[i - 1][0])
+                throw new InvalidDataException($"{where}: Sekunde {point[0]} muss größer sein als beim Punkt davor ({profil[i - 1][0]}).");
+            if (point[1] is < 0 or > 800)
+                throw new InvalidDataException($"{where}: {point[1]} W liegt außerhalb von 0–800 W.");
+        }
     }
 
     public void Save(string path)

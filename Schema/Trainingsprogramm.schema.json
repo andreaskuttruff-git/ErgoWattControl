@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://andreaskuttruff-git.github.io/ErgoWattControl/Schema/Trainingsprogramm.schema.json",
+  "title": "ErgoWattControl – Trainingsprogramm",
+  "description": "Ein wattgesteuertes Trainingsprogramm für ErgoWattControl. Eigene Programme in den Ordner CustomPrograms legen; die App zeigt sie unter ☰ → Trainingsprogramm starten … an. Mit \"$schema\": \"./Trainingsprogramm.schema.json\" in der Datei prüfen Editoren wie VS Code das Programm beim Schreiben.",
+  "type": "object",
+  "required": ["Name", "Profil"],
+  "properties": {
+    "$schema": {
+      "description": "Verweis auf dieses Schema, damit der Editor prüfen und Vorschläge machen kann. Die App ignoriert das Feld.",
+      "type": "string"
+    },
+    "Name": {
+      "description": "Name in der Programmliste, z. B. \"Mein Intervall 6×2 min\". Leer: der Dateiname.",
+      "type": "string",
+      "maxLength": 80
+    },
+    "Beschreibung": {
+      "description": "Text im Auswahldialog: Aufbau, Ziel, Hinweise. Absätze mit \\n\\n.",
+      "type": "string"
+    },
+    "Profil": {
+      "description": "Leistungsverlauf als Liste von [Sekunde, Watt]. Die Leistung eines Punkts gilt bis zum nächsten; der letzte Punkt markiert das Ende. Beispiel: [[0, 80], [300, 150], [600, 80], [900, 80]] = 5 min 80 W, 5 min 150 W, 5 min 80 W.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "description": "[Sekunde ab Start, Watt]. Die Sekunden müssen von 0 an steigen.",
+        "type": "array",
+        "prefixItems": [
+          { "description": "Sekunde ab Start (der erste Punkt hat 0).", "type": "integer", "minimum": 0 },
+          { "description": "Leistung in Watt. Das Cockpit regelt ab 25 W; die Wattgrenze aus den Einstellungen begrenzt nach oben.", "type": "integer", "minimum": 0, "maximum": 800 }
+        ],
+        "minItems": 2,
+        "maxItems": 2
+      }
+    }
+  },
+  "additionalProperties": false
+}

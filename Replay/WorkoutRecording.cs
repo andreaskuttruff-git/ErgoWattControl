@@ -39,7 +39,10 @@ public sealed class WorkoutRecording
 
     /// <summary>Power profile without pulse, e.g. from a <see cref="TrainingProgram"/>.</summary>
     public static WorkoutRecording FromProfile(string name, IEnumerable<(double Seconds, int Watt)> points, string? filePath = null) =>
-        new(name, Increasing(points.Select(p => (p.Seconds, p.Watt, 0)))) { FilePath = filePath };
+        new(name, Increasing(points.Select(p => (p.Seconds, p.Watt, 0)))) { FilePath = filePath, IsProgram = true };
+
+    /// <summary>A training program (a power profile), not a ride recorded earlier.</summary>
+    public bool IsProgram { get; private init; }
 
     public static WorkoutRecording Load(string path)
     {

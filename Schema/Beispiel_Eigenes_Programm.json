@@ -1,0 +1,17 @@
+{
+  "$schema": "./Trainingsprogramm.schema.json",
+  "Name": "Beispiel – eigenes Programm 20 min",
+  "Beschreibung": "Vorlage für eigene Programme: 5 min Einfahren, 3 × 2 min zügig mit 2 min locker dazwischen, 5 min Ausfahren.\n\nKopiere diese Datei unter neuem Namen in diesen Ordner und ändere Name, Beschreibung und Profil. Jeder Punkt im Profil ist [Sekunde, Watt]; die Leistung gilt bis zum nächsten Punkt, der letzte Punkt markiert das Ende.",
+  "Profil": [
+    [0, 70],
+    [150, 90],
+    [300, 130],
+    [420, 80],
+    [540, 130],
+    [660, 80],
+    [780, 130],
+    [900, 80],
+    [1140, 70],
+    [1200, 70]
+  ]
+}
