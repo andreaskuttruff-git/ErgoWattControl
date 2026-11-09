@@ -257,6 +257,11 @@ public sealed class RideForm : Form
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Einstellungen …", null, (_, _) => OpenSettings());
         menu.Items.Add(new ToolStripMenuItem("Hilfe", null, (_, _) => HelpWindow.Show(this, "start")) { ShortcutKeyDisplayString = "F1" });
+        menu.Items.Add("Info …", null, (_, _) =>
+        {
+            using var info = new InfoForm();
+            info.ShowDialog(this);
+        });
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Beenden", null, (_, _) => Close());
         menuButton.Click += (_, _) => menu.Show(menuButton, new Point(0, menuButton.Height));

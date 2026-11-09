@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Elevation profile as icon (exe, shortcuts, taskbar, setup); drawn by Setup\make-icon.py -->
     <ApplicationIcon>ErgoWattControl.ico</ApplicationIcon>
+    <!-- Version of local builds (shown under Einstellungen → Info); a release build takes it from the tag instead -->
+    <Version>1.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
