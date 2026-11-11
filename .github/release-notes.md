@@ -2,6 +2,10 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – in der App mit F1.
 
+### Neu in v1.4.1
+- **Export sicherer:** FIT und CSV werden erst vollständig in eine temporäre Datei geschrieben und dann umbenannt – ein fehlgeschlagener Export hinterlässt keine 0-Byte-Datei mehr und überschreibt keine vorhandene gute Datei.
+- **Verständliche Fehler beim Export:** Der Dialog zeigt Meldung und Fehlerart (auch Fehler der FIT-Bibliothek), der vollständige Fehler steht in `Fehler.log`; die übrigen markierten Aufzeichnungen werden trotzdem exportiert.
+
 ### Neu in v1.4.0
 - **☰ → Info …:** Version der App (mit Commit), Links zur Projektseite, zu neuen Versionen und zur Online-Hilfe sowie die Ordner für Einstellungen und Daten
 - README und Hilfe mit Screenshots aller vier Modi (freies Training, Strecke, Programm, Aufzeichnung nachfahren)

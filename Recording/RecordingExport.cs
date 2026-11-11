@@ -19,7 +19,9 @@ public static class RecordingExport
         public double? this[string column] => Array.IndexOf(file.Spalten, column) is var i and >= 0 && i < values.Length ? values[i] : null;
     }
 
-    public static void WriteCsv(RecordingFile file, string path)
+    public static void WriteCsv(RecordingFile file, string path) => WriteComplete(path, temp => WriteCsvTo(file, temp));
+
+    private static void WriteCsvTo(RecordingFile file, string path)
     {
         var text = new StringBuilder();
         text.AppendLine("Zeitstempel;" + string.Join(';', file.Spalten));
@@ -32,7 +34,27 @@ public static class RecordingExport
         File.WriteAllText(path, text.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
     }
 
-    public static void WriteFit(RecordingFile file, string path)
+    /// <summary>
+    /// Writes into "&lt;path&gt;.tmp" and replaces <paramref name="path"/> only when the file is complete, so a failed
+    /// export never leaves a 0-byte file behind or destroys a good one from earlier.
+    /// </summary>
+    public static void WriteFit(RecordingFile file, string path) => WriteComplete(path, temp => WriteFitTo(file, temp));
+
+    private static void WriteComplete(string path, Action<string> write)
+    {
+        var temp = path + ".tmp";
+        try
+        {
+            write(temp);
+            File.Move(temp, path, overwrite: true);
+        }
+        finally
+        {
+            try { File.Delete(temp); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
+    }
+
+    private static void WriteFitTo(RecordingFile file, string path)
     {
         if (file.Werte.Count == 0)
             throw new InvalidDataException("Die Aufzeichnung enthält keine Messwerte.");

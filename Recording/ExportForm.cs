@@ -304,9 +304,13 @@ public sealed class ExportForm : Form
                     written.Add(name + ".csv");
                 }
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException or System.Text.Json.JsonException)
+            // Any failure (also the FIT SDK's own FitException) is reported for this recording – with the exception
+            // type, since some come without a message – and logged in full, so the others still get exported.
+            catch (Exception ex) when (ex is not OutOfMemoryException)
             {
-                failed.Add($"{name}: {ex.Message}");
+                AppPaths.Log($"Export {source} → {folder}", ex);
+                var reason = string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : $"{ex.Message} ({ex.GetType().Name})";
+                failed.Add($"{name}: {reason}");
             }
         }
 
