@@ -273,6 +273,14 @@
   <li>Ist das Ergometer eingeschaltet und das Kabel am richtigen Port? In den Einstellungen <b>Verbindung testen</b>.</li>
   <li>Nach einem Cockpit-Reset verbindet sich die App von selbst neu.</li>
 </ul>
+<h3>Graph und Countdown bleiben zwischendurch stehen</h3>
+<p>Kommen vom Cockpit einige Sekunden lang keine Messwerte, zeichnet der Graph nichts, die Zahlen bleiben stehen und der Countdown bis zum nächsten Wechsel hält an (Lücken über 5 s zählen nicht als gefahrene Programmzeit). Unten rechts steht dann kurz „keine Antwort – neuer Versuch …“, danach verbindet sich die App von selbst wieder. Einzelne ausbleibende Antworten fragt sie sofort noch einmal ab, das merkst du nicht.</p>
+<ul>
+  <li><b>Windows-Update mit ausstehendem Neustart:</b> Wartet ein Update auf den Neustart – besonders ein Treiber für Anschlüsse (z. B. „Intel Ports Driver Update“) –, laufen die alte und die neue Treiberversion oft gemischt, und Windows arbeitet im Hintergrund. Das kann genau solche Aussetzer an der seriellen Schnittstelle auslösen. Den PC vor dem Training neu starten.</li>
+  <li><b>Kabel und Adapter:</b> Stecker fest? Bei einem USB-RS232-Adapter einen anderen USB-Anschluss probieren, möglichst direkt am PC statt am Hub.</li>
+  <li><b>Was passiert ist</b>, steht in <code>Fehler.log</code>: „Cockpit-Verbindung … unterbrochen“ mit Ursache, „wieder verbunden nach … s“ und „Antwort nach … Wiederholung(en) erhalten“ – mit Uhrzeit, sodass sich Aussetzer mit der Fahrt vergleichen lassen.</li>
+  <li>Hält ein seltsames Verhalten an (z. B. ein Export, der plötzlich scheitert), hilft oft schon, die App neu zu starten.</li>
+</ul>
 <h3>Die Leistung kommt nicht an / ▲ neben RPM</h3>
 <p>Die Wirbelstrombremse kann eine Leistung nur in einem bestimmten Trittfrequenzbereich halten (blaugraue Fläche im Graphen). Bei hoher Leistung musst du schneller treten – über 250 W mindestens 60 RPM, über 500 W mindestens 100 RPM.</p>
 <h3>Eine Strecke ist zu schwer</h3>

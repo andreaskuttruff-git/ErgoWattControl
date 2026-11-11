@@ -36,4 +36,15 @@ public static class AppPaths
         }
         catch (Exception) { }
     }
+
+    /// <summary>Appends a one-line note (no exception) to Fehler.log, e.g. the cockpit connection coming back; never throws.</summary>
+    public static void Note(string what)
+    {
+        try
+        {
+            Directory.CreateDirectory(SettingsFolder);
+            File.AppendAllText(LogFile, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {what}\r\n");
+        }
+        catch (Exception) { }
+    }
 }

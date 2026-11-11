@@ -2,6 +2,11 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – in der App mit F1.
 
+### Neu in v1.4.2
+- **Stabilere Verbindung zum Cockpit:** Bleibt eine einzelne Antwort aus, fragt die App sofort noch einmal nach (bis zu zweimal), statt die Verbindung abzubauen – kurze Störungen führen nicht mehr zu Sekunden ohne Messwerte, stehendem Graphen und angehaltenem Countdown.
+- **Protokoll:** Verbindungsabbrüche, Wiederverbinden und gerettete Anfragen stehen mit Uhrzeit in `Fehler.log`.
+- **Hilfe:** neuer Abschnitt zu Aussetzern – u. a. ein Windows-Update mit ausstehendem Neustart (Treiber für Anschlüsse) als mögliche Ursache.
+
 ### Neu in v1.4.1
 - **Export sicherer:** FIT und CSV werden erst vollständig in eine temporäre Datei geschrieben und dann umbenannt – ein fehlgeschlagener Export hinterlässt keine 0-Byte-Datei mehr und überschreibt keine vorhandene gute Datei.
 - **Verständliche Fehler beim Export:** Der Dialog zeigt Meldung und Fehlerart (auch Fehler der FIT-Bibliothek), der vollständige Fehler steht in `Fehler.log`; die übrigen markierten Aufzeichnungen werden trotzdem exportiert.

@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 
 namespace ErgoWattControl;
 
@@ -11,6 +11,11 @@ public sealed class DaumErgometer : IErgometer
 {
     private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(3);
     private static readonly TimeSpan PollDelay = TimeSpan.FromMilliseconds(400);
+    /// <summary>A missing answer is asked again this often before the connection counts as lost.</summary>
+    private const int QuickRetries = 2;
+
+    /// <summary>When the last connection was lost (for the log line when it is back); null while connected or never connected.</summary>
+    private DateTime? _lostAt;
 
     private readonly ConcurrentQueue<int> _wattRequests = new();
     private readonly ManualResetEventSlim _wake = new();
@@ -105,10 +110,21 @@ public sealed class DaumErgometer : IErgometer
                 CockpitAddress = cockpit.Address;
                 IsConnected = true;
                 Report($"Verbunden auf {port}", true, _capabilities.Info);
+                if (_lostAt is { } lost)
+                {
+                    AppPaths.Note($"Cockpit auf {port} wieder verbunden nach {(DateTime.Now - lost).TotalSeconds:0} s");
+                    _lostAt = null;
+                }
                 Poll(cockpit);
             }
             catch (Exception ex) when (_running)
             {
+                // Only a connection that was up and broke is logged (not every attempt while the cockpit is off).
+                if (IsConnected)
+                {
+                    _lostAt = DateTime.Now;
+                    AppPaths.Log($"Cockpit-Verbindung auf {port} unterbrochen ({Describe(ex)})", ex);
+                }
                 Report($"{port}: {Describe(ex)} – neuer Versuch …", false, $"{ex.GetType().Name}: {ex.Message}");
             }
             catch
@@ -165,10 +181,10 @@ public sealed class DaumErgometer : IErgometer
             {
                 while (_wattRequests.TryDequeue(out var newer))
                     watt = newer; // only the latest pending value matters
-                cockpit.SetWatt(watt);
+                Retry(() => cockpit.SetWatt(watt));
             }
 
-            var data = cockpit.ReadRunData();
+            var data = Retry(cockpit.ReadRunData);
 
             // After a cockpit reset (e.g. static discharge) it may answer again but has left
             // free training or fallen back to its default power, so restore our state.
@@ -198,6 +214,31 @@ public sealed class DaumErgometer : IErgometer
             _wake.Wait(PollDelay);
         }
     }
+
+    /// <summary>
+    /// A single missing answer (a disturbed byte, a short load peak on the PC) is asked again at once instead of
+    /// tearing down the connection – that took several seconds without data. Only repeated failures count as a lost
+    /// connection; each retry that rescued it is noted in Fehler.log.
+    /// </summary>
+    private T Retry<T>(Func<T> request)
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            try
+            {
+                var result = request();
+                if (attempt > 0)
+                    AppPaths.Note($"Cockpit: Antwort nach {attempt} Wiederholung(en) erhalten");
+                return result;
+            }
+            catch (TimeoutException) when (attempt < QuickRetries && _running)
+            {
+                // try again right away; DaumCockpit discards stale input before each request
+            }
+        }
+    }
+
+    private void Retry(Action request) => Retry(() => { request(); return 0; });
 
     private void Report(string text, bool ok, string? detail = null)
     {
