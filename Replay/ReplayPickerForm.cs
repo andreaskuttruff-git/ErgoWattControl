@@ -1,4 +1,4 @@
-namespace ErgoWattControl;
+﻿namespace ErgoWattControl;
 
 /// <summary>
 /// Start dialog for replaying: a list of training programs or recordings; the selected one shows its power profile,
@@ -120,7 +120,7 @@ public sealed class ReplayPickerForm : Form
         var form = new ReplayPickerForm("Aufzeichnung nachfahren", name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
             current, programs: false, current.ReplayShowOriginalPulse, saveAsDefault);
         var directory = current.RecordingDirectory;
-        foreach (var file in Files(directory, "*.json").Concat(Files(directory, "*.csv")).OrderByDescending(File.GetLastWriteTime))
+        foreach (var file in Files(directory, "*.json").Concat(Files(directory, "*.csv")).Concat(Files(directory, "*.fit")).OrderByDescending(File.GetLastWriteTime))
             form._entries.Add(RecordingEntry(file));
         form.Fill(directory, "Aufzeichnungen", []);
         return form;
@@ -132,11 +132,18 @@ public sealed class ReplayPickerForm : Form
     private static bool IsReadError(Exception ex) =>
         ex is IOException or UnauthorizedAccessException or InvalidDataException or FormatException or System.Text.Json.JsonException;
 
-    private static Entry RecordingEntry(string file) => new(Path.GetFileNameWithoutExtension(file), file, () =>
+    private static Entry RecordingEntry(string file) => FitImport.IsFit(file) ? FitEntry(file) : new(Path.GetFileNameWithoutExtension(file), file, () =>
     {
         var workout = WorkoutRecording.Load(file);
         var recording = Path.GetExtension(file).Equals(JsonRecorder.Extension, StringComparison.OrdinalIgnoreCase) ? RecordingFile.Load(file) : null;
         var route = recording?.Vorgabe is { Strecke: { } points } target ? GpxRoute.FromPoints(target.Name, target.Datei, points) : null;
+        if (route is not null && recording is not null)
+        {
+            // The pulse of the recorded ride by distance, for the green curve while riding the route again.
+            int distance = Array.IndexOf(recording.Spalten, "Distanz_km"), pulse = Array.IndexOf(recording.Spalten, "Puls");
+            if (distance >= 0 && pulse >= 0)
+                route.WithOriginalPulse(recording.Werte.Where(v => v.Length > Math.Max(distance, pulse)).Select(v => (v[distance] * 1000, (int)v[pulse])));
+        }
         var description = $"Gespeichert am {File.GetLastWriteTime(file):dd.MM.yyyy} um {File.GetLastWriteTime(file):HH:mm} Uhr\r\n"
             + (workout.HasPulse ? $"Puls damals: Ø {workout.AveragePulse:0}" : "Keine Pulsdaten aufgezeichnet") + "\r\n"
             + (route is not null
@@ -144,6 +151,31 @@ public sealed class ReplayPickerForm : Form
                 : "Folgt dem aufgezeichneten Leistungsverlauf") + "\r\n"
             + $"Ordner: {Path.GetDirectoryName(file)}";
         return new Selection(workout, description, recording?.Einstellungen, route);
+    });
+
+    /// <summary>
+    /// A FIT activity from another device or app: with power data its power profile is ridden again (with the pulse of
+    /// that day), without power but with GPS and elevation it is ridden as a route.
+    /// </summary>
+    private static Entry FitEntry(string file) => new(FitImport.DisplayName(file), file, () =>
+    {
+        var fit = FitImport.Load(file);
+        var when = $"FIT-Datei: Fahrt vom {fit.Start:dd.MM.yyyy} um {fit.Start:HH:mm} Uhr, {fit.Samples.Count} Messpunkte\r\n";
+        if (fit.HasPower)
+        {
+            var workout = fit.ToWorkout();
+            return new Selection(workout, when
+                + (workout.HasPulse ? $"Puls damals: Ø {workout.AveragePulse:0}" : "Keine Pulsdaten") + "\r\n"
+                + "Folgt dem aufgezeichneten Leistungsverlauf" + (fit.HasTrack ? " (die Datei hat auch eine Strecke – die fährst du unter „Strecke fahren“)" : "") + "\r\n"
+                + $"Ordner: {Path.GetDirectoryName(file)}");
+        }
+        // No power (e.g. a ride without power meter): the track as a route; the pulse of that day comes along.
+        var route = fit.ToRoute();
+        var pulse = WorkoutRecording.FromRows(fit.Name, fit.Samples.Select(s => (s.Seconds, 0, s.Pulse ?? 0)), file);
+        return new Selection(pulse, when
+            + (pulse.HasPulse ? $"Puls damals: Ø {pulse.AveragePulse:0}" : "Keine Pulsdaten") + "\r\n"
+            + $"Ohne Leistungswerte – wird als Strecke gefahren: {route.TotalDistance / 1000:0.0} km, {route.Ascent:0} Hm bergauf\r\n"
+            + $"Ordner: {Path.GetDirectoryName(file)}", Route: route);
     });
 
     private ReplayPickerForm(string title, Func<string, string> defaultFileName, AppSettings current, bool programs, bool showPulse,
@@ -163,7 +195,13 @@ public sealed class ReplayPickerForm : Form
         Font = new Font("Segoe UI", 11);
         _showPulse.Checked = showPulse;
         _showPulse.Visible = !programs;
-        _showPulse.CheckedChanged += (_, _) => { if (Workout is { } workout) _profile.SetWorkout(workout, null, _showPulse.Checked); };
+        _showPulse.CheckedChanged += (_, _) =>
+        {
+            if (Route is { } route)
+                _routeProfile.SetRoute(route, _showPulse.Checked);
+            else if (Workout is { } workout)
+                _profile.SetWorkout(workout, null, _showPulse.Checked);
+        };
         _list.SelectedIndexChanged += (_, _) => ShowSelected();
         _list.DoubleClick += (_, _) => { if (_start.Enabled) _start.PerformClick(); };
     }
@@ -258,7 +296,7 @@ public sealed class ReplayPickerForm : Form
         {
             Title = "Gespeichertes Training auswählen",
             InitialDirectory = Directory.Exists(directory) ? directory : null,
-            Filter = "Aufzeichnungen (*.json, *.csv)|*.json;*.csv",
+            Filter = "Aufzeichnungen und FIT-Dateien (*.json, *.csv, *.fit)|*.json;*.csv;*.fit",
         };
         if (picker.ShowDialog(this) != DialogResult.OK)
             return;
@@ -286,16 +324,17 @@ public sealed class ReplayPickerForm : Form
             _routeProfile.Visible = Route is not null;
             _profile.Visible = Route is null;
             _profile.SetWorkout(Workout, null, _showPulse.Checked);
-            _routeProfile.SetRoute(Route);
+            _routeProfile.SetRoute(Route, _showPulse.Checked);
             _note.Text = (Route is null ? ProfileNote : RouteNote) + _failed;
             _rideSettings.Show(selection.Settings ?? _current, route: Route is not null);
             _rideSettingsCaption.Text = _programs || selection.Settings is null
                 ? "Einstellungen – für diesen Lauf änderbar"
                 : "Einstellungen der Aufzeichnung – für diesen Lauf änderbar";
-            _facts.Text = $"Dauer {WorkoutProfile.Format(Workout.Duration)}     Ø {Workout.AverageWatt:0} W     max. {Workout.MaxWatt} W"
+            _facts.Text = (Workout.MaxWatt == 0 && Route is { } r ? $"Dauer {WorkoutProfile.Format(Workout.Duration)}     {r.TotalDistance / 1000:0.0} km     {r.Ascent:0} Hm" : $"Dauer {WorkoutProfile.Format(Workout.Duration)}     Ø {Workout.AverageWatt:0} W     max. {Workout.MaxWatt} W")
                 + (Workout.HasPulse ? $"     Puls Ø {Workout.AveragePulse:0}" : "");
             _description.Text = selection.Description.ReplaceLineEndings("\r\n");
-            _showPulse.Enabled = Workout.HasPulse && Route is null;
+            // Routes: the pulse of that ride by distance (FIT activity or route recording).
+            _showPulse.Enabled = Route is null ? Workout.HasPulse : Route.OriginalPulse is not null;
             _start.Enabled = true;
         }
         catch (Exception ex) when (IsReadError(ex))

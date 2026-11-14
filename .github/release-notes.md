@@ -2,6 +2,12 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – in der App mit F1.
 
+### Neu in v1.5.0
+- **FIT-Dateien nachfahren:** Aktivitäten aus Garmin Connect, Strava, Zwift oder vom Radcomputer – mit Leistungswerten als Leistungsprofil („Aufzeichnung nachfahren“), mit GPS und Höhe ohne Leistung (z. B. MTB-Touren) als Strecke wie eine GPX-Datei. Pausen werden übersprungen, Garmins nummerierte Dateien heißen „Garmin_Datum_Uhrzeit“.
+- **Puls im Höhenprofil:** Bei Strecken läuft der Puls in der Übersicht nach Kilometer mit – heute rot, bei einer früheren Fahrt (FIT oder Strecken-Aufzeichnung) der damalige grün.
+- **Puls von damals als Zahl:** rechts neben der Pulsanzeige in Grün, an derselben Stelle der früheren Fahrt.
+- **Training beenden:** Ein Dialog vor dem Ende mit Ergebnis, Dateiname und **Weiterfahren / Verwerfen / OK** – in allen Modi; auch nach dem Ziel lässt sich die Aufnahme verwerfen. **Enter** beendet jetzt auch Strecken und Programme (nochmal Enter = OK).
+
 ### Neu in v1.4.2
 - **Stabilere Verbindung zum Cockpit:** Bleibt eine einzelne Antwort aus, fragt die App sofort noch einmal nach (bis zu zweimal), statt die Verbindung abzubauen – kurze Störungen führen nicht mehr zu Sekunden ohne Messwerte, stehendem Graphen und angehaltenem Countdown.
 - **Protokoll:** Verbindungsabbrüche, Wiederverbinden und gerettete Anfragen stehen mit Uhrzeit in `Fehler.log`.

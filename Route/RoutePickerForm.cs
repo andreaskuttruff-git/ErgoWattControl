@@ -1,4 +1,4 @@
-namespace ErgoWattControl;
+﻿namespace ErgoWattControl;
 
 /// <summary>
 /// Start dialog for "Strecke fahren": the GPX routes of the route folder; the selected one shows its elevation profile
@@ -37,8 +37,8 @@ public sealed class RoutePickerForm : Form
         HelpWindow.Attach(this, "strecke");
 
         if (Directory.Exists(settings.GpxDirectory))
-            _files.AddRange(Directory.GetFiles(settings.GpxDirectory, "*.gpx").Order(StringComparer.OrdinalIgnoreCase));
-        _list.Items.AddRange([.. _files.Select(Path.GetFileNameWithoutExtension).Cast<object>()]);
+            _files.AddRange(Directory.GetFiles(settings.GpxDirectory, "*.gpx").Concat(Directory.GetFiles(settings.GpxDirectory, "*.fit")).Order(StringComparer.OrdinalIgnoreCase));
+        _list.Items.AddRange([.. _files.Select(FitImport.DisplayName).Cast<object>()]);
         _list.SelectedIndexChanged += (_, _) => ShowSelected();
         _list.DoubleClick += (_, _) => { if (_start.Enabled) _start.PerformClick(); };
 
@@ -64,7 +64,7 @@ public sealed class RoutePickerForm : Form
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
         buttons.Controls.AddRange([cancel, _start]);
 
-        var other = new Button { Text = "GPX-Datei aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
+        var other = new Button { Text = "GPX- oder FIT-Datei aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
         other.Click += (_, _) => PickOtherFile();
         var listPanel = new Panel { Dock = DockStyle.Left, Width = 372, Padding = new Padding(12, 12, 0, 0) };
         listPanel.Controls.Add(_list);
@@ -86,7 +86,7 @@ public sealed class RoutePickerForm : Form
         {
             Title = "Strecke auswählen",
             InitialDirectory = Directory.Exists(_settings.GpxDirectory) ? _settings.GpxDirectory : null,
-            Filter = "GPX-Strecken (*.gpx)|*.gpx",
+            Filter = "Strecken (*.gpx, *.fit)|*.gpx;*.fit",
         };
         if (picker.ShowDialog(this) != DialogResult.OK)
             return;
@@ -94,7 +94,7 @@ public sealed class RoutePickerForm : Form
         if (index < 0)
         {
             _files.Insert(0, picker.FileName);
-            _list.Items.Insert(0, Path.GetFileNameWithoutExtension(picker.FileName));
+            _list.Items.Insert(0, FitImport.DisplayName(picker.FileName));
             index = 0;
         }
         _list.SelectedIndex = index;
@@ -129,7 +129,7 @@ public sealed class RoutePickerForm : Form
                 overLimit ? DialogColors.Warning : null);
             Fact("Gewicht:", $"{_settings.RiderWeightKg:0} kg Fahrer + {_settings.BikeWeightKg:0} kg Rad");
             Fact("Einstellungen:", $"Steigungsfaktor {_settings.GradeFactorPercent} %,  {_settings.Gearing}-Übersetzung,  Startgang {_settings.StartGear}");
-            _profile.SetRoute(route);
+            _profile.SetRoute(route, _settings.ReplayShowOriginalPulse);
             _profile.SetHighlight(route.MaxGradeDistance,
                 $"▲ {peak.GradePercent:0.0} %  ·  {peak.Watt:0} W  ·  km {route.MaxGradeDistance / 1000:0.0}",
                 overLimit ? Color.OrangeRed : Color.Gold);

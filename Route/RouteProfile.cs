@@ -44,9 +44,18 @@ public sealed class RouteProfile : Control
     private static readonly Color MarkerColor = Color.Gold;
     private static readonly Color LabelColor = Color.FromArgb(150, 150, 150);
 
+    private static readonly Color PulseLine = Color.FromArgb(255, 110, 110);
+    // The pulse recorded back then is green, today's red – as in the program view.
+    private static readonly Color OriginalPulseLine = Color.FromArgb(110, 210, 120);
+
     private GpxRoute? _route;
     private double _position;
     private double _gradePercent;
+    private bool _showOriginalPulse;
+    private readonly List<(double Meters, int Pulse)> _livePulse = [];
+
+    private IReadOnlyList<(double Meters, int Pulse)>? OriginalPulse => _showOriginalPulse ? _route?.OriginalPulse : null;
+    private bool HasPulse => OriginalPulse is not null || _livePulse.Count > 0;
 
     [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
     public bool ShowPreview { get; set; } = true;
@@ -58,11 +67,21 @@ public sealed class RouteProfile : Control
         BackColor = Color.FromArgb(24, 24, 24);
     }
 
-    public void SetRoute(GpxRoute? route)
+    /// <param name="showOriginalPulse">Draw the pulse of the ride the route comes from (<see cref="GpxRoute.OriginalPulse"/>).</param>
+    public void SetRoute(GpxRoute? route, bool showOriginalPulse = false)
     {
         _route = route;
+        _showOriginalPulse = showOriginalPulse;
         _position = 0;
+        _livePulse.Clear();
         Invalidate();
+    }
+
+    /// <summary>The rider's pulse at this point of the route, drawn red into the overview of the whole route.</summary>
+    public void AddPulse(double meters, int pulse)
+    {
+        if (pulse > 0)
+            _livePulse.Add((meters, pulse));
     }
 
     private (double Distance, string Text, Color Color)? _highlight;
@@ -90,10 +109,13 @@ public sealed class RouteProfile : Control
         using var labelFont = new Font("Segoe UI", 14);
         using var titleFont = new Font("Segoe UI", 16, FontStyle.Bold);
 
+        // Room on the right for the pulse scale when there is a pulse curve.
+        var right = HasPulse ? 60 : 15;
         if (!ShowPreview)
         {
-            var whole = new Rectangle(60, 8, Width - 75, Height - 40);
+            var whole = new Rectangle(60, 8, Width - 60 - right, Height - 40);
             DrawProfile(g, route, whole, 0, route.TotalDistance, route.MinElevation, route.MaxElevation, null, labelFont);
+            DrawPulses(g, whole, route.TotalDistance, labelFont);
             using var brush = new SolidBrush(LabelColor);
             g.DrawString("0 km", labelFont, brush, whole.Left, whole.Bottom + 4);
             var endText = $"{route.TotalDistance / 1000:0.0} km";
@@ -104,8 +126,10 @@ public sealed class RouteProfile : Control
             return;
         }
 
-        var strip = new Rectangle(60, 8, Width - 75, (int)(Height * 0.26));
+        // With a pulse curve the overview gets more height, as in the program view.
+        var strip = new Rectangle(60, 8, Width - 60 - right, (int)(Height * (HasPulse ? 0.40 : 0.26)));
         DrawProfile(g, route, strip, 0, route.TotalDistance, route.MinElevation, route.MaxElevation, _position, null);
+        DrawPulses(g, strip, route.TotalDistance, labelFont);
 
         var from = _position - PreviewBehind;
         var to = _position + PreviewAhead;
@@ -121,7 +145,7 @@ public sealed class RouteProfile : Control
             var mid = (hi + lo) / 2;
             (lo, hi) = (mid - MinPreviewElevationSpan / 2, mid + MinPreviewElevationSpan / 2);
         }
-        var preview = new Rectangle(60, strip.Bottom + 14, Width - 75, Height - strip.Bottom - 44);
+        var preview = new Rectangle(60, strip.Bottom + 14, Width - 60 - right, Height - strip.Bottom - 44);
         DrawProfile(g, route, preview, from, to, lo, hi, _position, labelFont);
 
         using var labelBrush = new SolidBrush(LabelColor);
@@ -133,6 +157,60 @@ public sealed class RouteProfile : Control
         var info = $"{arrow} {_gradePercent:0.0} %    {_position / 1000:0.0} / {route.TotalDistance / 1000:0.0} km    {route.ElevationAt(_position):0} m";
         using var infoBrush = new SolidBrush(LineColor);
         g.DrawString(info, titleFont, infoBrush, preview.Left + 8, preview.Top + 4);
+    }
+
+    /// <summary>
+    /// Pulse by distance over the whole route on one scale (60–180, right): back then green, today red. Points more
+    /// than 300 m apart are not joined (a pause or missing values).
+    /// </summary>
+    private void DrawPulses(Graphics g, Rectangle area, double total, Font axisFont)
+    {
+        if (!HasPulse || total <= 0)
+            return;
+        const int lo = 60, hi = 180;
+        float Y(int pulse) => area.Bottom - (float)(Math.Clamp(pulse, lo, hi) - lo) / (hi - lo) * area.Height;
+        void Curve(IReadOnlyList<(double Meters, int Pulse)> points, Color color)
+        {
+            // Averaged over 4-pixel steps: a long tour has thousands of noisy values, one per pixel would be a band.
+            const float bucket = 4;
+            var averaged = new List<(float X, float Y, double Meters)>();
+            var (sum, count, bucketIndex, lastMeters) = (0.0, 0, -1, 0.0);
+            void Flush()
+            {
+                if (count > 0)
+                    averaged.Add(((bucketIndex + 0.5f) * bucket + area.Left, Y((int)Math.Round(sum / count)), lastMeters));
+            }
+            foreach (var (meters, pulse) in points)
+            {
+                var index = (int)((XFor(area, 0, total, Math.Min(meters, total)) - area.Left) / bucket);
+                if (index != bucketIndex)
+                {
+                    Flush();
+                    (sum, count, bucketIndex) = (0, 0, index);
+                }
+                sum += pulse;
+                count++;
+                lastMeters = meters;
+            }
+            Flush();
+            using var pen = new Pen(color, 5f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+            for (var i = 1; i < averaged.Count; i++)
+            {
+                // Not joined across a gap (a pause or missing values).
+                if (averaged[i].Meters - averaged[i - 1].Meters > Math.Max(300, total / area.Width * bucket * 3))
+                    continue;
+                g.DrawLine(pen, averaged[i - 1].X, averaged[i - 1].Y, averaged[i].X, averaged[i].Y);
+            }
+        }
+        if (OriginalPulse is { } original)
+            Curve(original, Color.FromArgb(200, OriginalPulseLine));
+        Curve(_livePulse, PulseLine);
+        using var brush = new SolidBrush(_livePulse.Count > 0 ? PulseLine : OriginalPulseLine);
+        foreach (var pulse in new[] { lo, (lo + hi) / 2, hi })
+        {
+            var size = g.MeasureString($"{pulse}", axisFont);
+            g.DrawString($"{pulse}", axisFont, brush, area.Right + 4, Math.Clamp(Y(pulse) - size.Height / 2, area.Top - 4, area.Bottom - size.Height + 4));
+        }
     }
 
     /// <summary>Gradient legend centred in the axis row below the plot, where it never covers the profile.</summary>

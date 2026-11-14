@@ -44,8 +44,14 @@ public sealed class WorkoutRecording
     /// <summary>A training program (a power profile), not a ride recorded earlier.</summary>
     public bool IsProgram { get; private init; }
 
+    /// <summary>A ride from another source (e.g. a FIT file): power and pulse per point in time.</summary>
+    public static WorkoutRecording FromRows(string name, IEnumerable<(double Seconds, int Watt, int Pulse)> rows, string? filePath = null) =>
+        new(name, Increasing(rows)) { FilePath = filePath };
+
     public static WorkoutRecording Load(string path)
     {
+        if (FitImport.IsFit(path))
+            return FitImport.Load(path).ToWorkout();
         var name = Path.GetFileNameWithoutExtension(path);
         if (!Path.GetExtension(path).Equals(".json", StringComparison.OrdinalIgnoreCase))
             return new WorkoutRecording(name, LoadCsv(path)) { FilePath = path };

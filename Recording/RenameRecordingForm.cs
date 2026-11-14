@@ -12,10 +12,11 @@ public sealed class RenameRecordingForm : Form
     public string? NewName => _fileName.CustomName;
 
     /// <param name="closingApp">Called from ✕ while recording: adds "Weiterfahren" (DialogResult.Cancel, also the window's ✕ and Esc).</param>
-    public RenameRecordingForm(string savedFile, bool closingApp = false)
+    /// <param name="endTraining">"■ Stop" / Training beenden in free training, asked before the recording stops: also "Weiterfahren".</param>
+    public RenameRecordingForm(string savedFile, bool closingApp = false, bool endTraining = false)
     {
         _fileName = new RecordingNameBox(Path.GetFileNameWithoutExtension(savedFile));
-        Text = closingApp ? "ErgoWattControl beenden" : "Aufnahme gespeichert";
+        Text = closingApp ? "ErgoWattControl beenden" : endTraining ? "Training beenden" : "Aufnahme gespeichert";
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -29,7 +30,8 @@ public sealed class RenameRecordingForm : Form
         var layout = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill };
         var folder = new Label
         {
-            Text = !closingApp ? $"Gespeichert in {Path.GetDirectoryName(savedFile)}"
+            Text = endTraining ? $"OK beendet die Aufnahme und speichert sie in {Path.GetDirectoryName(savedFile)}."
+                : !closingApp ? $"Gespeichert in {Path.GetDirectoryName(savedFile)}"
                 : File.Exists(savedFile) ? $"Die Aufnahme läuft noch. OK speichert sie in {Path.GetDirectoryName(savedFile)} und beendet die App."
                 : "Noch nichts aufgezeichnet – die Aufnahme beginnt mit dem ersten Tritt. OK beendet die App.",
             AutoSize = true,
@@ -45,7 +47,7 @@ public sealed class RenameRecordingForm : Form
         var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0) };
         var discard = new Button { Text = "Verwerfen", DialogResult = DialogResult.Abort, AutoSize = true, MinimumSize = new Size(90, 0) };
         var buttons = new FlowLayoutPanel { AutoSize = true, Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
-        if (closingApp)
+        if (closingApp || endTraining)
         {
             var resume = new Button { Text = "Weiterfahren", DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
             buttons.Controls.Add(resume);

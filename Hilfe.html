@@ -84,7 +84,7 @@
   <tr><th>Bereich</th><th>Bedeutung</th></tr>
   <tr><td><b>LEISTUNG</b> (gelb)</td><td>Vorgegebene Leistung in Watt, mit <b>−</b> / <b>+</b> daneben. Weicht die tatsächliche Leistung mehr als 5 W ab, steht darüber <code>[Ist … W]</code>.</td></tr>
   <tr><td>Oben rechts, über dem Puls</td><td>Was gerade gefahren wird: „Strecke: Name (km)“, „Programm: Name“ oder „Aufzeichnung: Name“; im Tooltip steht die Datei. Beim freien Training leer.</td></tr>
-  <tr><td><b>PULS</b> (rot)</td><td>Herzfrequenz vom Brustgurt bzw. Ohrclip des Cockpits.</td></tr>
+  <tr><td><b>PULS</b> (rot)</td><td>Herzfrequenz vom Brustgurt bzw. Ohrclip des Cockpits. Beim Nachfahren einer früheren Fahrt (Strecken-Aufzeichnung, FIT-Datei oder Aufzeichnung mit Puls) steht rechts daneben eine kleinere <b>grüne Zahl</b>: dein Puls von damals an derselben Stelle – bei Strecken am selben Kilometer, sonst zur selben Zeit. Er erscheint, solange „Puls vom Original einblenden“ eingeschaltet ist; bei Programmen gibt es keinen.</td></tr>
   <tr><td><b>RPM</b>, <b>km/h</b>, <b>ZEIT</b></td><td>Trittfrequenz, Geschwindigkeit und Fahrzeit. Ein <span style="color:var(--red)">▲</span> neben RPM heißt „schneller treten“, ein ▼ „langsamer treten“.</td></tr>
   <tr><td>Oberer Graph</td><td>Leistung (gelb) und Trittfrequenz (blau) der letzten 10 Minuten. Die <b>blaugraue Fläche</b> ist der Trittfrequenzbereich, in dem die Wirbelstrombremse die eingestellte Leistung halten kann (z. B. 40–160 RPM bis 150 W, 50–160 RPM bis 250 W). Sie gehört zur blauen Linie.</td></tr>
   <tr><td>Unterer Graph</td><td>Puls der letzten 10 Minuten. Beim Streckenfahren steht hier das Höhenprofil, bei Aufzeichnungen und Programmen der Leistungsverlauf: oben das ganze Training mit deinem Puls (rot, Skala rechts 60–180), darunter vergrößert die nächsten 10 Minuten (nur Leistung). Beim Wiederholen einer Aufzeichnung erscheint in der Übersicht zusätzlich der damals aufgezeichnete Puls grün, wenn „Puls vom Original einblenden“ gewählt ist.</td></tr>
@@ -99,18 +99,19 @@
   <tr><td><kbd>↓</kbd> <kbd>−</kbd> <kbd>2</kbd> · Mausrad runter</td><td>−5 W</td><td>1 Gang tiefer</td><td>ganzes Profil −5 W</td></tr>
   <tr><td><kbd>Bild ↑</kbd> <kbd>9</kbd></td><td>+25 W</td><td>5 Gänge höher</td><td>Profil +25 W</td></tr>
   <tr><td><kbd>Bild ↓</kbd> <kbd>3</kbd></td><td>−25 W</td><td>5 Gänge tiefer</td><td>Profil −25 W</td></tr>
-  <tr><td><kbd>Enter</kbd></td><td>Aufnahme starten / stoppen</td><td colspan="2">– (die Aufnahme läuft automatisch)</td></tr>
+  <tr><td><kbd>Enter</kbd></td><td>Aufnahme starten / stoppen</td><td colspan="2">Training beenden (Dialog; nochmal <kbd>Enter</kbd> = OK, <kbd>Esc</kbd> = Weiterfahren)</td></tr>
   <tr><td><kbd>0</kbd> <kbd>Einfg</kbd></td><td colspan="3">Fenster zwischen Fahrer-Monitor und Hauptbildschirm umschalten</td></tr>
   <tr><td><kbd>F1</kbd></td><td colspan="3">Diese Hilfe, gleich beim passenden Abschnitt – auch in jedem Dialog</td></tr>
 </table>
 
 <h2 id="frei">Freies Training</h2>
 <p>Ohne Strecke oder Programm stellst du die Leistung selbst ein (25 W bis zur Wattgrenze, in 5-W-Schritten). Die Bremse hält die Leistung unabhängig von der Trittfrequenz.</p>
-<p><b>● Aufnahme</b> (oder <kbd>Enter</kbd>) startet die Aufzeichnung, <b>■ Stop</b> beendet sie. Danach fragt ein Dialog nach dem Dateinamen – siehe <a href="#beenden">Aufnahme beenden</a>.</p>
+<p><b>● Aufnahme</b> (oder <kbd>Enter</kbd>) startet die Aufzeichnung, <b>■ Stop</b> (oder nochmal <kbd>Enter</kbd>) beendet sie. Vorher fragt ein Dialog nach dem Dateinamen – siehe <a href="#beenden">Aufnahme beenden</a>.</p>
 
 <h2 id="strecke">Strecke fahren</h2>
-<p><b>☰ → Strecke fahren …</b> zeigt die GPX-Dateien aus dem Streckenordner (<code>Dokumente\ErgoWattControl\GPX</code>, siehe <a href="#dateien">Dateien und Ordner</a>). Zur markierten Strecke siehst du das Höhenprofil (eingefärbt nach Steigung, der steilste Anstieg ist markiert), Länge, Höhenmeter, maximale Steigung und die Leistung, die sie im 1. Gang bei 60 RPM kostet. Liegt die über deiner Wattgrenze, steht das in Rot da. <b>GPX-Datei aus anderem Ordner …</b> holt eine Strecke von woanders.</p>
+<p><b>☰ → Strecke fahren …</b> zeigt die GPX- und FIT-Dateien aus dem Streckenordner (<code>Dokumente\ErgoWattControl\GPX</code>, siehe <a href="#dateien">Dateien und Ordner</a>). Zur markierten Strecke siehst du das Höhenprofil (eingefärbt nach Steigung, der steilste Anstieg ist markiert), Länge, Höhenmeter, maximale Steigung und die Leistung, die sie im 1. Gang bei 60 RPM kostet. Liegt die über deiner Wattgrenze, steht das in Rot da. <b>GPX-Datei aus anderem Ordner …</b> holt eine Strecke von woanders.</p>
 <p>Während der Fahrt berechnet die App die Bremsleistung aus Steigung, Gewicht (Fahrer + Rad), Roll- und Luftwiderstand und der virtuellen Geschwindigkeit – die ergibt sich aus Trittfrequenz × Gang. Du schaltest wie draußen: höherer Gang = schneller und schwerer.</p>
+<p><b>Puls im Höhenprofil:</b> In der Übersicht der ganzen Strecke läuft dein Puls mit – heute <b>rot</b>, und wenn die Strecke von einer früheren Fahrt stammt (eine Strecken-Aufzeichnung der App oder eine FIT-Datei, z. B. eine MTB-Tour aus Garmin Connect), der Puls von damals <b>grün</b>. Beide hängen am Kilometer, nicht an der Zeit: So siehst du am selben Anstieg direkt, wie dein Puls heute im Vergleich zur echten Tour liegt. Die Skala rechts reicht von 60 bis 180. Den grünen Puls schaltest du im Startdialog mit „Puls vom Original während der Fahrt einblenden“ ein oder aus.</p>
 <figure><img src="Hilfe-Bilder/strecke_auswahl.png" alt="Startdialog „Strecke fahren“: Höhenprofil mit dem steilsten Anstieg, Kennzahlen und Dateiname."><figcaption>Startdialog „Strecke fahren“: Höhenprofil mit dem steilsten Anstieg, Kennzahlen und Dateiname.</figcaption></figure>
 <figure style="max-width:900px"><img src="Hilfe-Bilder/fahransicht_strecke.png" alt="Unterwegs auf der Strecke: Gang statt Watt, darunter das Höhenprofil mit der aktuellen Position und dem Abschnitt der nächsten 2 km. ▼ neben RPM: langsamer treten."><figcaption>Unterwegs auf der Strecke: Gang statt Watt, darunter das Höhenprofil mit der aktuellen Position und dem Abschnitt der nächsten 2 km. ▼ neben RPM: langsamer treten.</figcaption></figure>
 <figure style="max-width:620px"><img src="Hilfe-Bilder/zusammenfassung.png" alt="Zusammenfassung am Ende einer Strecke."><figcaption>Zusammenfassung am Ende einer Strecke.</figcaption></figure>
@@ -129,6 +130,7 @@
   <li><b>Puls vom Original einblenden</b> zeigt während der Fahrt den Puls von damals zum Vergleich.</li>
   <li>Ältere Aufzeichnungen im CSV-Format lassen sich weiter nachfahren.</li>
   <li><b>Aufzeichnung aus anderem Ordner …</b> öffnet eine Aufzeichnung von woanders, z. B. von einem USB-Stick.</li>
+  <li><b>FIT-Dateien</b> anderer Geräte und Apps (Garmin Connect, Strava, Zwift, Radcomputer) lassen sich ebenfalls nachfahren: Enthält die Datei <b>Leistungswerte</b>, folgt die Fahrt dem damaligen Leistungsverlauf (der Puls von damals läuft grün mit). Hat sie <b>keine Leistung, aber GPS und Höhe</b> – z. B. eine MTB-Tour ohne Powermeter –, wird sie als Strecke gefahren. Pausen in der Datei werden übersprungen. In Garmin Connect bekommst du die Datei über das Zahnrad einer Aktivität → <i>Original exportieren</i>. Garmin benennt sie nur mit einer Nummer (z. B. <code>24087410711_ACTIVITY.fit</code>); die App zeigt sie dann als <code>Garmin_2026-08-23_15-57</code> mit Datum und Uhrzeit der Fahrt an und benennt auch die neue Aufzeichnung so.</li>
   <li><b>■ Training beenden</b> (unten) oder <b>☰ → Training beenden</b> bricht vorzeitig ab.</li>
 </ul>
 <figure><img src="Hilfe-Bilder/training_auswahl.png" alt="Startdialog „Aufzeichnung nachfahren“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen."><figcaption>Startdialog „Aufzeichnung nachfahren“ mit einer Strecken-Aufzeichnung: Sie wird wieder als Strecke gefahren, mit den gespeicherten, für diesen Lauf änderbaren Einstellungen.</figcaption></figure>
@@ -191,17 +193,17 @@
 <p><b>Als Standard speichern</b> übernimmt die angezeigten Werte in die <code>settings.json</code>; sie gelten dann auch für neue Strecken und im Einstellungsdialog.</p>
 
 <h2 id="beenden">Aufnahme beenden, umbenennen, verwerfen</h2>
-<p>Nach <b>■ Stop</b> im freien Training fragt ein Dialog nach dem Dateinamen; vorgeschlagen ist der bisherige Name.</p>
+<p><b>■ Stop</b> im freien Training, <b>■ Training beenden</b> bei Strecke, Aufzeichnung oder Programm und <b>☰ → Training beenden</b> öffnen einen Dialog <b>„Training beenden“</b>, bevor etwas endet. Bei Strecken, Aufzeichnungen und Programmen zeigt er gleich das Ergebnis (Strecke bzw. gefahrene Zeit, Ø Leistung, Ø Puls, Energie). Der Dateiname ist vorgeschlagen und lässt sich ändern.</p>
 <table>
   <tr><th>Knopf</th><th>Wirkung</th></tr>
-  <tr><td><b>OK</b></td><td>Speichert unter dem Namen im Feld (unverändert = bisheriger Name).</td></tr>
-  <tr><td><b>Verwerfen</b></td><td>Löscht die Aufnahme, ohne weitere Nachfrage.</td></tr>
-  <tr><td><b>Weiterfahren</b></td><td>Nur beim Schließen der App: zurück, die Aufnahme läuft weiter.</td></tr>
+  <tr><td><b>OK</b></td><td>Beendet das Training und speichert unter dem Namen im Feld (unverändert = bisheriger Name).</td></tr>
+  <tr><td><b>Verwerfen</b></td><td>Beendet das Training und löscht die Aufnahme, ohne weitere Nachfrage.</td></tr>
+  <tr><td><b>Weiterfahren</b></td><td>Zurück zur Fahrt – nichts wird beendet, die Aufnahme läuft weiter.</td></tr>
+  <tr><td><b>Ordner öffnen</b></td><td>Zeigt die Aufnahme im Explorer.</td></tr>
 </table>
+<p>Ist eine Strecke oder ein Programm zu Ende gefahren („Ziel erreicht“ / „Training abgeschlossen“), zeigt derselbe Dialog das Ergebnis – dann ohne Weiterfahren, aber mit <b>Verwerfen</b> und <b>OK</b>.</p>
 <figure style="max-width:700px"><img src="Hilfe-Bilder/training_beenden.png" alt="Der Dialog beim Schließen der App während einer Aufnahme."><figcaption>Der Dialog beim Schließen der App während einer Aufnahme.</figcaption></figure>
-<p><b>☰ → Training beenden</b> beendet, was gerade läuft: eine Strecke, eine nachgefahrene Aufzeichnung oder ein Programm – oder im freien Training die Aufnahme, wie <b>■ Stop</b>.</p>
-<p>Schließt du die App während einer Aufnahme oder eines Trainings (✕ oder <b>☰ → Beenden</b>), erscheint derselbe Dialog als „ErgoWattControl beenden“; OK speichert und beendet die App. Den Dateinamen einer Strecke, eines Trainings oder Programms kannst du schon im Startdialog ändern.</p>
-
+<p>Schließt du die App während einer Aufnahme oder eines Trainings (✕ oder <b>☰ → Beenden</b>), erscheint der Dialog als „ErgoWattControl beenden“, ebenfalls mit Weiterfahren, Verwerfen und OK; OK speichert und beendet die App. Den Dateinamen einer Strecke, eines Trainings oder Programms kannst du schon im Startdialog ändern.</p>
 <h2 id="export">Aufzeichnungen exportieren</h2>
 <p><b>☰ → Aufzeichnung exportieren …</b> wandelt Aufzeichnungen für andere Programme um. Links eine oder mehrere Aufzeichnungen markieren (mehrere mit <kbd>Strg</kbd>- oder <kbd>⇧</kbd>-Klick), rechts die Formate ankreuzen und den Zielordner wählen, dann <b>Exportieren</b>. Oben rechts zeigt eine kleine Vorschau die zuletzt angeklickte Aufzeichnung: Leistungsverlauf und Puls (grün), darunter Art, Datum, Dauer, Strecke, Ø- und Maximalleistung sowie den Durchschnittspuls.</p>
 <p><b>Löschen</b> (oder die Taste <kbd>Entf</kbd>) verschiebt die markierten Aufzeichnungen nach einer Rückfrage in den Papierkorb – von dort lassen sie sich bei Bedarf wiederherstellen.</p>

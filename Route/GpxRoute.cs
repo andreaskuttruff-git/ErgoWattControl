@@ -49,8 +49,11 @@ public sealed class GpxRoute
         }
     }
 
+    /// <summary>A GPX file, or the track of a FIT activity (<see cref="FitImport"/>).</summary>
     public static GpxRoute Load(string path)
     {
+        if (FitImport.IsFit(path))
+            return FitImport.Load(path).ToRoute();
         var doc = XDocument.Load(path);
         var points = doc.Descendants()
             .Where(e => e.Name.LocalName is "trkpt" or "rtept")
@@ -64,7 +67,14 @@ public sealed class GpxRoute
             .ToList();
         if (points.Count < 2)
             throw new InvalidDataException("Die GPX-Datei enthält keinen Track mit Höhenangaben.");
+        return FromTrack(Path.GetFileNameWithoutExtension(path), path, points);
+    }
 
+    /// <summary>A track of positions with elevation (GPX or FIT), resampled every <see cref="Step"/> m and smoothed.</summary>
+    public static GpxRoute FromTrack(string name, string? path, IReadOnlyList<(double Lat, double Lon, double Ele)> points)
+    {
+        if (points.Count < 2)
+            throw new InvalidDataException("Die Strecke enthält keine Punkte mit Höhenangaben.");
         var cumulative = new double[points.Count];
         for (var i = 1; i < points.Count; i++)
             cumulative[i] = cumulative[i - 1] + Haversine(points[i - 1], points[i]);
@@ -100,7 +110,7 @@ public sealed class GpxRoute
             smooth[i] = sum / (to - from + 1);
         }
 
-        return new GpxRoute(Path.GetFileNameWithoutExtension(path), path, smooth, lat, lon);
+        return new GpxRoute(name, path, smooth, lat, lon);
     }
 
     /// <summary>A route stored with a recording (see <see cref="Points"/>): already resampled and smoothed.</summary>
@@ -140,6 +150,47 @@ public sealed class GpxRoute
         }
         return (ElevationAt(to) - ElevationAt(from)) / (to - from);
     }
+
+    /// <summary>
+    /// The pulse of the ride the route comes from (a FIT activity or a route recording of this app), by distance in
+    /// metres – shown green in the route view next to today's pulse. Null for a plain GPX route.
+    /// </summary>
+    public IReadOnlyList<(double Meters, int Pulse)>? OriginalPulse { get; private set; }
+
+    /// <summary>Attaches the pulse of the original ride (points without pulse are dropped); returns the route.</summary>
+    public GpxRoute WithOriginalPulse(IEnumerable<(double Meters, int Pulse)> pulse)
+    {
+        var points = pulse.Where(p => p.Pulse > 0).OrderBy(p => p.Meters).ToList();
+        OriginalPulse = points.Count >= 10 ? points : null;
+        return this;
+    }
+
+    /// <summary>The original pulse around this point (average within ±50 m, else the nearest value within 300 m); null without one.</summary>
+    public int? OriginalPulseAt(double meters)
+    {
+        if (OriginalPulse is not { Count: > 0 } points)
+            return null;
+        // First point at or after meters - 50 (the list is sorted by distance).
+        int lo = 0, hi = points.Count;
+        while (lo < hi)
+        {
+            var mid = (lo + hi) / 2;
+            if (points[mid].Meters < meters - 50) lo = mid + 1; else hi = mid;
+        }
+        var (sum, count) = (0, 0);
+        for (var i = lo; i < points.Count && points[i].Meters <= meters + 50; i++)
+        {
+            sum += points[i].Pulse;
+            count++;
+        }
+        if (count > 0)
+            return (int)Math.Round((double)sum / count);
+        var nearest = points.MinBy(p => Math.Abs(p.Meters - meters));
+        return Math.Abs(nearest.Meters - meters) <= 300 ? nearest.Pulse : null;
+    }
+
+    /// <summary>Distance in metres between two positions (great circle).</summary>
+    internal static double Distance(double lat1, double lon1, double lat2, double lon2) => Haversine((lat1, lon1, 0), (lat2, lon2, 0));
 
     private static double Haversine((double Lat, double Lon, double Ele) a, (double Lat, double Lon, double Ele) b)
     {
