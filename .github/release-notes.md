@@ -2,6 +2,14 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – in der App mit F1.
 
+### Neu in v1.5.1
+- **Stabiler bei Störungen:** Kommt eine Antwort des Cockpits verrutscht an (Reste einer verspäteten Antwort), wird sie verworfen und neu angefragt, statt falsche Werte anzuzeigen. Auch das Nachstellen der Leistung und das Neu-Einstellen nach einem Cockpit-Reset werden bei einem Aussetzer sofort wiederholt.
+- **Cockpit-Reset im Protokoll:** Fällt das Cockpit aus dem freien Training, steht das in `Fehler.log`; klappt das Neu-Einstellen dreimal hintereinander nicht, verbindet sich die App neu.
+- **Keine stillen Abstürze:** Unerwartete Fehler werden mit allen Details in `Fehler.log` geschrieben und gemeldet – die App läuft weiter. Eine Aufnahme wird auch bei einem Fehler beim Schließen sauber beendet.
+- **Einstellungen sicher gespeichert:** `settings.json` wird nie halb geschrieben; eine beschädigte Datei wird als `settings.json.defekt` aufgehoben, die App startet mit Standardwerten.
+- **Programmansicht:** Die Pulskurve kostet auch bei langen Programmen nicht mehr Rechenzeit.
+- **Unittests:** 46 automatische Tests (u. a. gegen ein simuliertes Cockpit) laufen vor jedem Release.
+
 ### Neu in v1.5.0
 - **FIT-Dateien nachfahren:** Aktivitäten aus Garmin Connect, Strava, Zwift oder vom Radcomputer – mit Leistungswerten als Leistungsprofil („Aufzeichnung nachfahren“), mit GPS und Höhe ohne Leistung (z. B. MTB-Touren) als Strecke wie eine GPX-Datei. Pausen werden übersprungen, Garmins nummerierte Dateien heißen „Garmin_Datum_Uhrzeit“.
 - **Puls im Höhenprofil:** Bei Strecken läuft der Puls in der Übersicht nach Kilometer mit – heute rot, bei einer früheren Fahrt (FIT oder Strecken-Aufzeichnung) der damalige grün.
