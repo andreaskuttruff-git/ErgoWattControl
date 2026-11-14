@@ -8,13 +8,13 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 ## Die Modi
 
-| Freies Training | Strecke fahren (GPX) |
+| Freies Training | Strecke fahren (GPX oder FIT) |
 |---|---|
-| ![Freies Training: Wattvorgabe, Leistung/RPM und Puls der letzten 10 Minuten](Hilfe-Bilder/fahransicht.png) | ![Strecke fahren: Gang, Höhenprofil der ganzen Strecke und der nächsten 2 km mit Steigung](Hilfe-Bilder/fahransicht_strecke.png) |
-| Leistung in 5-W-Schritten vorgeben; oben Leistung und Trittfrequenz, unten der Puls. | Gang statt Watt: Die Bremsleistung folgt aus Steigung, Gewicht und Tempo. Unten das Höhenprofil – ganz und die nächsten 2 km. |
+| ![Freies Training: Wattvorgabe, Leistung/RPM und Puls der letzten 10 Minuten](Hilfe-Bilder/fahransicht.png) | ![Strecke fahren: eine MTB-Tour aus einer FIT-Datei – Gang, Höhenprofil mit dem Puls von damals (grün) und heute (rot), die nächsten 2 km](Hilfe-Bilder/fahransicht_strecke.png) |
+| Leistung in 5-W-Schritten vorgeben; oben Leistung und Trittfrequenz, unten der Puls. | Gang statt Watt: Die Bremsleistung folgt aus Steigung, Gewicht und Tempo. Hier eine eigene MTB-Tour als FIT-Datei: im Höhenprofil der Puls von damals (grün) und heute (rot) nach Kilometer, die grüne Zahl neben dem Puls ist der Wert von damals an dieser Stelle. |
 | **Trainingsprogramm** | **Aufzeichnung nachfahren** |
 | ![Trainingsprogramm S08: Profil des ganzen Programms mit dem Puls, darunter die nächsten 10 Minuten](Hilfe-Bilder/fahransicht_programm.png) | ![Aufzeichnung nachfahren: Puls von damals (grün) und von heute (rot) über dem Leistungsverlauf](Hilfe-Bilder/fahransicht_aufzeichnung.png) |
-| Das Programm gibt die Leistung vor. Oben das ganze Programm mit deinem Puls, darunter die nächsten 10 Minuten mit dem nächsten Wechsel. | Eine frühere Fahrt als Vorgabe: Puls von damals (grün) neben dem von heute (rot) – so siehst du den Fortschritt. |
+| Das Programm gibt die Leistung vor. Oben das ganze Programm mit deinem Puls, darunter die nächsten 10 Minuten mit dem nächsten Wechsel. | Eine frühere Fahrt als Vorgabe: Puls von damals (grün) neben dem von heute (rot), als Kurve und als Zahl neben der Pulsanzeige – so siehst du den Fortschritt. |
 
 ## Funktionen
 
