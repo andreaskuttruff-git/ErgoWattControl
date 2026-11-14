@@ -29,7 +29,16 @@ public sealed class DaumErgometer : IErgometer
     public event Action<ErgometerData>? DataReceived;
     public event Action<ErgometerStatus>? StatusChanged;
 
-    public DaumErgometer(string? portName) => _portName = portName;
+    /// <summary>Opens the connection to a port; unit tests replace it with a simulated cockpit.</summary>
+    private readonly Func<string, DaumCockpit> _openCockpit;
+
+    public DaumErgometer(string? portName) : this(portName, port => new DaumCockpit(port)) { }
+
+    internal DaumErgometer(string? portName, Func<string, DaumCockpit> openCockpit)
+    {
+        _portName = portName;
+        _openCockpit = openCockpit;
+    }
 
     public string DisplayName => $"Daum ({_portName ?? "kein Port"})";
     public string? PortName => _portName;
@@ -103,7 +112,7 @@ public sealed class DaumErgometer : IErgometer
             try
             {
                 Report($"Verbinde mit {port} …", false);
-                cockpit = new DaumCockpit(port);
+                cockpit = _openCockpit(port);
                 cockpit.QueryAddress();
                 QueryCockpitType(cockpit);
                 InitializeCockpit(cockpit);
@@ -166,15 +175,19 @@ public sealed class DaumErgometer : IErgometer
 
     private void InitializeCockpit(DaumCockpit cockpit)
     {
-        cockpit.QueryAddress();
-        cockpit.SelectFreeTraining();
-        cockpit.StartProgram();
-        cockpit.SetWatt(_targetWatt);
+        Retry(() => cockpit.QueryAddress());
+        Retry(cockpit.SelectFreeTraining);
+        Retry(() => cockpit.StartProgram());
+        Retry(() => cockpit.SetWatt(_targetWatt));
     }
+
+    /// <summary>Re-initialisations in a row after which the connection is rebuilt from scratch.</summary>
+    private const int MaxReinitsInRow = 3;
 
     private void Poll(DaumCockpit cockpit)
     {
         var wattMismatchCount = 0;
+        var reinitsInRow = 0;
         while (_running)
         {
             if (_wattRequests.TryDequeue(out var watt))
@@ -190,13 +203,17 @@ public sealed class DaumErgometer : IErgometer
             // free training or fallen back to its default power, so restore our state.
             if (data.Program != 0)
             {
+                if (++reinitsInRow > MaxReinitsInRow)
+                    throw new IOException($"Cockpit bleibt in Programm {data.Program} statt im freien Training");
+                AppPaths.Note($"Cockpit in Programm {data.Program} statt im freien Training – wird neu eingestellt ({reinitsInRow}. Mal)");
                 InitializeCockpit(cockpit);
                 continue;
             }
+            reinitsInRow = 0;
             wattMismatchCount = data.Watt == _targetWatt ? 0 : wattMismatchCount + 1;
             if (wattMismatchCount >= 3)
             {
-                cockpit.SetWatt(_targetWatt);
+                Retry(() => cockpit.SetWatt(_targetWatt));
                 wattMismatchCount = 0;
             }
 
@@ -235,6 +252,10 @@ public sealed class DaumErgometer : IErgometer
             {
                 // try again right away; DaumCockpit discards stale input before each request
             }
+            catch (CockpitReplyException ex) when (attempt < QuickRetries && _running)
+            {
+                AppPaths.Note($"Cockpit: {ex.Message}");
+            }
         }
     }
 
@@ -251,6 +272,7 @@ public sealed class DaumErgometer : IErgometer
     private static string Describe(Exception ex) => ex switch
     {
         TimeoutException => "keine Antwort",
+        CockpitReplyException => "Antwort passt nicht",
         UnauthorizedAccessException => "Port belegt",
         IOException => "Port nicht verfügbar",
         _ => ex.Message,

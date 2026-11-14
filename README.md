@@ -46,6 +46,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 | `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
 | `Settings/` | `settings.json` und Einstellungsdialog |
+| `Tests/` | Unittests (xUnit): Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken |
 
 ## Weitere Geräte anbinden
 
@@ -60,10 +61,18 @@ Die Oberfläche spricht nur mit `ErgoController`, der nur mit `IErgometer`. Für
 .NET 10, Windows Forms:
 
 ```
-dotnet publish -c Release -o publish
+dotnet publish ErgoWattControl.csproj -c Release -o publish
 ```
 
-Setup (WiX 5, wird beim Bauen per NuGet geholt): `Setupuild-setup.ps1 [-Version 1.0.0]` veröffentlicht die App, lädt die aktuelle .NET 10 Desktop Runtime von Microsoft (Prüfsumme wird kontrolliert) und baut `Setup\out\ErgoWattControl-Setup.exe`:
+Tests (laufen auch vor jedem Release auf GitHub; ein Fehler stoppt das Release):
+
+```
+dotnet test Tests\ErgoWattControl.Tests.csproj
+```
+
+Sie brauchen kein Ergometer: `SimulatedCockpit` spielt das Daum-Cockpit nach – mit ausbleibenden oder verrutschten Antworten und Resets. Einstellungen und Dateien landen in einem eigenen Temp-Ordner, nie in den echten.
+
+Setup (WiX 5, wird beim Bauen per NuGet geholt): `Setup\build-setup.ps1 [-Version 1.0.0]` veröffentlicht die App, lädt die aktuelle .NET 10 Desktop Runtime von Microsoft (Prüfsumme wird kontrolliert) und baut `Setup\out\ErgoWattControl-Setup.exe`:
 
 - `Setup\Installer`: MSI, pro Benutzer nach `%LocalAppData%\Programs\ErgoWattControl`, Verknüpfung im Startmenü und (abwählbar, `DESKTOPSHORTCUT`) auf dem Desktop
 - `Setup\Bundle`: Setup.exe (Burn), installiert die Runtime nur, wenn sie fehlt, dann das MSI. Eigene Oberfläche (`Theme.xml`/`.wxl`, auf Deutsch): Bild der App, Häkchen „Verknüpfung auf dem Desktop“, am Ende „Starten“ mit Wahl Demo-Modus (startet `ErgoWattControl.exe -demo:1` bzw. `-demo:0`). Still: `ErgoWattControl-Setup.exe /passive DesktopShortcut=0`

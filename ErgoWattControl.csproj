@@ -26,6 +26,10 @@
     <!-- The WiX setup projects and their output are built separately (Setup\build-setup.ps1) -->
     <None Remove="Setup\**" />
     <Compile Remove="Setup\**" />
+    <!-- Unit tests are a project of their own (Tests\ErgoWattControl.Tests.csproj) and may use internal members -->
+    <Compile Remove="Tests\**" />
+    <None Remove="Tests\**" />
+    <InternalsVisibleTo Include="ErgoWattControl.Tests" />
     <EmbeddedResource Include="Programme\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
     <!-- JSON schema of a program (and an example) for the rider's own programs, written to CustomPrograms\ at start -->
     <None Remove="Schema\**" />

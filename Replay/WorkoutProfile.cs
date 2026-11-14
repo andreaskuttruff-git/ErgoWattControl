@@ -201,16 +201,37 @@ public sealed class WorkoutProfile : Control
         const int lo = 60, hi = 180;
         float Y(int pulse) => area.Bottom - (float)(Math.Clamp(pulse, lo, hi) - lo) / (hi - lo) * area.Height;
         using var pen = new Pen(PulseLine, 5f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
+        // One averaged point per 2 px column instead of one per second: a long program has thousands of readings,
+        // and drawing each of them every second costs more and more as the ride goes on.
         PointF? prev = null;
         var prevSeconds = double.NegativeInfinity;
-        foreach (var (seconds, pulse) in _livePulse)
+        int column = int.MinValue, sum = 0, count = 0;
+        double firstSeconds = 0, lastSeconds = 0;
+        void Flush()
         {
-            var point = new PointF(XFor(area, 0, duration, Math.Min(seconds, duration)), Y(pulse));
-            if (prev is { } p && seconds - prevSeconds <= 5)
+            if (count == 0)
+                return;
+            var point = new PointF(column * 2 + 1, Y(sum / count));
+            if (prev is { } p && firstSeconds - prevSeconds <= 5)
                 g.DrawLine(pen, p, point);
             prev = point;
-            prevSeconds = seconds;
+            prevSeconds = lastSeconds;
+            sum = count = 0;
         }
+        foreach (var (seconds, pulse) in _livePulse)
+        {
+            var x = (int)XFor(area, 0, duration, Math.Min(seconds, duration)) / 2;
+            if (x != column || seconds - lastSeconds > 5)
+            {
+                Flush();
+                column = x;
+                firstSeconds = seconds;
+            }
+            sum += pulse;
+            count++;
+            lastSeconds = seconds;
+        }
+        Flush();
         // One scale for both curves: red once today's pulse is there, green while only the recorded one is.
         using var brush = new SolidBrush(_livePulse.Count > 0 ? PulseLine : OriginalPulseLine);
         foreach (var pulse in new[] { lo, (lo + hi) / 2, hi })

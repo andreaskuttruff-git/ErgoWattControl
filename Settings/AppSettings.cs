@@ -71,25 +71,51 @@ public sealed class AppSettings
             {
                 var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(AppPaths.SettingsFile)) ?? new AppSettings();
                 // Rewrite so options added in newer versions show up in the file with their defaults.
-                try { loaded.Save(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+                loaded.TrySave();
                 return loaded;
             }
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
-            // Corrupt file: fall back to defaults and overwrite it below.
+            // Corrupt file: keep a copy for diagnosis, then fall back to defaults and overwrite it below.
+            AppPaths.Log("settings.json defekt, Standardwerte werden benutzt", ex);
+            try { File.Copy(AppPaths.SettingsFile, AppPaths.SettingsFile + ".defekt", overwrite: true); } catch (Exception) { }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Unreadable (locked, no permission): start with defaults but don't overwrite the file.
+            AppPaths.Log("settings.json nicht lesbar, Standardwerte werden benutzt", ex);
+            return Defaults();
         }
 
-        var ports = SerialPort.GetPortNames();
-        var settings = new AppSettings { PortName = ports.Contains("COM1") ? "COM1" : ports.FirstOrDefault() };
-        settings.Save();
+        var settings = Defaults();
+        settings.TrySave();
         return settings;
+    }
+
+    private static AppSettings Defaults()
+    {
+        var ports = SerialPort.GetPortNames();
+        return new AppSettings { PortName = ports.Contains("COM1") ? "COM1" : ports.FirstOrDefault() };
+    }
+
+    /// <summary>Save at start-up: a failure is logged, the app runs on with the settings in memory.</summary>
+    private void TrySave()
+    {
+        try { Save(); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            AppPaths.Log("settings.json speichern", ex);
+        }
     }
 
     public void Save()
     {
         Directory.CreateDirectory(AppPaths.SettingsFolder);
-        File.WriteAllText(AppPaths.SettingsFile, JsonSerializer.Serialize(this, JsonOptions));
+        // Write a temporary file and swap it in, so a crash or full disk never leaves a half-written settings.json.
+        var temp = AppPaths.SettingsFile + ".tmp";
+        File.WriteAllText(temp, JsonSerializer.Serialize(this, JsonOptions));
+        File.Move(temp, AppPaths.SettingsFile, overwrite: true);
     }
 
     /// <summary>Takes over the ride values (weights, gearing, grade factor, resistances, power limit) of <paramref name="other"/>.</summary>

@@ -13,14 +13,24 @@ public static class AppPaths
     public static bool Portable { get; } = File.Exists(Path.Combine(AppContext.BaseDirectory, "settings.json"));
 
     /// <summary>Folder of settings.json and Fehler.log.</summary>
-    public static string SettingsFolder { get; } = Portable
+    public static string SettingsFolder { get; private set; } = Portable
         ? AppContext.BaseDirectory
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name);
 
     /// <summary>Default parent of Aufzeichnungen\, GPX\ and Programme\.</summary>
-    public static string DataFolder { get; } = Portable
+    public static string DataFolder { get; private set; } = Portable
         ? AppContext.BaseDirectory
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Name);
+
+    /// <summary>
+    /// Unit tests only: keeps settings, Fehler.log and data in <paramref name="folder"/>, so a test never touches the
+    /// rider's real settings or recordings.
+    /// </summary>
+    internal static void UseFolderForTests(string folder)
+    {
+        SettingsFolder = folder;
+        DataFolder = folder;
+    }
 
     public static string SettingsFile => Path.Combine(SettingsFolder, "settings.json");
 

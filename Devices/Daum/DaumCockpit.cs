@@ -28,27 +28,26 @@ public sealed class DaumCockpit : IDisposable
     // Cockpit needs at least ~50ms between packets or it can corrupt its own state.
     private static readonly TimeSpan MinGap = TimeSpan.FromMilliseconds(60);
 
-    private readonly SerialPort _port;
+    private readonly ICockpitPort _port;
     private DateTime _lastSend = DateTime.MinValue;
+
+    /// <summary>
+    /// True once the cockpit answered Get_Address with the command byte first, as the protocol describes. Only then are
+    /// replies checked for that echo – a cockpit that doesn't echo keeps working exactly as before.
+    /// </summary>
+    private bool _echoes;
 
     public byte Address { get; private set; }
 
-    public DaumCockpit(string portName)
-    {
-        _port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One)
-        {
-            ReadTimeout = 1200,
-            WriteTimeout = 500,
-            // Some daum update cables draw their supply from the handshake lines.
-            DtrEnable = true,
-            RtsEnable = true,
-        };
-        _port.Open();
-    }
+    public DaumCockpit(string portName) : this(new SerialCockpitPort(portName)) { }
+
+    /// <summary>Over any byte channel; unit tests pass a simulated cockpit here.</summary>
+    internal DaumCockpit(ICockpitPort port) => _port = port;
 
     public byte QueryAddress()
     {
         var reply = Transact([0x11], 2);
+        _echoes = reply[0] == 0x11;
         Address = reply[1];
         return Address;
     }
@@ -75,6 +74,14 @@ public sealed class DaumCockpit : IDisposable
         {
             var read = _port.Read(buffer, offset, expectedReplyLength - offset);
             offset += read;
+        }
+        // A reply that doesn't start with our command (and address) is out of step – e.g. the rest of an earlier,
+        // late answer. Its values would be garbage, so it counts like a missing answer and is asked again.
+        if (_echoes && (buffer[0] != request[0] || (request.Length > 1 && buffer[1] != request[1])))
+        {
+            Thread.Sleep(MinGap); // let the rest of the stray telegram arrive, the next request discards it
+            throw new CockpitReplyException(
+                $"Antwort passt nicht zur Anfrage 0x{request[0]:X2}: {Convert.ToHexString(buffer)}");
         }
         return buffer;
     }
@@ -157,4 +164,39 @@ public sealed class DaumCockpit : IDisposable
             Gear = r[16],
         };
     }
+}
+
+/// <summary>The cockpit answered, but the reply doesn't belong to the request (out of step); retried like a timeout.</summary>
+public sealed class CockpitReplyException(string message) : IOException(message);
+
+/// <summary>The byte channel to the cockpit: the serial port, or a simulated cockpit in the unit tests.</summary>
+internal interface ICockpitPort : IDisposable
+{
+    void DiscardInBuffer();
+    void Write(byte[] buffer, int offset, int count);
+    /// <summary>Reads at least one byte; throws <see cref="TimeoutException"/> if none arrives in time.</summary>
+    int Read(byte[] buffer, int offset, int count);
+}
+
+internal sealed class SerialCockpitPort : ICockpitPort
+{
+    private readonly SerialPort _port;
+
+    public SerialCockpitPort(string portName)
+    {
+        _port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One)
+        {
+            ReadTimeout = 1200,
+            WriteTimeout = 500,
+            // Some daum update cables draw their supply from the handshake lines.
+            DtrEnable = true,
+            RtsEnable = true,
+        };
+        _port.Open();
+    }
+
+    public void DiscardInBuffer() => _port.DiscardInBuffer();
+    public void Write(byte[] buffer, int offset, int count) => _port.Write(buffer, offset, count);
+    public int Read(byte[] buffer, int offset, int count) => _port.Read(buffer, offset, count);
+    public void Dispose() => _port.Dispose();
 }

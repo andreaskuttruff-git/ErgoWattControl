@@ -246,7 +246,7 @@
 <table>
   <tr><th>Datei / Ordner</th><th>Ort</th><th>Inhalt</th></tr>
   <tr><td><code>settings.json</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Einstellungen; wird beim ersten Start angelegt.</td></tr>
-  <tr><td><code>Fehler.log</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Details, wenn eine Datei nicht geladen oder geschrieben werden konnte.</td></tr>
+  <tr><td><code>Fehler.log</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Details, wenn eine Datei nicht geladen oder geschrieben werden konnte, sowie unerwartete Fehler und Aussetzer des Cockpits. Eine unlesbare <code>settings.json</code> wird als <code>settings.json.defekt</code> aufgehoben, die App startet dann mit Standardwerten.</td></tr>
   <tr><td><code>Aufzeichnungen\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Aufzeichnungen (Standard-Ablageordner, in den Einstellungen änderbar).</td></tr>
   <tr><td><code>GPX\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Strecken für „Strecke fahren“.</td></tr>
   <tr><td><code>Programme\</code></td><td><code>Dokumente\ErgoWattControl</code></td><td>Die mitgelieferten Programme. Sie stecken in der exe; beim Start schreibt die App fehlende oder veränderte Dateien neu – Änderungen an diesen Dateien werden also überschrieben.</td></tr>
@@ -280,7 +280,7 @@
 <ul>
   <li><b>Windows-Update mit ausstehendem Neustart:</b> Wartet ein Update auf den Neustart – besonders ein Treiber für Anschlüsse (z. B. „Intel Ports Driver Update“) –, laufen die alte und die neue Treiberversion oft gemischt, und Windows arbeitet im Hintergrund. Das kann genau solche Aussetzer an der seriellen Schnittstelle auslösen. Den PC vor dem Training neu starten.</li>
   <li><b>Kabel und Adapter:</b> Stecker fest? Bei einem USB-RS232-Adapter einen anderen USB-Anschluss probieren, möglichst direkt am PC statt am Hub.</li>
-  <li><b>Was passiert ist</b>, steht in <code>Fehler.log</code>: „Cockpit-Verbindung … unterbrochen“ mit Ursache, „wieder verbunden nach … s“ und „Antwort nach … Wiederholung(en) erhalten“ – mit Uhrzeit, sodass sich Aussetzer mit der Fahrt vergleichen lassen.</li>
+  <li><b>Was passiert ist</b>, steht in <code>Fehler.log</code>: „Cockpit-Verbindung … unterbrochen“ mit Ursache, „wieder verbunden nach … s“ und „Antwort nach … Wiederholung(en) erhalten“, „Antwort passt nicht zur Anfrage“ (ein verrutschtes Telegramm, wird verworfen und neu angefragt) und „Cockpit in Programm … statt im freien Training“ (nach einem Reset des Cockpits stellt die App es neu ein; klappt das dreimal hintereinander nicht, verbindet sie sich neu) – mit Uhrzeit, sodass sich Aussetzer mit der Fahrt vergleichen lassen.</li>
   <li>Hält ein seltsames Verhalten an (z. B. ein Export, der plötzlich scheitert), hilft oft schon, die App neu zu starten.</li>
 </ul>
 <h3>Die Leistung kommt nicht an / ▲ neben RPM</h3>

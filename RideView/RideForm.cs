@@ -446,8 +446,9 @@ public sealed class RideForm : Form
             if (_replay is { Finished: true })
                 EndReplay(completed: true);
         }
-        catch (IOException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            AppPaths.Log("Aufzeichnung abgebrochen", ex);
             StopRecording();
             MessageBox.Show(this, $"Aufzeichnung abgebrochen:\n{ex.Message}", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -505,10 +506,19 @@ public sealed class RideForm : Form
 
     private void StopRecording()
     {
-        if (_recorder is null)
+        if (_recorder is not { } recorder)
             return;
-        _recorder.Dispose();
+        // Forget the recorder first: even if closing the file fails, the view must leave the recording state
+        // (otherwise every following second would hit the broken recorder again).
         _recorder = null;
+        try
+        {
+            recorder.Dispose();
+        }
+        catch (Exception ex)
+        {
+            AppPaths.Log("Aufzeichnung schließen", ex);
+        }
         UpdateRecordButton();
         _time.ForeColor = _timeCaption.ForeColor = Color.White;
         ShowTotals(0, 0, 0, Caption);

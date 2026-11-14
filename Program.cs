@@ -35,6 +35,15 @@ static class Program
     [STAThread]
     static void Main(string[] args)
     {
+        // Last line of defence: an unexpected error in an event handler is logged and reported instead of
+        // ending the app mid-training without a trace; the app keeps running (Fehler.log has the stack trace).
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += (_, e) => ReportUnexpected(e.Exception);
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            if (e.ExceptionObject is Exception ex)
+                AppPaths.Log("Unbehandelter Fehler (App wird beendet)", ex);
+        };
         ApplicationConfiguration.Initialize();
         // All dialogs dark like the ride view (and the Windows dark title bar); MessageBox stays as Windows draws it.
         Application.SetColorMode(SystemColorMode.Dark);
@@ -72,6 +81,24 @@ static class Program
         ProgramFiles.Install();
         Application.Run(new RideForm(AppSettings.Load(), demo, demoRoute, mainScreen));
         HelpWindow.Close();
+    }
+
+    private static bool _reporting;
+
+    /// <summary>Logs an error that escaped an event handler and tells the rider once (no stacked message boxes).</summary>
+    private static void ReportUnexpected(Exception ex)
+    {
+        AppPaths.Log("Unerwarteter Fehler", ex);
+        if (_reporting)
+            return;
+        _reporting = true;
+        try
+        {
+            MessageBox.Show($"Unerwarteter Fehler: {ex.Message}\n\nDie App läuft weiter. Details stehen in {AppPaths.LogFile}.",
+                "ErgoWattControl", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        catch (Exception) { /* nothing left to report with */ }
+        finally { _reporting = false; }
     }
 
     /// <summary>
