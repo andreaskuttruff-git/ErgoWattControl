@@ -16,14 +16,15 @@ public sealed class DemoErgometer : IErgometer
     private double _pulse = 85;
     private double _energyKJ;
     private DateTime _last = DateTime.Now;
+    private bool _disposed;
 
     public event Action<ErgometerData>? DataReceived;
     public event Action<ErgometerStatus>? StatusChanged;
 
     public string DisplayName => "Demo";
     public ErgometerCapabilities Capabilities { get; } =
-        new(DaumCockpit.MaxWattForType(40), 5, RpmRange.For, "Demo (simulierter Fahrer, wie Cockpit 8008): max. 800 W");
-    public bool IsConnected => _timer is not null;
+        new(ErgoController.AbsoluteMaxWatt, 5, RpmRange.For, "Demo (simulierter Fahrer, wie Cockpit 8008): max. 800 W");
+    public bool IsConnected => _timer is not null && !_disposed;
 
     public void Start()
     {
@@ -35,16 +36,18 @@ public sealed class DemoErgometer : IErgometer
 
     private void Tick()
     {
-        ErgometerData data;
+        // Reading and handing on happen under the lock Dispose takes too: once Dispose returns, no reading follows.
         lock (_gate)
         {
+            if (_disposed)
+                return;
             var now = DateTime.Now;
             var watt = _targetWatt;
             _energyKJ += watt * (now - _last).TotalSeconds / 1000;
             _last = now;
             var rpm = 75 + _random.Next(-4, 5);
             _pulse += (95 + watt * 0.3 - _pulse) * 0.05;
-            data = new ErgometerData
+            var data = new ErgometerData
             {
                 Watt = watt,
                 Rpm = rpm,
@@ -54,12 +57,14 @@ public sealed class DemoErgometer : IErgometer
                 Pulse = (int)_pulse,
                 EnergyKJ = _energyKJ,
             };
+            DataReceived?.Invoke(data);
         }
-        DataReceived?.Invoke(data);
     }
 
     public void Dispose()
     {
+        lock (_gate)
+            _disposed = true;
         _timer?.Dispose();
         _timer = null;
     }

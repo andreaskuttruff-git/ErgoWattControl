@@ -47,15 +47,16 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 | `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
 | `Settings/` | `settings.json` (`AppSettings`) mit den Fahrwerten als eigener Gruppe (`RideValues`: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze – auch pro Fahrt im Startdialog änderbar), Einstellungsdialog |
-| `Tests/` | Unittests (xUnit): Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken |
+| `Tests/` | Unittests (xUnit): Vertragstests für jedes Gerät, `ErgoController`, Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, Trainingsmodi, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken |
 
 ## Weitere Geräte anbinden
 
 Die Oberfläche spricht nur mit `ErgoController`, der nur mit `IErgometer`. Für ein neues Gerät (z. B. Bluetooth-Trainer mit FTMS, ANT+ FE-C):
 
-1. Klasse anlegen, die `IErgometer` implementiert: Verbindung im Hintergrund halten, `SetTargetPower` umsetzen, `DataReceived`/`StatusChanged` auslösen und in `Capabilities` angeben, was das Gerät kann (Maximalleistung, Wattraster, ggf. Drehzahlbereich der Bremse). Werte, die das Gerät nicht misst (Strecke, Energie …), bleiben `null` – die App rechnet sie dann selbst.
-2. In `ErgometerTypes` eintragen (Id für die `settings.json`, Anzeigename, Erzeugung).
-3. Falls das Gerät Verbindungsdaten braucht: Felder in `AppSettings` und im Einstellungsdialog ergänzen.
+1. Klasse in einem eigenen Ordner unter `Devices/` anlegen, die `IErgometer` implementiert: Verbindung im Hintergrund halten, `SetTargetPower` umsetzen, `DataReceived`/`StatusChanged` auslösen und in `Capabilities` angeben, was das Gerät kann (Maximalleistung, Wattraster, ggf. Drehzahlbereich der Bremse). Werte, die das Gerät nicht misst (Strecke, Energie …), bleiben `null` – die App rechnet sie dann selbst. Den Vertrag, den jedes Gerät einhalten muss (erst `Start` verbindet, Zielleistung auch vor dem Verbinden, nach `Dispose` keine Ereignisse mehr …), beschreibt `IErgometer`.
+2. Einen Eintrag `ErgometerType` in `ErgometerTypes.All`: Id für die `settings.json` (danach nie mehr ändern), Anzeigename, Erzeugung, ob es über einen COM-Port verbunden wird und wie „Verbindung testen“ geht. Der Einstellungsdialog richtet sich danach.
+3. In `Tests/ErgometerContractTests.cs` eine Unterklasse anlegen – am besten gegen eine Simulation des Protokolls wie `SimulatedCockpit` für Daum. Dann laufen dieselben Vertragstests wie für Daum und Demo.
+4. Nur wenn das Gerät andere Verbindungsdaten als einen COM-Port braucht (z. B. eine Bluetooth-Adresse): Feld in `AppSettings` und eine Zeile im Einstellungsdialog ergänzen.
 
 ## Bauen
 

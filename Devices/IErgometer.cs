@@ -5,6 +5,17 @@ namespace ErgoWattControl;
 /// cockpit over RS232, the demo rider, later e.g. a Bluetooth trainer) implements this; the app talks to it only
 /// through <see cref="ErgoController"/>. Implementations keep their own connection alive and may raise the events on
 /// any thread.
+/// <para>
+/// The contract every device keeps (checked for each one by Tests\ErgometerContractTests.cs):
+/// creating it touches no hardware – only <see cref="Start"/> connects, and it is called once;
+/// <see cref="SetTargetPower"/> may come at any time, also before or between connections, and the device applies the
+/// latest value as soon as it is connected; <see cref="StatusChanged"/> reports Connected = true once it is ready to
+/// ride, and only then <see cref="IsConnected"/> is true; <see cref="Capabilities"/> is always valid (MaxWatt at least
+/// <see cref="ErgoController.MinWatt"/>, WattStep at least 1); <see cref="IDisposable.Dispose"/> may be called without
+/// Start and more than once, returns within a few seconds and no events follow afterwards.
+/// Event handlers must not wait synchronously for another thread (e.g. Control.Invoke): a device may raise its events
+/// while holding a lock that Dispose takes as well. The app's handlers only queue the reading (BeginInvoke).
+/// </para>
 /// </summary>
 public interface IErgometer : IDisposable
 {

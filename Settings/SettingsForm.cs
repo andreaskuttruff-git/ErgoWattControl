@@ -13,8 +13,9 @@ public sealed class SettingsForm : Form
     private readonly TextBox _txtFolder = new() { Width = 330 };
     private readonly ComboBox _cmbMonitor = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 330 };
 
-    /// <summary>Id of the chosen kind of ergometer (<see cref="ErgometerTypes"/>).</summary>
-    public string Device => ((DeviceItem)_cmbDevice.SelectedItem!).Id;
+    /// <summary>The chosen kind of ergometer (<see cref="ErgometerTypes"/>).</summary>
+    public ErgometerType DeviceType => (ErgometerType)_cmbDevice.SelectedItem!;
+    public string Device => DeviceType.Id;
     public string? PortName => _cmbPorts.SelectedItem as string;
     public string RecordingDirectory => _txtFolder.Text.Trim();
     public string? RideMonitor => (_cmbMonitor.SelectedItem as MonitorItem)?.DeviceName;
@@ -147,10 +148,6 @@ public sealed class SettingsForm : Form
         public override string ToString() => Text;
     }
 
-    private sealed record DeviceItem(string Id, string Text)
-    {
-        public override string ToString() => Text;
-    }
 
     public SettingsForm(AppSettings settings, ErgoController controller)
     {
@@ -208,9 +205,14 @@ public sealed class SettingsForm : Form
         buttons.Margin = new Padding(3, 18, 3, 3);
         grid.Controls.Add(buttons, 1, 10);
 
-        _cmbDevice.Items.AddRange([.. ErgometerTypes.All.Select(t => new DeviceItem(t.Id, t.Name))]);
-        _cmbDevice.SelectedItem = _cmbDevice.Items.Cast<DeviceItem>().FirstOrDefault(d => d.Id == settings.Device) ?? _cmbDevice.Items[0];
-        void ShowDeviceFields() => portLabel.Visible = portRow.Visible = _lblTest.Visible = Device == ErgometerTypes.DaumRs232;
+        _cmbDevice.Items.AddRange([.. ErgometerTypes.All]);
+        _cmbDevice.SelectedItem = ErgometerTypes.Find(settings.Device);
+        // Only the connection fields the chosen kind of device uses.
+        void ShowDeviceFields()
+        {
+            portLabel.Visible = portRow.Visible = _lblTest.Visible = DeviceType.UsesSerialPort;
+            btnTest.Visible = DeviceType.TestConnection is not null;
+        }
         _cmbDevice.SelectedIndexChanged += (_, _) => ShowDeviceFields();
         ShowDeviceFields();
         Controls.Add(grid);
@@ -263,7 +265,8 @@ public sealed class SettingsForm : Form
             // Not disabling the button: that would hand focus to the folder box, which then selects its whole text.
             testRunning = true;
             _lblTest.Text = $"Teste {port} …";
-            _lblTest.Text = await Task.Run(() => DaumErgometer.TestPort(port, _controller.Device as DaumErgometer));
+            if (DeviceType.TestConnection is { } test)
+                _lblTest.Text = await Task.Run(() => test(port, _controller.Device));
             testRunning = false;
         };
         btnBrowse.Click += (_, _) =>

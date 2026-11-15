@@ -755,9 +755,10 @@ public sealed class RideForm : Form
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
         var monitorChanged = dialog.RideMonitor != _settings.RideMonitor;
-        var deviceChanged = dialog.Device != _settings.Device || dialog.PortName != _settings.PortName;
+        var before = _settings.Snapshot();
         _settings.Device = dialog.Device;
         _settings.PortName = dialog.PortName;
+        var deviceChanged = before.Device != _settings.Device || dialog.DeviceType.ConnectionChanged(before, _settings);
         _settings.RecordingDirectory = dialog.RecordingDirectory;
         _settings.RideMonitor = dialog.RideMonitor;
         _settings.Ride = dialog.Ride;
