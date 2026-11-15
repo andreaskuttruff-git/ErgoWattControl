@@ -146,6 +146,56 @@ public sealed class AppSettings
         return SanitizeFileName(name) ?? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}";
     }
 
+    /// <summary>
+    /// Where recordings are written, in this order: the chosen folder; the default folder in Documents if another one is
+    /// chosen (e.g. a network drive or USB stick that is missing); <see cref="AppPaths.FallbackRecordingFolder"/>.
+    /// </summary>
+    public IReadOnlyList<string> RecordingFolders()
+    {
+        var folders = new List<string>();
+        foreach (var folder in new[] { RecordingDirectory, Path.Combine(AppPaths.DataFolder, "Aufzeichnungen"), AppPaths.FallbackRecordingFolder })
+        {
+            if (!string.IsNullOrWhiteSpace(folder) && !folders.Any(f => SameFolder(f, folder)))
+                folders.Add(folder);
+        }
+        return folders;
+    }
+
+    /// <summary>Recordings in all <see cref="RecordingFolders"/>, newest first; folders that are missing or unreadable are skipped.</summary>
+    public IReadOnlyList<string> RecordingFiles(params string[] patterns)
+    {
+        var files = new List<string>();
+        foreach (var folder in RecordingFolders())
+        {
+            try
+            {
+                if (Directory.Exists(folder))
+                    files.AddRange(patterns.SelectMany(p => Directory.GetFiles(folder, p)));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+            {
+                AppPaths.Log($"Aufzeichnungen in {folder} nicht lesbar", ex);
+            }
+        }
+        return [.. files.OrderByDescending(File.GetLastWriteTime)];
+    }
+
+    /// <summary>The file lies in a fallback folder, not in the chosen one (shown as such in the lists).</summary>
+    public bool InFallbackFolder(string file) => !SameFolder(Path.GetDirectoryName(file) ?? "", RecordingDirectory);
+
+    public static bool SameFolder(string a, string b)
+    {
+        try
+        {
+            return string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(a)),
+                Path.TrimEndingDirectorySeparator(Path.GetFullPath(b)), StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            return string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     /// <summary>Replaces characters not allowed in file names by "_" and drops a typed ".json"/".csv"; null if nothing is left.</summary>
     public static string? SanitizeFileName(string name)
     {

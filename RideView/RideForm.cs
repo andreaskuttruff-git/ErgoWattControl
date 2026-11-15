@@ -460,13 +460,24 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Datei konnte nicht angelegt werden:\n{ex.Message}", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            AppPaths.Log("Aufzeichnung anlegen", ex);
+            // Route, replay and program: shown once – the controller doesn't try again in this run, the ride goes on.
+            var text = Guided
+                ? $"Die Aufzeichnung konnte nicht angelegt werden – auch nicht im Ersatzordner. Das Training läuft ohne Aufzeichnung weiter:\n{ex.Message}\n\nOrdner: {_settings.RecordingDirectory}"
+                : $"Datei konnte nicht angelegt werden:\n{ex.Message}";
+            MessageBox.Show(this, text, "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
         UpdateRecordButton();
         _time.Text = "0:00:00";
         _time.ForeColor = _timeCaption.ForeColor = Color.OrangeRed;
         ShowTotals(0, 0, 0, Color.OrangeRed);
+        // Recording already runs (a guided ride goes on behind the message); just say where it ends up.
+        if (_training.RecordingInFallbackFolder && _training.Recorder is { } recorder)
+            MessageBox.Show(this, $"Der Ablageordner ist nicht beschreibbar:\n{_settings.RecordingDirectory}\n\n"
+                + $"Die Aufzeichnung wird stattdessen hier gespeichert:\n{Path.GetDirectoryName(recorder.FilePath)}\n\n"
+                + "Export und „Aufzeichnung nachfahren“ finden sie dort. Der Grund steht in Fehler.log.",
+                "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
     private JsonRecorder? StopRecording()

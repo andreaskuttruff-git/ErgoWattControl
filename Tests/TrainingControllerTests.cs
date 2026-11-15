@@ -196,12 +196,38 @@ public class TrainingControllerTests
         var blocker = Path.Combine(TestFolder.New("blockiert"), "Aufzeichnungen");
         File.WriteAllText(blocker, ""); // a file where the folder should be
         _settings.RecordingDirectory = blocker;
+        _training.RecordingFolders = () => [blocker]; // no fallback either
         _training.BeginRoute(Hill(), customName: "Zweiter Versuch");
 
         Assert.ThrowsAny<IOException>(() => _training.StartRecording());
 
         Assert.Null(_training.Recorder);
         Assert.Equal("Zweiter Versuch", _training.NextRecordingName);
+    }
+
+    [Fact]
+    public void FailedRecording_IsNotRetriedWithEveryReading_UntilTheNextRun()
+    {
+        var blocker = Path.Combine(TestFolder.New("blockiert"), "Aufzeichnungen");
+        File.WriteAllText(blocker, ""); // a file where the folder should be
+        _settings.RecordingDirectory = blocker;
+        _training.RecordingFolders = () => [blocker]; // no fallback either
+        _training.BeginRoute(Hill(), customName: null);
+        Assert.True(_training.Update(Pedalling(), T0));
+        Assert.ThrowsAny<IOException>(() => _training.StartRecording());
+
+        // Previously every reading asked for the recording again – and showed the error again.
+        for (var s = 1; s <= 5; s++)
+            Assert.False(_training.Update(Pedalling(), T0.AddSeconds(s)));
+        Assert.Null(_training.Recorder);
+
+        // The next route tries again (the folder may be back by then).
+        _settings.RecordingDirectory = TestFolder.New("wieder_da");
+        _training.RecordingFolders = _settings.RecordingFolders;
+        _training.EndMode();
+        _training.BeginRoute(Hill(), customName: null);
+        Assert.True(_training.Update(Pedalling(), T0.AddSeconds(10)));
+        Assert.NotNull(_training.StartRecording());
     }
 
     [Fact]

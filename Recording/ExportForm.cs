@@ -35,9 +35,10 @@ public sealed class ExportForm : Form
         Font = new Font("Segoe UI", 11);
         HelpWindow.Attach(this, "export");
 
-        if (Directory.Exists(settings.RecordingDirectory))
-            _files.AddRange(Directory.GetFiles(settings.RecordingDirectory, "*" + JsonRecorder.Extension).OrderByDescending(File.GetLastWriteTime));
-        _list.Items.AddRange([.. _files.Select(Path.GetFileNameWithoutExtension).Cast<object>()]);
+        // Also recordings that had to go to a fallback folder (chosen folder not writable), marked as such.
+        _files.AddRange(settings.RecordingFiles("*" + JsonRecorder.Extension));
+        _list.Items.AddRange([.. _files.Select(f => settings.InFallbackFolder(f)
+            ? $"{Path.GetFileNameWithoutExtension(f)}   (Ersatzordner)" : Path.GetFileNameWithoutExtension(f)).Cast<object>()]);
         _list.SelectedIndexChanged += (_, _) =>
         {
             UpdateButton();
@@ -62,7 +63,8 @@ public sealed class ExportForm : Form
             if (index == tipIndex)
                 return;
             tipIndex = index;
-            tip.SetToolTip(_list, index >= 0 ? Path.GetFileName(_files[index]) : "");
+            // A recording in a fallback folder shows where it lies.
+            tip.SetToolTip(_list, index < 0 ? "" : settings.InFallbackFolder(_files[index]) ? _files[index] : Path.GetFileName(_files[index]));
         };
         _list.MouseLeave += (_, _) => tipIndex = -1;
         // The target folder is often longer than its box: the whole path on hover, kept up to date while typing.

@@ -13,11 +13,17 @@ public sealed class TrainingController
     private RideValues? _runValues;
     /// <summary>Recording name typed in a start dialog, waiting for the first pedal stroke.</summary>
     private string? _customFileName;
+    /// <summary>
+    /// Creating the recording failed in this run: the guided training goes on without one instead of trying again with
+    /// every reading (and reporting the same error each time).
+    /// </summary>
+    private bool _recordingFailed;
 
     public TrainingController(AppSettings settings, ErgoController ergo)
     {
         _settings = settings;
         _ergo = ergo;
+        RecordingFolders = settings.RecordingFolders;
     }
 
     public TrainingMode Mode { get; private set; } = new FreeTraining();
@@ -55,6 +61,7 @@ public sealed class TrainingController
     {
         StopRecording();
         _customFileName = customName;
+        _recordingFailed = false;
         UseRunValues(runValues);
     }
 
@@ -64,6 +71,7 @@ public sealed class TrainingController
         StopRecording();
         Mode = new FreeTraining();
         _customFileName = null;
+        _recordingFailed = false;
         UseRunValues(null);
     }
 
@@ -84,7 +92,7 @@ public sealed class TrainingController
     {
         if (Mode.Update(d, now) is { } watt)
             _ergo.SetTargetWatt(watt);
-        return Recorder is null && Guided && d.Rpm > 0 && !Mode.Finished;
+        return Recorder is null && Guided && !_recordingFailed && d.Rpm > 0 && !Mode.Finished;
     }
 
     /// <summary>Appends the reading to the recording, if one runs; file errors are thrown (the caller stops the recording).</summary>
@@ -104,17 +112,55 @@ public sealed class TrainingController
     public string RecordingPath => Recorder?.FilePath
         ?? Path.Combine(_settings.RecordingDirectory, NextRecordingName + JsonRecorder.Extension);
 
-    /// <summary>Creates the recording file; throws if it can't be written (the typed name is kept for another try).</summary>
+    /// <summary>
+    /// Creates the recording file; throws if it can't be written. The typed name is kept, and a guided training then
+    /// doesn't start a recording by itself again (<see cref="Update"/>) until the next route or replay.
+    /// </summary>
     public JsonRecorder StartRecording()
+    {
+        try
+        {
+            return CreateRecorder();
+        }
+        catch
+        {
+            _recordingFailed = true;
+            throw;
+        }
+    }
+
+    /// <summary>The folders tried in turn for a new recording; unit tests replace them.</summary>
+    internal Func<IReadOnlyList<string>> RecordingFolders { get; set; }
+
+    /// <summary>The running recording was written to a fallback folder because the chosen one can't be written.</summary>
+    public bool RecordingInFallbackFolder => Recorder is { } recorder && _settings.InFallbackFolder(recorder.FilePath);
+
+    private JsonRecorder CreateRecorder()
     {
         // The recording keeps the settings it was ridden with, including the ride values changed for this run.
         var settings = _settings.Snapshot();
         settings.Ride = Ride.Copy();
-        var recorder = new JsonRecorder(_settings.RecordingDirectory, NextRecordingName, Mode.RecordingKind, settings, Mode.RecordingTarget);
-        // A name typed in the start dialog is used for this one recording only.
-        _customFileName = null;
-        Recorder = recorder;
-        return recorder;
+        Exception? first = null;
+        foreach (var folder in RecordingFolders())
+        {
+            try
+            {
+                var recorder = new JsonRecorder(folder, NextRecordingName, Mode.RecordingKind, settings, Mode.RecordingTarget);
+                // A name typed in the start dialog is used for this one recording only.
+                _customFileName = null;
+                Recorder = recorder;
+                return recorder;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+            {
+                // A missing drive, no rights, a file where the folder should be …: try the next folder.
+                AppPaths.Log($"Aufzeichnung in {folder} nicht möglich", ex);
+                first ??= ex;
+            }
+        }
+        // Not even the fallback works: report why the chosen folder failed.
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw(first ?? new IOException("Kein Ordner für Aufzeichnungen."));
+        return null!;
     }
 
     /// <summary>Closes the recording; never throws (a failure is logged), afterwards nothing is recorded any more.</summary>

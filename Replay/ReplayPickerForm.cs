@@ -120,7 +120,8 @@ public sealed class ReplayPickerForm : Form
         var form = new ReplayPickerForm("Aufzeichnung nachfahren", name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
             current, programs: false, current.ReplayShowOriginalPulse, saveAsDefault);
         var directory = current.RecordingDirectory;
-        foreach (var file in Files(directory, "*.json").Concat(Files(directory, "*.csv")).Concat(Files(directory, "*.fit")).OrderByDescending(File.GetLastWriteTime))
+        // Also recordings that had to go to a fallback folder (chosen folder not writable).
+        foreach (var file in current.RecordingFiles("*.json", "*.csv", "*.fit"))
             form._entries.Add(RecordingEntry(file));
         form.Fill(directory, "Aufzeichnungen", []);
         return form;

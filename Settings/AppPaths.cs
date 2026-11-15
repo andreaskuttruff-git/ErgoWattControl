@@ -30,7 +30,15 @@ public static class AppPaths
     {
         SettingsFolder = folder;
         DataFolder = folder;
+        FallbackRecordingFolder = Path.Combine(folder, "Ersatzordner");
     }
+
+    /// <summary>
+    /// Last resort for recordings when the chosen folder (and the default one) can't be written: in the rider's own
+    /// profile, %LocalAppData%\ErgoWattControl\Aufzeichnungen – not Temp, which Windows empties without asking.
+    /// </summary>
+    public static string FallbackRecordingFolder { get; private set; } =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Name, "Aufzeichnungen");
 
     public static string SettingsFile => Path.Combine(SettingsFolder, "settings.json");
 
