@@ -137,7 +137,14 @@ public partial class PseudoLocalizationTests
     [MemberData(nameof(Windows))]
     public void Window_TextsFitTheirFields(string window)
     {
-        var (problems, checkedFields) = InPseudoWindow(window, form => (Clipped(form, out var count), count));
+        var (problems, checkedFields, size) = InPseudoWindow(window, form => (Clipped(form, out var count), count, form.Size));
+        // The ride view lays out its fields for the monitor's size. On a smaller screen (the GitHub runner has
+        // 1024 × 768) Windows won't make it 1280 × 1024, so its fields would be too narrow there – no statement possible.
+        if (window == "Fahransicht" && size != RideMonitor)
+        {
+            Console.WriteLine($"{window}: Bildschirm zu klein ({size.Width} × {size.Height}), Prüfung übersprungen.");
+            return;
+        }
         Assert.True(problems.Count == 0, "Abgeschnittene Texte:\n" + string.Join("\n", problems));
         Assert.True(checkedFields > 0, $"{window}: kein sichtbares Textfeld geprüft – zeigt das Fenster überhaupt etwas?");
     }
@@ -260,7 +267,10 @@ public partial class PseudoLocalizationTests
         {
             var form = WindowFactories[window]();
             if (form is RideForm)
+            {
+                form.MaximumSize = Size.Empty; // set by the app from the real screen
                 form.Bounds = new Rectangle(Point.Empty, RideMonitor);
+            }
             return form;
         }, inspect, window);
 
