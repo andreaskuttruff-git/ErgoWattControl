@@ -18,7 +18,7 @@ public sealed class ReplayPickerForm : Form
     private static readonly Color DarkBack = Color.FromArgb(24, 24, 24);
 
     private readonly List<Entry> _entries = [];
-    private readonly ListBox _list = new() { Dock = DockStyle.Fill, IntegralHeight = false, HorizontalScrollbar = true };
+    private readonly SteadyListBox _list = new() { Dock = DockStyle.Fill, IntegralHeight = false, HorizontalScrollbar = true };
     private readonly WorkoutProfile _profile = new() { Dock = DockStyle.Fill, ShowPreview = false, Visible = false };
     private readonly RouteProfile _routeProfile = new() { Dock = DockStyle.Fill, ShowPreview = false, Visible = false };
     private readonly RideSettingsPanel _rideSettings = new() { Dock = DockStyle.Bottom, Padding = new Padding(0, 6, 0, 0) };

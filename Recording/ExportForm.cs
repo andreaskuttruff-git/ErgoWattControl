@@ -8,7 +8,7 @@ public sealed class ExportForm : Form
 {
     private readonly AppSettings _settings;
     private readonly List<string> _files = [];
-    private readonly ListBox _list = new() { Dock = DockStyle.Fill, IntegralHeight = false, HorizontalScrollbar = true, SelectionMode = SelectionMode.MultiExtended };
+    private readonly SteadyListBox _list = new() { Dock = DockStyle.Fill, IntegralHeight = false, HorizontalScrollbar = true, SelectionMode = SelectionMode.MultiExtended };
     private readonly CheckBox _fit = new() { Text = L.T("Export_Fit"), AutoSize = true };
     private readonly CheckBox _csv = new() { Text = L.T("Export_Csv"), AutoSize = true };
     private readonly TextBox _folder = new() { Width = 400 };

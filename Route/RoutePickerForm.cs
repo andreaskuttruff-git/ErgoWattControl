@@ -11,7 +11,7 @@ public sealed class RoutePickerForm : Form
     private readonly AppSettings _settings;
     private readonly int _maxWatt;
     private readonly List<string> _files = [];
-    private readonly ListBox _list = new() { Dock = DockStyle.Fill, IntegralHeight = false, HorizontalScrollbar = true };
+    private readonly SteadyListBox _list = new() { Dock = DockStyle.Fill, IntegralHeight = false, HorizontalScrollbar = true };
     private readonly RouteProfile _profile = new() { Dock = DockStyle.Fill, ShowPreview = false };
     private readonly TableLayoutPanel _facts = new() { Dock = DockStyle.Fill, ColumnCount = 2, AutoScroll = true, Padding = new Padding(0, 10, 0, 0) };
     private readonly RecordingNameBox _fileName = new("");

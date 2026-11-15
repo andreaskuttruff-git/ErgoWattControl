@@ -20,6 +20,9 @@ internal static class TestFolder
         AppPaths.UseFolderForTests(Path);
         // The expected texts in the tests are German; tests for English switch the language themselves.
         Language.Apply("de");
+        // Windows' common controls 6 as in the app (ApplicationConfiguration.Initialize): windows built in the tests
+        // look and behave like the app's – e.g. a list box scrolls on the horizontal wheel only with them.
+        Application.EnableVisualStyles();
     }
 
     /// <summary>A new empty folder below the test folder.</summary>
