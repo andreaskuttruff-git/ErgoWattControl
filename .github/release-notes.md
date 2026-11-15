@@ -2,6 +2,10 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.0.2
+- **Programm- und Aufzeichnungsauswahl:** Die Liste scrollt nicht mehr von selbst mit, wenn man nach dem Anklicken eines Eintrags die Maus darüber bewegt (trat vor allem per Remotedesktop auf). Gilt auch für die Liste im Export.
+- **Log beim Start ohne Cockpit:** Antwortet das Cockpit beim Start nicht (z. B. im Schlafmodus), steht das jetzt einmal in `ErgoWattControl.log` – und sobald die Verbindung steht, auch nach wie vielen Sekunden.
+
 ### Neu in v2.0.1
 - **Deutsch und Englisch:** Die ganze App gibt es jetzt auf Deutsch und Englisch – Oberfläche, Meldungen, Hilfe (F1), Programmbeschreibungen und Setup. Umschalten unter **☰ → Einstellungen → Sprache / Language** (Automatisch wie Windows, Deutsch, English); die App bietet den Neustart gleich an. Zahlen und Datum folgen weiter den Windows-Einstellungen.
 - **Größe der Fahransicht** in den Einstellungen wählbar: wie bisher (Standard), ganzer Monitor oder eine feste Größe wie 1280 × 1024 oder 1920 × 1080.
