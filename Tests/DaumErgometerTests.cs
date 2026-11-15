@@ -14,10 +14,16 @@ public class DaumErgometerTests
         private readonly List<ErgometerData> _data = [];
         public readonly DaumErgometer Device;
 
-        public Rig()
+        private int _asleep;
+
+        /// <param name="asleepAttempts">Connection attempts the cockpit doesn't answer (asleep/off at start).</param>
+        public Rig(int asleepAttempts = 0)
         {
+            _asleep = asleepAttempts;
             Device = new DaumErgometer("COM-TEST", _ =>
             {
+                if (Interlocked.Decrement(ref _asleep) >= 0)
+                    throw new TimeoutException("The operation has timed out.");
                 var sim = new SimulatedCockpit();
                 lock (_opened)
                     _opened.Add(sim);
@@ -63,6 +69,31 @@ public class DaumErgometerTests
         Assert.Equal(1, rig.Sim.Count(0x21)); // started
         Assert.Equal("Cockpit 8008: max. 800 W", rig.Device.Capabilities.Info);
         Assert.Equal(80, rig.Data[0].Rpm);
+    }
+
+    [Fact]
+    public void CockpitConnected_IsNoted()
+    {
+        var mark = TestFolder.LogMark();
+        using var rig = new Rig();
+        rig.Start();
+        Rig.WaitFor(() => TestFolder.LogSince(mark).Contains("Cockpit on COM-TEST connected"), "Verbindung im Log");
+        Assert.Matches(@"Cockpit on COM-TEST connected \(address \d+, max\. 800 W\)\r?\n", TestFolder.LogSince(mark));
+    }
+
+    [Fact]
+    public void CockpitAsleepAtStart_IsNotedOnce_AndTheWaitWhenItAnswers()
+    {
+        var mark = TestFolder.LogMark();
+        using var rig = new Rig(asleepAttempts: 2);
+        rig.Device.Start();
+        Rig.WaitFor(() => rig.Device.IsConnected && TestFolder.LogSince(mark).Contains("connected"), "verbunden nach dem Aufwachen", seconds: 15);
+
+        var log = TestFolder.LogSince(mark);
+        // Two failed attempts with the same reason: one line, not one every 3 s.
+        Assert.Single(log.Split('\n'), line => line.Contains("Cockpit on COM-TEST not answering (TimeoutException"));
+        Assert.Matches(@"Cockpit on COM-TEST connected \(address \d+, max\. 800 W\) after [5-9] s", log);
+        Assert.DoesNotContain("reconnected", log);
     }
 
     [Fact]

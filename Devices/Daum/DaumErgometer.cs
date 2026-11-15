@@ -16,6 +16,10 @@ public sealed class DaumErgometer : IErgometer
 
     /// <summary>When the last connection was lost (for the log line when it is back); null while connected or never connected.</summary>
     private DateTime? _lostAt;
+    /// <summary>Since when the app waits for a cockpit that hasn't answered yet (e.g. asleep at start); null while connected.</summary>
+    private DateTime? _waitingSince;
+    /// <summary>The last noted reason why connecting failed: the same reason is logged only once, not every 3 s.</summary>
+    private string? _notedFailure;
 
     private readonly ConcurrentQueue<int> _wattRequests = new();
     private readonly ManualResetEventSlim _wake = new();
@@ -119,20 +123,34 @@ public sealed class DaumErgometer : IErgometer
                 CockpitAddress = cockpit.Address;
                 IsConnected = true;
                 Report(L.F("Daum_Connected", port), true, _capabilities.Info);
+                var details = $"address {CockpitAddress}, max. {_capabilities.MaxWatt} W";
                 if (_lostAt is { } lost)
-                {
-                    AppPaths.Note($"Cockpit on {port} reconnected after {(DateTime.Now - lost).TotalSeconds:0} s");
-                    _lostAt = null;
-                }
+                    AppPaths.Note($"Cockpit on {port} reconnected ({details}) after {(DateTime.Now - lost).TotalSeconds:0} s");
+                else
+                    AppPaths.Note($"Cockpit on {port} connected ({details})"
+                        + (_waitingSince is { } since ? $" after {(DateTime.Now - since).TotalSeconds:0} s" : ""));
+                _lostAt = null;
+                _waitingSince = null;
+                _notedFailure = null;
                 Poll(cockpit);
             }
             catch (Exception ex) when (_running)
             {
-                // Only a connection that was up and broke is logged (not every attempt while the cockpit is off).
                 if (IsConnected)
                 {
                     _lostAt = DateTime.Now;
                     AppPaths.Log($"Cockpit connection on {port} lost ({ex.GetType().Name})", ex);
+                }
+                else if (_lostAt is null)
+                {
+                    // Not connected yet (cockpit asleep, off or unplugged at start): noted once per reason, not every 3 s.
+                    _waitingSince ??= DateTime.Now;
+                    var reason = $"{ex.GetType().Name}: {ex.Message}";
+                    if (reason != _notedFailure)
+                    {
+                        _notedFailure = reason;
+                        AppPaths.Note($"Cockpit on {port} not answering ({reason}) – retrying every {RetryDelay.TotalSeconds:0} s");
+                    }
                 }
                 Report(L.F("Daum_Retrying", port, Describe(ex)), false, $"{ex.GetType().Name}: {ex.Message}");
             }
