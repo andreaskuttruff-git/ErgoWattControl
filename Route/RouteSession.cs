@@ -61,8 +61,15 @@ public sealed class RouteSession
         TargetWatt = RoundToStep(PowerFor(GradePercent / 100, StandingReferenceSpeed()));
     }
 
-    public const string GearingRoad = "Rennrad";
+    /// <summary>Ids of the gear tables as stored in settings.json ("Rennrad" of v1.x is read as <see cref="GearingRoad"/>).</summary>
+    public const string GearingRoad = "Road";
     public const string GearingMtb = "MTB";
+
+    /// <summary>The gear tables in the order of the lists.</summary>
+    public static readonly string[] Gearings = [GearingMtb, GearingRoad];
+
+    /// <summary>Name of a gear table in the language of the user interface.</summary>
+    public static string GearingName(string gearing) => L.T(gearing == GearingRoad ? "Gearing_Road" : "Gearing_Mtb");
 
     /// <summary>
     /// Distance per crank revolution. Road: the gear table in the 8008 TRS manual (p. 15), 3.7–9.3 m.

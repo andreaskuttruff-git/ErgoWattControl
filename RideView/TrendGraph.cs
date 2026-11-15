@@ -76,7 +76,7 @@ public sealed class TrendGraph : Control
         {
             var x = plot.Right - m / (float)minutes * plot.Width;
             g.DrawLine(gridPen, x, plot.Top, x, plot.Bottom);
-            var text = m == 0 ? "jetzt" : $"-{m} min";
+            var text = m == 0 ? L.T("Graph_Now") : L.F("Graph_MinutesAgo", m);
             var size = g.MeasureString(text, labelFont);
             g.DrawString(text, labelFont, labelBrush, Math.Clamp(x - size.Width / 2, 0, Width - size.Width), plot.Bottom + 4);
         }

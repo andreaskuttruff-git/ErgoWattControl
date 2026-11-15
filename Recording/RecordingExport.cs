@@ -63,7 +63,7 @@ public static class RecordingExport
     private static void WriteFitTo(RecordingFile file, string path)
     {
         if (file.Values.Count == 0)
-            throw new InvalidDataException("Die Aufzeichnung enthält keine Messwerte.");
+            throw new InvalidDataException(L.T("File_NoData"));
         var rows = file.Values.Select(v => new Row(file, v)).ToList();
         var route = file.Target?.Route;
         var virtualRide = route is { Length: > 1 };

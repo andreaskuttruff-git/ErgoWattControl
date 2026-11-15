@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Texts of the user interface: German. Keys are the same in every language; see Localization\L.cs. -->
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Button_Browse" xml:space="preserve"><value>Durchsuchen…</value></data>
+  <data name="Button_BrowseSpaced" xml:space="preserve"><value>Durchsuchen …</value></data>
+  <data name="Button_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Button_Close" xml:space="preserve"><value>Schließen</value></data>
+  <data name="Button_Default" xml:space="preserve"><value>Standard</value></data>
+  <data name="Button_Delete" xml:space="preserve"><value>Löschen</value></data>
+  <data name="Button_Discard" xml:space="preserve"><value>Verwerfen</value></data>
+  <data name="Button_Identify" xml:space="preserve"><value>Identifizieren</value></data>
+  <data name="Button_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Button_Open" xml:space="preserve"><value>Öffnen</value></data>
+  <data name="Button_OpenFolder" xml:space="preserve"><value>Ordner öffnen</value></data>
+  <data name="Button_Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="Button_Resume" xml:space="preserve"><value>Weiterfahren</value></data>
+  <data name="Button_SignIn" xml:space="preserve"><value>Anmelden</value></data>
+  <data name="Button_SignOut" xml:space="preserve"><value>Abmelden</value></data>
+  <data name="Button_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Button_TestConnection" xml:space="preserve"><value>Verbindung testen</value></data>
+  <data name="Caption_Folder" xml:space="preserve"><value>Ordner</value></data>
+  <data name="Caption_Recording" xml:space="preserve"><value>Aufzeichnung</value></data>
+  <data name="Caption_Replay" xml:space="preserve"><value>Aufzeichnung nachfahren</value></data>
+  <data name="Caption_Route" xml:space="preserve"><value>Strecke fahren</value></data>
+  <data name="Daum_Connected" xml:space="preserve"><value>Verbunden auf {0}</value></data>
+  <data name="Daum_Connecting" xml:space="preserve"><value>Verbinde mit {0} …</value></data>
+  <data name="Daum_InfoNotQueryable" xml:space="preserve"><value>Cockpit-Typ nicht abfragbar: max. {0} W</value></data>
+  <data name="Daum_InfoType" xml:space="preserve"><value>Cockpit {0}: max. {1} W</value></data>
+  <data name="Daum_InfoUnknownYet" xml:space="preserve"><value>Cockpit-Typ noch unbekannt, bis dahin max. {0} W</value></data>
+  <data name="Daum_NoAnswer" xml:space="preserve"><value>keine Antwort</value></data>
+  <data name="Daum_NoPort" xml:space="preserve"><value>Kein COM-Port eingestellt (☰ → Einstellungen)</value></data>
+  <data name="Daum_NoPortName" xml:space="preserve"><value>kein Port</value></data>
+  <data name="Daum_PortBusy" xml:space="preserve"><value>Port belegt</value></data>
+  <data name="Daum_PortUnavailable" xml:space="preserve"><value>Port nicht verfügbar</value></data>
+  <data name="Daum_ReplyMismatch" xml:space="preserve"><value>Antwort passt nicht</value></data>
+  <data name="Daum_Retrying" xml:space="preserve"><value>{0}: {1} – neuer Versuch …</value></data>
+  <data name="Daum_TestConnected" xml:space="preserve"><value>OK – Cockpit verbunden (Adresse {0})</value></data>
+  <data name="Daum_TestError" xml:space="preserve"><value>Fehler: {0}</value></data>
+  <data name="Daum_TestFound" xml:space="preserve"><value>OK – Cockpit gefunden (Adresse {0}, Version {1})</value></data>
+  <data name="Daum_TestPortBusy" xml:space="preserve"><value>Port ist belegt (läuft noch ein anderes Programm?)</value></data>
+  <data name="Daum_TestPortInUseByApp" xml:space="preserve"><value>Port wird gerade von der App für Verbindungsversuche benutzt.</value></data>
+  <data name="Daum_TypeUnknown" xml:space="preserve"><value>unbekannt ({0})</value></data>
+  <data name="Delete_Done" xml:space="preserve"><value>✓ {0} Aufzeichnung(en) in den Papierkorb verschoben</value></data>
+  <data name="Delete_Failed" xml:space="preserve"><value>
+Nicht gelöscht: {0}</value></data>
+  <data name="Delete_Many" xml:space="preserve"><value>Diese {0} Aufzeichnungen in den Papierkorb verschieben?</value></data>
+  <data name="Delete_More" xml:space="preserve"><value>… und {0} weitere</value></data>
+  <data name="Delete_One" xml:space="preserve"><value>Diese Aufzeichnung in den Papierkorb verschieben?</value></data>
+  <data name="Delete_Restore" xml:space="preserve"><value>Aus dem Papierkorb lassen sie sich wiederherstellen.</value></data>
+  <data name="Delete_Title" xml:space="preserve"><value>Aufzeichnung löschen</value></data>
+  <data name="Demo_Info" xml:space="preserve"><value>Demo (simulierter Fahrer, wie Cockpit 8008): max. 800 W</value></data>
+  <data name="Demo_Status" xml:space="preserve"><value>Demo-Modus (kein Cockpit)</value></data>
+  <data name="Device_DaumRs232" xml:space="preserve"><value>Daum ergo_bike (RS232)</value></data>
+  <data name="Device_Demo" xml:space="preserve"><value>Demo (simulierter Fahrer)</value></data>
+  <data name="Device_NoDevice" xml:space="preserve"><value>Kein Gerät</value></data>
+  <data name="End_Ask" xml:space="preserve"><value>Training beenden</value></data>
+  <data name="End_CloseApp" xml:space="preserve"><value>ErgoWattControl beenden</value></data>
+  <data name="End_Completed" xml:space="preserve"><value>Training abgeschlossen</value></data>
+  <data name="End_DeleteFailed" xml:space="preserve"><value>Löschen nicht möglich, die Datei bleibt erhalten:
+{0}</value></data>
+  <data name="End_DoneHeading" xml:space="preserve"><value>Geschafft – {0}</value></data>
+  <data name="End_Ended" xml:space="preserve"><value>Training beendet</value></data>
+  <data name="End_Finish" xml:space="preserve"><value>Ziel erreicht</value></data>
+  <data name="End_FinishHeading" xml:space="preserve"><value>Ziel erreicht – {0}</value></data>
+  <data name="End_NothingYet" xml:space="preserve"><value>Noch nichts aufgezeichnet – die Aufnahme beginnt mit dem ersten Tritt. OK beendet die App.</value></data>
+  <data name="End_OkEndsRecording" xml:space="preserve"><value>OK beendet die Aufnahme und speichert sie in {0}.</value></data>
+  <data name="End_OkEndsTraining" xml:space="preserve"><value>OK beendet das Training und speichert die Aufnahme in {0}.</value></data>
+  <data name="End_RenameFailed" xml:space="preserve"><value>Umbenennen nicht möglich, die Datei behält ihren Namen:
+{0}</value></data>
+  <data name="End_Saved" xml:space="preserve"><value>Aufnahme gespeichert</value></data>
+  <data name="End_SavedIn" xml:space="preserve"><value>Gespeichert in {0}</value></data>
+  <data name="End_StillRecording" xml:space="preserve"><value>Die Aufnahme läuft noch. OK speichert sie in {0} und beendet die App.</value></data>
+  <data name="Error_Unexpected" xml:space="preserve"><value>Unerwarteter Fehler: {0}
+
+Die App läuft weiter. Details stehen in {1}.</value></data>
+  <data name="Export_Button" xml:space="preserve"><value>Exportieren</value></data>
+  <data name="Export_Csv" xml:space="preserve"><value>CSV – für Excel (Semikolon, Dezimalkomma)</value></data>
+  <data name="Export_Facts" xml:space="preserve"><value>{0} vom {1:dd.MM.yyyy HH:mm} Uhr</value></data>
+  <data name="Export_FactsLine" xml:space="preserve"><value>Dauer {0}     Strecke {1:0.0} km     Ø {2:0} W     max. {3} W</value></data>
+  <data name="Export_Failed" xml:space="preserve"><value>
+Nicht exportiert: {0}</value></data>
+  <data name="Export_FallbackMark" xml:space="preserve"><value>{0}   (Ersatzordner)</value></data>
+  <data name="Export_Fit" xml:space="preserve"><value>FIT – für Strava, Garmin Connect, intervals.icu, TrainingPeaks</value></data>
+  <data name="Export_FitNote" xml:space="preserve"><value>FIT: Eine Strecke wird als virtuelle Fahrt mit Karte exportiert, alle anderen Aufzeichnungen als Indoor-Training. Die Datei lässt sich z. B. bei Strava unter „Hochladen → Datei“ importieren.</value></data>
+  <data name="Export_Formats" xml:space="preserve"><value>Formate</value></data>
+  <data name="Export_GarminTip" xml:space="preserve"><value>Öffnet nach dem Export Garmin Connect in einem eigenen Fenster;
+die FIT-Dateien werden auf der Import-Seite eingesetzt.
+Beim ersten Mal selbst anmelden – mit „Daten speichern“ geht es danach direkt zur Import-Seite.</value></data>
+  <data name="Export_NoRecordings" xml:space="preserve"><value>Im Ordner {0} liegen keine Aufzeichnungen (*.json).</value></data>
+  <data name="Export_NotReadable" xml:space="preserve"><value>Nicht lesbar: {0}</value></data>
+  <data name="Export_StravaTip" xml:space="preserve"><value>Öffnet nach dem Export Strava in einem eigenen Fenster;
+die FIT-Dateien werden auf der Upload-Seite eingesetzt.
+Beim ersten Mal selbst anmelden – mit „Eingeloggt bleiben“ geht es danach direkt zur Upload-Seite.</value></data>
+  <data name="Export_TargetDialog" xml:space="preserve"><value>Zielordner für den Export</value></data>
+  <data name="Export_TargetFolder" xml:space="preserve"><value>Zielordner</value></data>
+  <data name="Export_TargetUnusable" xml:space="preserve"><value>Zielordner nicht verwendbar: {0}</value></data>
+  <data name="Export_Title" xml:space="preserve"><value>Aufzeichnung exportieren</value></data>
+  <data name="Export_UploadTo" xml:space="preserve"><value>Danach hochladen bei:</value></data>
+  <data name="Export_Written" xml:space="preserve"><value>✓ {0} Datei(en) geschrieben: {1}</value></data>
+  <data name="Fact_AvgPower" xml:space="preserve"><value>Ø Leistung</value></data>
+  <data name="Fact_AvgPowerThen" xml:space="preserve"><value>{0:0} W   (damals Ø {1:0} W)</value></data>
+  <data name="Fact_AvgPulse" xml:space="preserve"><value>Ø Puls</value></data>
+  <data name="Fact_AvgPulseThen" xml:space="preserve"><value>{0:0}   (damals Ø {1:0})</value></data>
+  <data name="Fact_AvgSpeed" xml:space="preserve"><value>Ø Geschwindigkeit</value></data>
+  <data name="Fact_Energy" xml:space="preserve"><value>Energie</value></data>
+  <data name="Fact_MovingTime" xml:space="preserve"><value>Fahrzeit</value></data>
+  <data name="Fact_ProfileShifted" xml:space="preserve"><value>Profil verschoben</value></data>
+  <data name="Fact_Revolutions" xml:space="preserve"><value>Umdrehungen</value></data>
+  <data name="Fact_Ridden" xml:space="preserve"><value>Gefahren</value></data>
+  <data name="Fact_RiddenValue" xml:space="preserve"><value>{0} von {1}</value></data>
+  <data name="Fact_Route" xml:space="preserve"><value>Strecke</value></data>
+  <data name="Fact_RouteValue" xml:space="preserve"><value>{0:0.0} von {1:0.0} km</value></data>
+  <data name="File_ColumnMissing" xml:space="preserve"><value>Spalte „{0}“ fehlt – ist das eine Aufzeichnung dieser App?</value></data>
+  <data name="File_Empty" xml:space="preserve"><value>Die Datei ist leer.</value></data>
+  <data name="File_NoData" xml:space="preserve"><value>Die Aufzeichnung enthält keine Messwerte.</value></data>
+  <data name="File_NoDataRows" xml:space="preserve"><value>Die Datei enthält keine Messwerte.</value></data>
+  <data name="File_TooShort" xml:space="preserve"><value>Die Aufzeichnung ist kürzer als 10 Sekunden.</value></data>
+  <data name="Fit_Damaged" xml:space="preserve"><value>Die FIT-Datei ist beschädigt oder unvollständig: {0}</value></data>
+  <data name="Fit_NoPowerButTrack" xml:space="preserve"><value>Die FIT-Datei enthält keine Leistungswerte – fahre sie unter „Strecke fahren“ als Strecke nach.</value></data>
+  <data name="Fit_NoPowerNoTrack" xml:space="preserve"><value>Die FIT-Datei enthält weder Leistungswerte noch eine Strecke.</value></data>
+  <data name="Fit_NoRecords" xml:space="preserve"><value>Die FIT-Datei enthält keine Messwerte (records).</value></data>
+  <data name="Fit_NotFit" xml:space="preserve"><value>Das ist keine FIT-Datei.</value></data>
+  <data name="Fit_NoTrackButPower" xml:space="preserve"><value>Die FIT-Datei enthält keine GPS-Strecke mit Höhenangaben (z. B. eine Indoor-Fahrt) – nachfahren lässt sie sich unter „Aufzeichnung nachfahren“ als Leistungsprofil.</value></data>
+  <data name="Fit_NoTrackNoPower" xml:space="preserve"><value>Die FIT-Datei enthält keine GPS-Strecke mit Höhenangaben (z. B. eine Indoor-Fahrt) – sie lässt sich nicht als Strecke fahren.</value></data>
+  <data name="Gearing_Mtb" xml:space="preserve"><value>MTB</value></data>
+  <data name="Gearing_Road" xml:space="preserve"><value>Rennrad</value></data>
+  <data name="Gpx_NoTrack" xml:space="preserve"><value>Die GPX-Datei enthält keinen Track mit Höhenangaben.</value></data>
+  <data name="Graph_MinutesAgo" xml:space="preserve"><value>-{0} min</value></data>
+  <data name="Graph_Now" xml:space="preserve"><value>jetzt</value></data>
+  <data name="Help_Caption" xml:space="preserve"><value>Hilfe</value></data>
+  <data name="Help_OpenFailed" xml:space="preserve"><value>Die Hilfe konnte nicht geöffnet werden:
+{0}</value></data>
+  <data name="Help_TargetFailed" xml:space="preserve"><value>Konnte nicht geöffnet werden:
+{0}
+{1}</value></data>
+  <data name="Help_Title" xml:space="preserve"><value>ErgoWattControl – Hilfe</value></data>
+  <data name="Info_Folders" xml:space="preserve"><value>Einstellungen: {0}
+Daten: {1}</value></data>
+  <data name="Info_HelpOnline" xml:space="preserve"><value>Hilfe online</value></data>
+  <data name="Info_HelpUrl" xml:space="preserve"><value>https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html</value></data>
+  <data name="Info_Portable" xml:space="preserve"><value>
+(portabel – alles neben der exe)</value></data>
+  <data name="Info_Project" xml:space="preserve"><value>Projektseite auf GitHub</value></data>
+  <data name="Info_Releases" xml:space="preserve"><value>Neue Versionen (Releases)</value></data>
+  <data name="Info_Subtitle" xml:space="preserve"><value>Steuerung für das Daum ergo_bike 8008 TRS (RS232)</value></data>
+  <data name="Info_Title" xml:space="preserve"><value>Info</value></data>
+  <data name="Info_Version" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Kind_Program" xml:space="preserve"><value>Programm</value></data>
+  <data name="Kind_Recording" xml:space="preserve"><value>Aufzeichnung</value></data>
+  <data name="Kind_Route" xml:space="preserve"><value>Strecke</value></data>
+  <data name="Kind_Training" xml:space="preserve"><value>Training</value></data>
+  <data name="Load_RecordingFailed" xml:space="preserve"><value>Die Aufzeichnung konnte nicht geladen werden:
+{0}
+
+Details: {1}</value></data>
+  <data name="Load_RouteFailed" xml:space="preserve"><value>Die Strecke konnte nicht geladen werden:
+{0}
+
+Details: {1}</value></data>
+  <data name="Menu_EndTraining" xml:space="preserve"><value>Training beenden</value></data>
+  <data name="Menu_Exit" xml:space="preserve"><value>Beenden</value></data>
+  <data name="Menu_Export" xml:space="preserve"><value>Aufzeichnung exportieren …</value></data>
+  <data name="Menu_Help" xml:space="preserve"><value>Hilfe</value></data>
+  <data name="Menu_Info" xml:space="preserve"><value>Info …</value></data>
+  <data name="Menu_Program" xml:space="preserve"><value>Trainingsprogramm starten …</value></data>
+  <data name="Menu_Replay" xml:space="preserve"><value>Aufzeichnung nachfahren …</value></data>
+  <data name="Menu_Route" xml:space="preserve"><value>Strecke fahren …</value></data>
+  <data name="Menu_Settings" xml:space="preserve"><value>Einstellungen …</value></data>
+  <data name="Monitor_Describe" xml:space="preserve"><value>Monitor {0} – {1}×{2}</value></data>
+  <data name="Monitor_Primary" xml:space="preserve"><value> (Hauptmonitor)</value></data>
+  <data name="Pick_AsRoute" xml:space="preserve"><value>Wird wieder als Strecke gefahren: {0}, {1:0.0} km, {2:0} Hm bergauf</value></data>
+  <data name="Pick_ChooseTraining" xml:space="preserve"><value>Gespeichertes Training auswählen</value></data>
+  <data name="Pick_CustomFolderTip" xml:space="preserve"><value>{0}
+Eigene Programme (*.json) dort ablegen – sie stehen mit ★ oben in der Liste.
+Aufbau: TrainingProgram.schema.json, Vorlage: Example_Custom_Program.json.</value></data>
+  <data name="Pick_CustomProgram" xml:space="preserve"><value>Eigenes Programm: {0}</value></data>
+  <data name="Pick_FactsPower" xml:space="preserve"><value>Dauer {0}     Ø {1:0} W     max. {2} W</value></data>
+  <data name="Pick_FactsPulse" xml:space="preserve"><value>     Puls Ø {0:0}</value></data>
+  <data name="Pick_FactsRoute" xml:space="preserve"><value>Dauer {0}     {1:0.0} km     {2:0} Hm</value></data>
+  <data name="Pick_FileName" xml:space="preserve"><value>Dateiname:</value></data>
+  <data name="Pick_FitAlsoTrack" xml:space="preserve"><value> (die Datei hat auch eine Strecke – die fährst du unter „Strecke fahren“)</value></data>
+  <data name="Pick_FitNoPower" xml:space="preserve"><value>Ohne Leistungswerte – wird als Strecke gefahren: {0:0.0} km, {1:0} Hm bergauf</value></data>
+  <data name="Pick_FitRide" xml:space="preserve"><value>FIT-Datei: Fahrt vom {0:dd.MM.yyyy} um {0:HH:mm} Uhr, {1} Messpunkte</value></data>
+  <data name="Pick_Folder" xml:space="preserve"><value>Ordner: {0}</value></data>
+  <data name="Pick_FolderNotOpened" xml:space="preserve"><value>Ordner nicht zu öffnen: {0}</value></data>
+  <data name="Pick_FollowsPower" xml:space="preserve"><value>Folgt dem aufgezeichneten Leistungsverlauf</value></data>
+  <data name="Pick_NoPulse" xml:space="preserve"><value>Keine Pulsdaten</value></data>
+  <data name="Pick_NoPulseRecorded" xml:space="preserve"><value>Keine Pulsdaten aufgezeichnet</value></data>
+  <data name="Pick_NothingInFolder" xml:space="preserve"><value>Im Ordner {0} liegen keine {1}.</value></data>
+  <data name="Pick_NotReadable" xml:space="preserve"><value>Nicht lesbar:</value></data>
+  <data name="Pick_NotReadableShort" xml:space="preserve"><value>Nicht lesbar</value></data>
+  <data name="Pick_OpenCustomFolder" xml:space="preserve"><value>Ordner für eigene Programme öffnen</value></data>
+  <data name="Pick_OtherFolder" xml:space="preserve"><value>Aufzeichnung aus anderem Ordner …</value></data>
+  <data name="Pick_ProfileNote" xml:space="preserve"><value>Die Zeit läuft nur, solange du trittst. + / − und das Mausrad verschieben das ganze Profil um ±5 W.</value></data>
+  <data name="Pick_Programs" xml:space="preserve"><value>Programme (*.json)</value></data>
+  <data name="Pick_ProgramsTitle" xml:space="preserve"><value>Trainingsprogramm starten</value></data>
+  <data name="Pick_PulseThen" xml:space="preserve"><value>Puls damals: Ø {0:0}</value></data>
+  <data name="Pick_Recordings" xml:space="preserve"><value>Aufzeichnungen</value></data>
+  <data name="Pick_RecordingSettings" xml:space="preserve"><value>Einstellungen der Aufzeichnung – für diesen Lauf änderbar</value></data>
+  <data name="Pick_RecordingsTitle" xml:space="preserve"><value>Aufzeichnung nachfahren</value></data>
+  <data name="Pick_RouteNote" xml:space="preserve"><value>Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst.</value></data>
+  <data name="Pick_RunSettings" xml:space="preserve"><value>Einstellungen – für diesen Lauf änderbar</value></data>
+  <data name="Pick_SaveAsDefault" xml:space="preserve"><value>Als Standard speichern</value></data>
+  <data name="Pick_SaveAsDefaultTip" xml:space="preserve"><value>Übernimmt diese Werte in die settings.json – sie gelten dann auch für neue Strecken und im Einstellungsdialog.</value></data>
+  <data name="Pick_SavedAsDefault" xml:space="preserve"><value>✓ in den Einstellungen gespeichert</value></data>
+  <data name="Pick_SavedAt" xml:space="preserve"><value>Gespeichert am {0:dd.MM.yyyy} um {0:HH:mm} Uhr</value></data>
+  <data name="Pick_ShowPulse" xml:space="preserve"><value>Puls vom Original während der Fahrt einblenden</value></data>
+  <data name="Pick_TrainingFilter" xml:space="preserve"><value>Aufzeichnungen und FIT-Dateien (*.json, *.csv, *.fit)|*.json;*.csv;*.fit</value></data>
+  <data name="Program_FirstAtZero" xml:space="preserve"><value>{0}: Der erste Punkt muss bei Sekunde 0 beginnen.</value></data>
+  <data name="Program_InvalidJson" xml:space="preserve"><value>Kein gültiges JSON{0}: {1}</value></data>
+  <data name="Program_Line" xml:space="preserve"><value> (Zeile {0})</value></data>
+  <data name="Program_NotIncreasing" xml:space="preserve"><value>{0}: Sekunde {1} muss größer sein als beim Punkt davor ({2}).</value></data>
+  <data name="Program_Point" xml:space="preserve"><value>Profile, Punkt {0}</value></data>
+  <data name="Program_PointShape" xml:space="preserve"><value>{0}: erwartet [Sekunde, Watt].</value></data>
+  <data name="Program_TextExpected" xml:space="preserve"><value>Erwartet: ein Text oder ein Text je Sprache (z. B. "de" und "en").</value></data>
+  <data name="Program_TooFewPoints" xml:space="preserve"><value>„Profile“ braucht mindestens zwei Punkte [Sekunde, Watt] – der letzte markiert das Ende.</value></data>
+  <data name="Program_WattRange" xml:space="preserve"><value>{0}: {1} W liegt außerhalb von 0–800 W.</value></data>
+  <data name="Rec_CreateFailed" xml:space="preserve"><value>Datei konnte nicht angelegt werden:
+{0}</value></data>
+  <data name="Rec_CreateFailedGuided" xml:space="preserve"><value>Die Aufzeichnung konnte nicht angelegt werden – auch nicht im Ersatzordner. Das Training läuft ohne Aufzeichnung weiter:
+{0}
+
+Ordner: {1}</value></data>
+  <data name="Rec_InFallbackFolder" xml:space="preserve"><value>Der Ablageordner ist nicht beschreibbar:
+{0}
+
+Die Aufzeichnung wird stattdessen hier gespeichert:
+{1}
+
+Export und „Aufzeichnung nachfahren“ finden sie dort. Der Grund steht im Protokoll ErgoWattControl.log.</value></data>
+  <data name="Rec_NoFolder" xml:space="preserve"><value>Kein Ordner für Aufzeichnungen.</value></data>
+  <data name="Rec_NotConnected" xml:space="preserve"><value>Das Ergometer ist noch nicht verbunden.</value></data>
+  <data name="Rec_Stopped" xml:space="preserve"><value>Aufzeichnung abgebrochen:
+{0}</value></data>
+  <data name="Ride_Actual" xml:space="preserve"><value>[Ist {0} W]</value></data>
+  <data name="Ride_Close" xml:space="preserve"><value>Beenden</value></data>
+  <data name="Ride_Connecting" xml:space="preserve"><value>Verbinde …</value></data>
+  <data name="Ride_EndTraining" xml:space="preserve"><value>■ Training beenden</value></data>
+  <data name="Ride_GearCaption" xml:space="preserve"><value>GANG   {0} W</value></data>
+  <data name="Ride_GearHint" xml:space="preserve"><value>[↑↓ + − / Mausrad Gang ±1  Bild ±5]</value></data>
+  <data name="Ride_GraphPower" xml:space="preserve"><value>Leistung (W)</value></data>
+  <data name="Ride_GraphPulse" xml:space="preserve"><value>Puls (bpm)</value></data>
+  <data name="Ride_Menu" xml:space="preserve"><value>Menü</value></data>
+  <data name="Ride_NextChange" xml:space="preserve"><value>nächster Wechsel in {0} → {1} W</value></data>
+  <data name="Ride_NoMoreChange" xml:space="preserve"><value>bis zum Ende gleichbleibend</value></data>
+  <data name="Ride_Power" xml:space="preserve"><value>LEISTUNG</value></data>
+  <data name="Ride_PowerHint" xml:space="preserve"><value>[↑↓ + − / Mausrad ±5  Bild ±25]</value></data>
+  <data name="Ride_Profile" xml:space="preserve"><value>PROFIL</value></data>
+  <data name="Ride_ProfileShifted" xml:space="preserve"><value>PROFIL   {0:+0;-0} W</value></data>
+  <data name="Ride_Pulse" xml:space="preserve"><value>PULS</value></data>
+  <data name="Ride_Record" xml:space="preserve"><value>● Aufnahme</value></data>
+  <data name="Ride_ReplayHint" xml:space="preserve"><value>[↑↓ + − / Mausrad Profil ±5  Bild ±25]</value></data>
+  <data name="Ride_Revolutions" xml:space="preserve"><value>{0:0} U</value></data>
+  <data name="Ride_Stop" xml:space="preserve"><value>■ Stop</value></data>
+  <data name="Ride_Time" xml:space="preserve"><value>ZEIT</value></data>
+  <data name="Ride_ToMainScreen" xml:space="preserve"><value>Hauptbildschirm</value></data>
+  <data name="Ride_ToRideView" xml:space="preserve"><value>Fahransicht</value></data>
+  <data name="RideValues_Drag" xml:space="preserve"><value>   Luftwiderstand (cw·A)</value></data>
+  <data name="RideValues_PowerLimit" xml:space="preserve"><value>Wattgrenze</value></data>
+  <data name="RideValues_Rolling" xml:space="preserve"><value>Rollwiderstand</value></data>
+  <data name="Route_Choose" xml:space="preserve"><value>Strecke auswählen</value></data>
+  <data name="Route_Climbing" xml:space="preserve"><value>Höhenmeter bergauf:</value></data>
+  <data name="Route_ClimbingValue" xml:space="preserve"><value>{0:0} m   (Höhe {1:0} – {2:0} m)</value></data>
+  <data name="Route_Distance" xml:space="preserve"><value>Strecke:</value></data>
+  <data name="Route_Filter" xml:space="preserve"><value>Strecken (*.gpx, *.fit)|*.gpx;*.fit</value></data>
+  <data name="Route_MaxGrade" xml:space="preserve"><value>Max. Steigung:</value></data>
+  <data name="Route_MaxPower" xml:space="preserve"><value>Max. Leistung:</value></data>
+  <data name="Route_NoPoints" xml:space="preserve"><value>Die Strecke enthält keine Punkte mit Höhenangaben.</value></data>
+  <data name="Route_NoRoutes" xml:space="preserve"><value>Im Ordner {0} liegen keine GPX-Strecken.</value></data>
+  <data name="Route_OtherFolder" xml:space="preserve"><value>GPX- oder FIT-Datei aus anderem Ordner …</value></data>
+  <data name="Route_OverLimit" xml:space="preserve"><value>{0}
+Über deiner Wattgrenze von {1} W – dort wird auf {1} W begrenzt.</value></data>
+  <data name="Route_Peak" xml:space="preserve"><value>{0:0} W  am steilsten Anstieg ({1:0.0} %), im 1. Gang bei {2} RPM ({3:0} km/h) – schneller kostet mehr</value></data>
+  <data name="Route_RiddenWith" xml:space="preserve"><value>   (gefahren mit {0} %: {1:0.0} %)</value></data>
+  <data name="Route_Settings" xml:space="preserve"><value>Einstellungen:</value></data>
+  <data name="Route_SettingsValue" xml:space="preserve"><value>Steigungsfaktor {0} %,  {1}-Übersetzung,  Startgang {2}</value></data>
+  <data name="Route_StoredGaps" xml:space="preserve"><value>Die gespeicherte Strecke hat nicht alle {0:0} m einen Punkt.</value></data>
+  <data name="Route_StoredIncomplete" xml:space="preserve"><value>Die gespeicherte Strecke ist unvollständig.</value></data>
+  <data name="Route_Title" xml:space="preserve"><value>Strecke fahren</value></data>
+  <data name="Route_TooShort" xml:space="preserve"><value>Die Strecke ist kürzer als 100 m.</value></data>
+  <data name="Route_Weight" xml:space="preserve"><value>Gewicht:</value></data>
+  <data name="Route_WeightValue" xml:space="preserve"><value>{0:0} kg Fahrer + {1:0} kg Rad</value></data>
+  <data name="Settings_BikeTip" xml:space="preserve"><value>Gewicht des Rads, mit dem du die Strecke virtuell fährst. Zählt wie das Fahrergewicht.</value></data>
+  <data name="Settings_BrowseTip" xml:space="preserve"><value>Ablageordner auswählen.</value></data>
+  <data name="Settings_ChoosePort" xml:space="preserve"><value>Bitte einen Port auswählen.</value></data>
+  <data name="Settings_ComPort" xml:space="preserve"><value>COM-Port:</value></data>
+  <data name="Settings_Connected" xml:space="preserve"><value>Aktuell verbunden: {0}</value></data>
+  <data name="Settings_Device" xml:space="preserve"><value>Gerät:</value></data>
+  <data name="Settings_DeviceTip" xml:space="preserve"><value>Welches Ergometer die App steuert.
+Demo: ein simulierter Fahrer zum Ausprobieren ohne Ergometer.
+Nach dem Speichern verbindet sich die App sofort neu.</value></data>
+  <data name="Settings_Folder" xml:space="preserve"><value>Ablageordner:</value></data>
+  <data name="Settings_FolderDialog" xml:space="preserve"><value>Ablageordner für Aufzeichnungen</value></data>
+  <data name="Settings_FolderInvalid" xml:space="preserve"><value>Ablageordner ungültig:
+{0}</value></data>
+  <data name="Settings_FolderTip" xml:space="preserve"><value>Ordner für die Aufzeichnungen.
+Die Dateinamen legen FileNameTraining, FileNameRoute und FileNameProgram in der settings.json fest.</value></data>
+  <data name="Settings_Gearing" xml:space="preserve"><value>Übersetzung</value></data>
+  <data name="Settings_GearingTip" xml:space="preserve"><value>Übersetzung der 28 virtuellen Gänge im Streckenmodus.
+MTB: kleinere Gänge (2,0–7,4 m pro Kurbelumdrehung), am Berg langsam kurbeln möglich.
+Rennrad: Daum-Tabelle (3,7–9,3 m pro Kurbelumdrehung).</value></data>
+  <data name="Settings_GradeTip" xml:space="preserve"><value>Wie steil die GPX-Strecke wirkt: 100 % = wie in echt, 50 % = alle Steigungen und Gefälle halb so steil.
+Macht bergige Strecken fahrbar, ohne an die Wattgrenze zu stoßen.</value></data>
+  <data name="Settings_IdentifyTip" xml:space="preserve"><value>Zeigt auf jedem Monitor 3 Sekunden lang groß seine Nummer.</value></data>
+  <data name="Settings_KgBike" xml:space="preserve"><value>kg   Rad</value></data>
+  <data name="Settings_KgGrade" xml:space="preserve"><value>kg   Steigung</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Sprache / Language:</value></data>
+  <data name="Settings_LanguageAuto" xml:space="preserve"><value>Automatisch – wie Windows ({0})</value></data>
+  <data name="Settings_LanguageTip" xml:space="preserve"><value>Sprache der App. Eine Änderung gilt nach einem Neustart; die App bietet ihn gleich an.
+Zahlen und Datum richten sich nach den Windows-Einstellungen.</value></data>
+  <data name="Settings_Monitor" xml:space="preserve"><value>Fahransicht auf:</value></data>
+  <data name="Settings_MonitorAuto" xml:space="preserve"><value>Automatisch (erster Nebenmonitor)</value></data>
+  <data name="Settings_MonitorTip" xml:space="preserve"><value>Monitor, auf den der Button „Fahransicht“ das Fenster legt.
+„Automatisch“ nimmt den ersten Monitor, der nicht der Hauptmonitor ist.</value></data>
+  <data name="Settings_NotConnected" xml:space="preserve"><value>Aktuell nicht verbunden</value></data>
+  <data name="Settings_OpenTip" xml:space="preserve"><value>Ablageordner im Explorer öffnen.</value></data>
+  <data name="Settings_PortTip" xml:space="preserve"><value>Serielle Schnittstelle, an der das Cockpit hängt (Update-Kabel bzw. USB-RS232-Adapter).
+Nach dem Speichern verbindet sich die App sofort neu.</value></data>
+  <data name="Settings_PowerLimit" xml:space="preserve"><value>Wattgrenze:</value></data>
+  <data name="Settings_PowerLimitTip" xml:space="preserve"><value>Höchste Leistung, die die App einstellt – auch im Streckenmodus.
+Das Gerät selbst begrenzt zusätzlich (Daum 8008/8080: 800 W, andere Cockpits: 400 W); es gilt der kleinere Wert.</value></data>
+  <data name="Settings_PowerLimitUnit" xml:space="preserve"><value>W   ({0})</value></data>
+  <data name="Settings_RefreshTip" xml:space="preserve"><value>Liste der COM-Ports neu einlesen, z. B. nach dem Einstecken eines USB-Adapters.</value></data>
+  <data name="Settings_RestartLater" xml:space="preserve"><value>Die neue Sprache gilt ab dem nächsten Start der App (gerade läuft ein Training).</value></data>
+  <data name="Settings_RestartNow" xml:space="preserve"><value>Die neue Sprache gilt nach einem Neustart der App.
+
+Jetzt neu starten?</value></data>
+  <data name="Settings_Rider" xml:space="preserve"><value>Fahrer</value></data>
+  <data name="Settings_RiderTip" xml:space="preserve"><value>Dein Körpergewicht. Bestimmt im Streckenmodus, wie viel Leistung ein Anstieg kostet.</value></data>
+  <data name="Settings_Route" xml:space="preserve"><value>Strecke fahren:</value></data>
+  <data name="Settings_SaveFailed" xml:space="preserve"><value>Einstellungen konnten nicht gespeichert werden:
+{0}</value></data>
+  <data name="Settings_StartGear" xml:space="preserve"><value>   Startgang</value></data>
+  <data name="Settings_StartGearTip" xml:space="preserve"><value>Gang, in dem eine Strecke beginnt (1 = leichtester, 28 = schwerster).</value></data>
+  <data name="Settings_Testing" xml:space="preserve"><value>Teste {0} …</value></data>
+  <data name="Settings_TestTip" xml:space="preserve"><value>Prüft, ob am gewählten Port ein Cockpit antwortet. Ändert nichts am Cockpit.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Start_Help" xml:space="preserve"><value>ErgoWattControl – Steuerung für Daum ergo_bike 8008 TRS
+
+Aufruf:
+  ErgoWattControl.exe
+      Normalbetrieb: verbindet sich mit dem Cockpit am eingestellten COM-Port.
+
+  ErgoWattControl.exe -demo [GPX-Datei oder Aufzeichnung]
+      Demo-Modus ohne Cockpit: ein simulierter Fahrer (ca. 75 RPM) ersetzt das
+      Ergometer, die serielle Schnittstelle wird nicht benutzt.
+      Mit GPX-Datei startet diese Strecke sofort, ohne Übersicht;
+      mit einer Aufzeichnung (JSON/CSV) oder einem Programm wird dieses wiederholt.
+      Beispiel: ErgoWattControl.exe -demo "GPX\Tour.gpx"
+
+  ErgoWattControl.exe -main
+      Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor.
+      „Fahransicht“ bzw. Taste 0 schiebt das Fenster auf den Fahrer-Monitor.
+      Kombinierbar: ErgoWattControl.exe -main -demo
+
+  ErgoWattControl.exe -help
+      Zeigt diese Hilfe.
+
+Schreibweisen: -demo, --demo, /demo,  -main, --main, /main  sowie  -help, --help, -h, -?, /?
+Einstellungen: %AppData%\ErgoWattControl\settings.json, Aufzeichnungen, Strecken
+und Programme in Dokumente\ErgoWattControl. Liegt eine settings.json neben der exe,
+bleibt alles im Programmordner (portabel).</value></data>
+  <data name="Start_HelpTitle" xml:space="preserve"><value>ErgoWattControl – Parameter</value></data>
+  <data name="Start_UnknownParameter" xml:space="preserve"><value>Unbekannter Parameter: {0}</value></data>
+  <data name="Upload_DefaultTip" xml:space="preserve"><value>Beide Adressen auf den Standard von {0} zurücksetzen.</value></data>
+  <data name="Upload_EnableTip" xml:space="preserve"><value>Upload zu {0} verwenden: Der Exportdialog bietet dann „Danach hochladen bei {0}“ an.</value></data>
+  <data name="Upload_FieldNotFound" xml:space="preserve"><value>Dateifeld nicht gefunden – bitte die Datei oben auf die Seite ziehen oder dort die Datei auswählen.</value></data>
+  <data name="Upload_FilesStrip" xml:space="preserve"><value>Exportierte Dateien – werden auf der {0} eingesetzt, lassen sich aber auch hineinziehen:</value></data>
+  <data name="Upload_FindingField" xml:space="preserve"><value>Suche das Dateifeld der {0} …</value></data>
+  <data name="Upload_GarminLoginHint" xml:space="preserve"><value>Bitte bei Garmin anmelden. „Daten speichern“ ist vorausgewählt – so geht es beim nächsten Mal direkt zur Import-Seite.</value></data>
+  <data name="Upload_GarminNextStep" xml:space="preserve"><value>jetzt auf der Seite „Daten importieren“ klicken.</value></data>
+  <data name="Upload_GarminPage" xml:space="preserve"><value>Seite „Daten importieren“ von Garmin Connect</value></data>
+  <data name="Upload_GarminPageName" xml:space="preserve"><value>Import-Seite</value></data>
+  <data name="Upload_ImportLabel" xml:space="preserve"><value>Import</value></data>
+  <data name="Upload_InsertAgain" xml:space="preserve"><value>Erneut einsetzen</value></data>
+  <data name="Upload_InsertedMany" xml:space="preserve"><value>✓ {0} Dateien eingesetzt – </value></data>
+  <data name="Upload_InsertedOne" xml:space="preserve"><value>✓ {0} eingesetzt – </value></data>
+  <data name="Upload_LoginUrlTip" xml:space="preserve"><value>Anmeldeseite von {0}. Wird geöffnet, solange keine Anmeldung gespeichert ist.</value></data>
+  <data name="Upload_NotSignedIn" xml:space="preserve"><value>Nicht angemeldet</value></data>
+  <data name="Upload_NoWebView" xml:space="preserve"><value>Eingebettetes Browserfenster nicht verfügbar ({0}) – {1} wird im Standardbrowser geöffnet.</value></data>
+  <data name="Upload_SessionChecking" xml:space="preserve"><value>Anmeldung gespeichert – wird geprüft …</value></data>
+  <data name="Upload_SessionExpired" xml:space="preserve"><value>Anmeldung abgelaufen – bitte neu anmelden</value></data>
+  <data name="Upload_SessionSaved" xml:space="preserve"><value>Anmeldung gespeichert</value></data>
+  <data name="Upload_SessionUnknown" xml:space="preserve"><value>Anmeldung gespeichert (Prüfung nicht möglich)</value></data>
+  <data name="Upload_SessionValid" xml:space="preserve"><value>Anmeldung gespeichert und gültig</value></data>
+  <data name="Upload_SignedIn" xml:space="preserve"><value>✓ Bei {0} angemeldet – das Fenster schließt sich.</value></data>
+  <data name="Upload_SignedOut" xml:space="preserve"><value>Abgemeldet – gespeicherte Anmeldung gelöscht</value></data>
+  <data name="Upload_SignInLabel" xml:space="preserve"><value>Anmeldung</value></data>
+  <data name="Upload_SignInTip" xml:space="preserve"><value>Öffnet die Anmeldeseite von {0} im Browserfenster.
+Nur ohne gespeicherte (gültige) Anmeldung.</value></data>
+  <data name="Upload_SignOutBlocked" xml:space="preserve"><value>Abmelden nicht möglich, solange das {0}-Fenster offen ist</value></data>
+  <data name="Upload_SignOutTip" xml:space="preserve"><value>Löscht die im {0}-Fenster gespeicherte Anmeldung (Cookies) dieses Rechners.
+Beim nächsten Mal musst du dich neu anmelden.</value></data>
+  <data name="Upload_StravaLoginHint" xml:space="preserve"><value>Bitte bei Strava anmelden (am besten per E-Mail – Google lässt die Anmeldung in eingebetteten Fenstern oft nicht zu). „Eingeloggt bleiben“ ist vorausgewählt – so geht es beim nächsten Mal direkt zur Upload-Seite.</value></data>
+  <data name="Upload_StravaNextStep" xml:space="preserve"><value>Strava lädt die Datei hoch – danach Titel prüfen und „Speichern &amp; anzeigen“ klicken.</value></data>
+  <data name="Upload_StravaPage" xml:space="preserve"><value>Upload-Seite von Strava („Datei hochladen“)</value></data>
+  <data name="Upload_StravaPageName" xml:space="preserve"><value>Upload-Seite</value></data>
+  <data name="Upload_TitleSignIn" xml:space="preserve"><value>{0} – Anmelden</value></data>
+  <data name="Upload_TitleUpload" xml:space="preserve"><value>{0} – Aufzeichnung hochladen</value></data>
+  <data name="Upload_UploadLabel" xml:space="preserve"><value>Upload</value></data>
+  <data name="Upload_UploadUrlTip" xml:space="preserve"><value>{0}. Wird nach der Anmeldung bzw. bei gespeicherter Anmeldung direkt geöffnet.</value></data>
+</root>

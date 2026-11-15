@@ -29,11 +29,11 @@ public sealed class ReplayPickerForm : Form
         Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, WordWrap = true, ScrollBars = ScrollBars.Vertical,
         BorderStyle = BorderStyle.None, BackColor = SystemColors.Control, TabStop = false,
     };
-    private readonly CheckBox _showPulse = new() { Text = "Puls vom Original während der Fahrt einblenden", AutoSize = true, Dock = DockStyle.Bottom, Padding = new Padding(0, 6, 0, 0) };
+    private readonly CheckBox _showPulse = new() { Text = L.T("Pick_ShowPulse"), AutoSize = true, Dock = DockStyle.Bottom, Padding = new Padding(0, 6, 0, 0) };
     private readonly RecordingNameBox _fileName = new("");
-    private readonly Button _start = new() { Text = "Start", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(100, 0), Enabled = false };
-    private const string ProfileNote = "Die Zeit läuft nur, solange du trittst. + / − und das Mausrad verschieben das ganze Profil um ±5 W.";
-    private const string RouteNote = "Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst.";
+    private readonly Button _start = new() { Text = L.T("Button_Start"), DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(100, 0), Enabled = false };
+    private static string ProfileNote => L.T("Pick_ProfileNote");
+    private static string RouteNote => L.T("Pick_RouteNote");
     private readonly Label _note = new() { Dock = DockStyle.Bottom, AutoSize = true, Padding = new Padding(0, 8, 0, 0), MaximumSize = new Size(780, 0) };
     private string _failed = "";
     private readonly Func<string, string> _defaultFileName;
@@ -70,7 +70,7 @@ public sealed class ReplayPickerForm : Form
     /// </summary>
     public static ReplayPickerForm ForPrograms(string directory, string? customDirectory, AppSettings current, Action<RideValues> saveAsDefault)
     {
-        var form = new ReplayPickerForm("Trainingsprogramm starten", programFile => AppSettings.BuildFileName(current.FileNameProgram, DateTime.Now, programFile),
+        var form = new ReplayPickerForm(L.T("Pick_ProgramsTitle"), programFile => AppSettings.BuildFileName(current.FileNameProgram, DateTime.Now, programFile),
             current, programs: true, showPulse: false, saveAsDefault);
         form._customDirectory = customDirectory;
         var failed = new List<string>();
@@ -84,7 +84,7 @@ public sealed class ReplayPickerForm : Form
                 {
                     var program = TrainingProgram.Load(file);
                     var text = program.Description.Text;
-                    var description = (string.IsNullOrWhiteSpace(text) ? "" : text + "\n\n") + $"Eigenes Programm: {file}";
+                    var description = (string.IsNullOrWhiteSpace(text) ? "" : text + "\n\n") + L.F("Pick_CustomProgram", file);
                     form._entries.Add(new Entry("★ " + program.DisplayName, file, () => new Selection(program.ToWorkout(), description)));
                 }
                 catch (Exception ex) when (IsReadError(ex))
@@ -105,7 +105,7 @@ public sealed class ReplayPickerForm : Form
                 failed.Add(Path.GetFileName(file));
             }
         }
-        form.Fill(directory, "Programme (*.json)", failed);
+        form.Fill(directory, L.T("Pick_Programs"), failed);
         return form;
     }
 
@@ -117,13 +117,13 @@ public sealed class ReplayPickerForm : Form
     /// <param name="saveAsDefault">Stores the ride values shown as the new defaults in settings.json.</param>
     public static ReplayPickerForm ForRecordings(AppSettings current, Action<RideValues> saveAsDefault)
     {
-        var form = new ReplayPickerForm("Aufzeichnung nachfahren", name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
+        var form = new ReplayPickerForm(L.T("Pick_RecordingsTitle"), name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
             current, programs: false, current.ReplayShowOriginalPulse, saveAsDefault);
         var directory = current.RecordingDirectory;
         // Also recordings that had to go to a fallback folder (chosen folder not writable).
         foreach (var file in current.RecordingFiles("*.json", "*.csv", "*.fit"))
             form._entries.Add(RecordingEntry(file));
-        form.Fill(directory, "Aufzeichnungen", []);
+        form.Fill(directory, L.T("Pick_Recordings"), []);
         return form;
     }
 
@@ -145,12 +145,12 @@ public sealed class ReplayPickerForm : Form
             if (distance >= 0 && pulse >= 0)
                 route.WithOriginalPulse(recording.Values.Where(v => v.Length > Math.Max(distance, pulse)).Select(v => (v[distance] * 1000, (int)v[pulse])));
         }
-        var description = $"Gespeichert am {File.GetLastWriteTime(file):dd.MM.yyyy} um {File.GetLastWriteTime(file):HH:mm} Uhr\r\n"
-            + (workout.HasPulse ? $"Puls damals: Ø {workout.AveragePulse:0}" : "Keine Pulsdaten aufgezeichnet") + "\r\n"
+        var description = L.F("Pick_SavedAt", File.GetLastWriteTime(file)) + "\r\n"
+            + (workout.HasPulse ? L.F("Pick_PulseThen", workout.AveragePulse) : L.T("Pick_NoPulseRecorded")) + "\r\n"
             + (route is not null
-                ? $"Wird wieder als Strecke gefahren: {route.Name}, {route.TotalDistance / 1000:0.0} km, {route.Ascent:0} Hm bergauf"
-                : "Folgt dem aufgezeichneten Leistungsverlauf") + "\r\n"
-            + $"Ordner: {Path.GetDirectoryName(file)}";
+                ? L.F("Pick_AsRoute", route.Name, route.TotalDistance / 1000, route.Ascent)
+                : L.T("Pick_FollowsPower")) + "\r\n"
+            + L.F("Pick_Folder", Path.GetDirectoryName(file));
         return new Selection(workout, description, recording?.Settings?.Ride, route);
     });
 
@@ -161,22 +161,22 @@ public sealed class ReplayPickerForm : Form
     private static Entry FitEntry(string file) => new(FitImport.DisplayName(file), file, () =>
     {
         var fit = FitImport.Load(file);
-        var when = $"FIT-Datei: Fahrt vom {fit.Start:dd.MM.yyyy} um {fit.Start:HH:mm} Uhr, {fit.Samples.Count} Messpunkte\r\n";
+        var when = L.F("Pick_FitRide", fit.Start, fit.Samples.Count) + "\r\n";
         if (fit.HasPower)
         {
             var workout = fit.ToWorkout();
             return new Selection(workout, when
-                + (workout.HasPulse ? $"Puls damals: Ø {workout.AveragePulse:0}" : "Keine Pulsdaten") + "\r\n"
-                + "Folgt dem aufgezeichneten Leistungsverlauf" + (fit.HasTrack ? " (die Datei hat auch eine Strecke – die fährst du unter „Strecke fahren“)" : "") + "\r\n"
-                + $"Ordner: {Path.GetDirectoryName(file)}");
+                + (workout.HasPulse ? L.F("Pick_PulseThen", workout.AveragePulse) : L.T("Pick_NoPulse")) + "\r\n"
+                + L.T("Pick_FollowsPower") + (fit.HasTrack ? L.T("Pick_FitAlsoTrack") : "") + "\r\n"
+                + L.F("Pick_Folder", Path.GetDirectoryName(file)));
         }
         // No power (e.g. a ride without power meter): the track as a route; the pulse of that day comes along.
         var route = fit.ToRoute();
         var pulse = WorkoutRecording.FromRows(fit.Name, fit.Samples.Select(s => (s.Seconds, 0, s.Pulse ?? 0)), file);
         return new Selection(pulse, when
-            + (pulse.HasPulse ? $"Puls damals: Ø {pulse.AveragePulse:0}" : "Keine Pulsdaten") + "\r\n"
-            + $"Ohne Leistungswerte – wird als Strecke gefahren: {route.TotalDistance / 1000:0.0} km, {route.Ascent:0} Hm bergauf\r\n"
-            + $"Ordner: {Path.GetDirectoryName(file)}", Route: route);
+            + (pulse.HasPulse ? L.F("Pick_PulseThen", pulse.AveragePulse) : L.T("Pick_NoPulse")) + "\r\n"
+            + L.F("Pick_FitNoPower", route.TotalDistance / 1000, route.Ascent) + "\r\n"
+            + L.F("Pick_Folder", Path.GetDirectoryName(file)), Route: route);
     });
 
     private ReplayPickerForm(string title, Func<string, string> defaultFileName, AppSettings current, bool programs, bool showPulse,
@@ -210,9 +210,9 @@ public sealed class ReplayPickerForm : Form
     private void Fill(string directory, string what, List<string> failed)
     {
         var nameRow = new FlowLayoutPanel { Dock = DockStyle.Bottom, AutoSize = true, WrapContents = false, Padding = new Padding(0, 8, 0, 0) };
-        nameRow.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 12, 0) });
+        nameRow.Controls.Add(new Label { Text = L.T("Pick_FileName"), AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 12, 0) });
         nameRow.Controls.Add(_fileName);
-        _failed = failed.Count > 0 ? $"\nNicht lesbar:\n  {string.Join("\n  ", failed)}" : "";
+        _failed = failed.Count > 0 ? $"\n{L.T("Pick_NotReadable")}\n  {string.Join("\n  ", failed)}" : "";
         _note.Text = ProfileNote + _failed;
         var graph = new Panel { Dock = DockStyle.Top, Height = 300, BackColor = DarkBack };
         graph.Controls.Add(_profile);
@@ -225,16 +225,16 @@ public sealed class ReplayPickerForm : Form
         {
             // Docked to the bottom in this order: caption above the values, the button below them.
             var saved = new Label { AutoSize = true, Anchor = AnchorStyles.Left, ForeColor = DialogColors.Ok, Margin = new Padding(8, 6, 0, 0) };
-            var saveAsDefault = new Button { Text = "Als Standard speichern", AutoSize = true, Margin = new Padding(0, 4, 0, 0) };
+            var saveAsDefault = new Button { Text = L.T("Pick_SaveAsDefault"), AutoSize = true, Margin = new Padding(0, 4, 0, 0) };
             saveAsDefault.Click += (_, _) =>
             {
                 _saveAsDefault(_rideSettings.Apply(_current.Ride));
-                saved.Text = "✓ in den Einstellungen gespeichert";
+                saved.Text = L.T("Pick_SavedAsDefault");
             };
             _list.SelectedIndexChanged += (_, _) => saved.Text = "";
             var defaultsRow = new FlowLayoutPanel { Dock = DockStyle.Bottom, AutoSize = true, WrapContents = false };
             defaultsRow.Controls.AddRange([saveAsDefault, saved]);
-            new ToolTip().SetToolTip(saveAsDefault, "Übernimmt diese Werte in die settings.json – sie gelten dann auch für neue Strecken und im Einstellungsdialog.");
+            new ToolTip().SetToolTip(saveAsDefault, L.T("Pick_SaveAsDefaultTip"));
             details.Controls.Add(_rideSettingsCaption);
             details.Controls.Add(_rideSettings);
             details.Controls.Add(defaultsRow);
@@ -242,7 +242,7 @@ public sealed class ReplayPickerForm : Form
         details.Controls.Add(_note);
         details.Controls.Add(nameRow);
 
-        var cancel = new Button { Text = "Abbrechen", DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(100, 0) };
+        var cancel = new Button { Text = L.T("Button_Cancel"), DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(100, 0) };
         AcceptButton = _start;
         CancelButton = cancel;
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
@@ -253,14 +253,14 @@ public sealed class ReplayPickerForm : Form
         if (!_programs)
         {
             // Recordings may also lie elsewhere (an older folder, a USB stick).
-            var other = new Button { Text = "Aufzeichnung aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
+            var other = new Button { Text = L.T("Pick_OtherFolder"), Dock = DockStyle.Bottom, Height = 36 };
             other.Click += (_, _) => PickOtherFile(directory);
             listPanel.Controls.Add(other);
         }
         else if (_customDirectory is { } custom)
         {
             // Own programs: open their folder (with the schema and an example to copy from).
-            var own = new Button { Text = "Ordner für eigene Programme öffnen", Dock = DockStyle.Bottom, Height = 36 };
+            var own = new Button { Text = L.T("Pick_OpenCustomFolder"), Dock = DockStyle.Bottom, Height = 36 };
             own.Click += (_, _) =>
             {
                 try
@@ -270,10 +270,10 @@ public sealed class ReplayPickerForm : Form
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
                 {
-                    _note.Text = $"Ordner nicht zu öffnen: {ex.Message}";
+                    _note.Text = L.F("Pick_FolderNotOpened", ex.Message);
                 }
             };
-            new ToolTip().SetToolTip(own, $"{custom}\nEigene Programme (*.json) dort ablegen – sie stehen mit ★ oben in der Liste.\nAufbau: TrainingProgram.schema.json, Vorlage: Example_Custom_Program.json.");
+            new ToolTip().SetToolTip(own, L.F("Pick_CustomFolderTip", custom));
             listPanel.Controls.Add(own);
         }
         Controls.Add(details);
@@ -283,9 +283,9 @@ public sealed class ReplayPickerForm : Form
         _list.Items.AddRange([.. _entries.Select(e => e.Title)]);
         // Until something is selected (or if nothing can be): the current settings.
         _rideSettings.Show(_current.Ride, route: false);
-        _rideSettingsCaption.Text = "Einstellungen – für diesen Lauf änderbar";
+        _rideSettingsCaption.Text = L.T("Pick_RunSettings");
         if (_entries.Count == 0)
-            _description.Text = $"Im Ordner {directory} liegen keine {what}.";
+            _description.Text = L.F("Pick_NothingInFolder", directory, what);
         else
             _list.SelectedIndex = 0;
         ActiveControl = _list;
@@ -295,9 +295,9 @@ public sealed class ReplayPickerForm : Form
     {
         using var picker = new OpenFileDialog
         {
-            Title = "Gespeichertes Training auswählen",
+            Title = L.T("Pick_ChooseTraining"),
             InitialDirectory = Directory.Exists(directory) ? directory : null,
-            Filter = "Aufzeichnungen und FIT-Dateien (*.json, *.csv, *.fit)|*.json;*.csv;*.fit",
+            Filter = L.T("Pick_TrainingFilter"),
         };
         if (picker.ShowDialog(this) != DialogResult.OK)
             return;
@@ -329,10 +329,12 @@ public sealed class ReplayPickerForm : Form
             _note.Text = (Route is null ? ProfileNote : RouteNote) + _failed;
             _rideSettings.Show(selection.Ride ?? _current.Ride, route: Route is not null);
             _rideSettingsCaption.Text = _programs || selection.Ride is null
-                ? "Einstellungen – für diesen Lauf änderbar"
-                : "Einstellungen der Aufzeichnung – für diesen Lauf änderbar";
-            _facts.Text = (Workout.MaxWatt == 0 && Route is { } r ? $"Dauer {WorkoutProfile.Format(Workout.Duration)}     {r.TotalDistance / 1000:0.0} km     {r.Ascent:0} Hm" : $"Dauer {WorkoutProfile.Format(Workout.Duration)}     Ø {Workout.AverageWatt:0} W     max. {Workout.MaxWatt} W")
-                + (Workout.HasPulse ? $"     Puls Ø {Workout.AveragePulse:0}" : "");
+                ? L.T("Pick_RunSettings")
+                : L.T("Pick_RecordingSettings");
+            _facts.Text = (Workout.MaxWatt == 0 && Route is { } r
+                    ? L.F("Pick_FactsRoute", WorkoutProfile.Format(Workout.Duration), r.TotalDistance / 1000, r.Ascent)
+                    : L.F("Pick_FactsPower", WorkoutProfile.Format(Workout.Duration), Workout.AverageWatt, Workout.MaxWatt))
+                + (Workout.HasPulse ? L.F("Pick_FactsPulse", Workout.AveragePulse) : "");
             _description.Text = selection.Description.ReplaceLineEndings("\r\n");
             // Routes: the pulse of that ride by distance (FIT activity or route recording).
             _showPulse.Enabled = Route is null ? Workout.HasPulse : Route.OriginalPulse is not null;
@@ -344,7 +346,7 @@ public sealed class ReplayPickerForm : Form
             Route = null;
             _profile.SetWorkout(null, null, false);
             _routeProfile.SetRoute(null);
-            _facts.Text = "Nicht lesbar";
+            _facts.Text = L.T("Pick_NotReadableShort");
             _description.Text = ex.Message;
             _start.Enabled = false;
         }

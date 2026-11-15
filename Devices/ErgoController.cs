@@ -27,7 +27,7 @@ public sealed class ErgoController : IDisposable
     public int MaxWatt => Math.Min(Capabilities.MaxWatt, _userLimitWatt);
     public bool IsConnected => _device?.IsConnected ?? false;
 
-    private static readonly ErgometerCapabilities Unknown = new(400, 5, null, "Kein Gerät");
+    private static ErgometerCapabilities Unknown => new(400, 5, null, L.T("Device_NoDevice"));
 
     /// <summary>Connects to <paramref name="device"/> (replacing and closing the previous one) and sends it the current target.</summary>
     public void Use(IErgometer device)

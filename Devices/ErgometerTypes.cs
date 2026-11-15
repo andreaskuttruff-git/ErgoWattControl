@@ -5,7 +5,7 @@ namespace ErgoWattControl;
 /// name in the settings dialog, how to create it, and which connection fields the dialog shows.
 /// </summary>
 /// <param name="Id">Stored in settings.json (<see cref="AppSettings.Device"/>); never change it once released.</param>
-/// <param name="Name">Shown in the settings dialog.</param>
+/// <param name="NameKey">Key of the name shown in the settings dialog (Localization\Strings.resx).</param>
 /// <param name="Create">Creates the device from the settings without connecting yet (<see cref="IErgometer.Start"/> does that).</param>
 /// <param name="UsesSerialPort">The device is connected via <see cref="AppSettings.PortName"/>: the dialog shows the COM port.</param>
 /// <param name="TestConnection">
@@ -14,7 +14,7 @@ namespace ErgoWattControl;
 /// </param>
 public sealed record ErgometerType(
     string Id,
-    string Name,
+    string NameKey,
     Func<AppSettings, IErgometer> Create,
     bool UsesSerialPort = false,
     Func<string, IErgometer?, string>? TestConnection = null)
@@ -22,6 +22,9 @@ public sealed record ErgometerType(
     /// <summary>Whether switching from <paramref name="before"/> to <paramref name="after"/> needs a new connection.</summary>
     public bool ConnectionChanged(AppSettings before, AppSettings after) =>
         UsesSerialPort && before.PortName != after.PortName;
+
+    /// <summary>Name in the language of the user interface.</summary>
+    public string Name => L.T(NameKey);
 
     public override string ToString() => Name;
 }
@@ -38,10 +41,10 @@ public static class ErgometerTypes
 
     public static readonly IReadOnlyList<ErgometerType> All =
     [
-        new(DaumRs232, "Daum ergo_bike (RS232)", settings => new DaumErgometer(settings.PortName),
+        new(DaumRs232, "Device_DaumRs232", settings => new DaumErgometer(settings.PortName),
             UsesSerialPort: true,
             TestConnection: (port, running) => DaumErgometer.TestPort(port, running as DaumErgometer)),
-        new(Demo, "Demo (simulierter Fahrer)", _ => new DemoErgometer()),
+        new(Demo, "Device_Demo", _ => new DemoErgometer()),
     ];
 
     /// <summary>The type with this id; unknown or missing ids (settings from before the device choice) mean the Daum cockpit.</summary>

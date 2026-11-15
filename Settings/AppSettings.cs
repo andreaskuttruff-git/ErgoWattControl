@@ -9,6 +9,9 @@ public sealed class AppSettings
 {
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
+    /// <summary>Language of the user interface: "auto" (as Windows), "de" or "en" (<see cref="ErgoWattControl.Language"/>).</summary>
+    public string Language { get; set; } = ErgoWattControl.Language.Auto;
+
     /// <summary>Kind of ergometer (<see cref="ErgometerTypes"/>); settings from before the device choice have none and mean the Daum cockpit.</summary>
     public string Device { get; set; } = ErgometerTypes.DaumRs232;
     /// <summary>COM port of the Daum cockpit.</summary>
@@ -154,7 +157,7 @@ public sealed class AppSettings
             .Replace("{Route}", route ?? "")
             .Replace("{Training}", route ?? "")
             .Replace("{Program}", route ?? "");
-        return SanitizeFileName(name) ?? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}";
+        return SanitizeFileName(name) ?? $"Recording_{time:yyyy-MM-dd_HH-mm-ss}";
     }
 
     /// <summary>

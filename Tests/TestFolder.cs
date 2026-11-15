@@ -18,6 +18,8 @@ internal static class TestFolder
     {
         Directory.CreateDirectory(Path);
         AppPaths.UseFolderForTests(Path);
+        // The expected texts in the tests are German; tests for English switch the language themselves.
+        Language.Apply("de");
     }
 
     /// <summary>A new empty folder below the test folder.</summary>

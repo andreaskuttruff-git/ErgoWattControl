@@ -77,16 +77,16 @@ public sealed partial class FitImport
         {
             using var stream = File.OpenRead(path);
             if (!decode.IsFIT(stream))
-                throw new InvalidDataException("Das ist keine FIT-Datei.");
+                throw new InvalidDataException(L.T("Fit_NotFit"));
             stream.Position = 0;
             decode.Read(stream);
         }
         catch (Fit.FitException ex)
         {
-            throw new InvalidDataException($"Die FIT-Datei ist beschädigt oder unvollständig: {ex.Message}", ex);
+            throw new InvalidDataException(L.F("Fit_Damaged", ex.Message), ex);
         }
         if (records.Count < 2)
-            throw new InvalidDataException("Die FIT-Datei enthält keine Messwerte (records).");
+            throw new InvalidDataException(L.T("Fit_NoRecords"));
 
         // Time line without pauses: a gap longer than MaxGap counts as one second.
         records.Sort((a, b) => a.Time.CompareTo(b.Time));
@@ -110,8 +110,8 @@ public sealed partial class FitImport
     {
         if (!HasPower)
             throw new InvalidDataException(HasTrack
-                ? "Die FIT-Datei enthält keine Leistungswerte – fahre sie unter „Strecke fahren“ als Strecke nach."
-                : "Die FIT-Datei enthält weder Leistungswerte noch eine Strecke.");
+                ? L.T("Fit_NoPowerButTrack")
+                : L.T("Fit_NoPowerNoTrack"));
         // Gaps in the power stream (sensor dropouts) take the last value.
         var watt = 0;
         var rows = Samples.Select(s => (s.Seconds, watt = s.Watt ?? watt, s.Pulse ?? 0));
@@ -122,8 +122,7 @@ public sealed partial class FitImport
     public GpxRoute ToRoute()
     {
         if (!HasTrack)
-            throw new InvalidDataException("Die FIT-Datei enthält keine GPS-Strecke mit Höhenangaben (z. B. eine Indoor-Fahrt) – "
-                + (HasPower ? "nachfahren lässt sie sich unter „Aufzeichnung nachfahren“ als Leistungsprofil." : "sie lässt sich nicht als Strecke fahren."));
+            throw new InvalidDataException(L.T(HasPower ? "Fit_NoTrackButPower" : "Fit_NoTrackNoPower"));
         var track = Samples.Where(s => s.Lat is not null && s.Lon is not null && s.Elevation is not null).ToList();
         var route = GpxRoute.FromTrack(Name, Path, [.. track.Select(s => (s.Lat!.Value, s.Lon!.Value, s.Elevation!.Value))]);
         // The pulse of that ride by distance along the same track, for the green curve in the route view.

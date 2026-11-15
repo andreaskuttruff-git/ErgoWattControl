@@ -25,7 +25,7 @@ public static partial class Monitors
     }
 
     public static string Describe(Screen screen) =>
-        $"Monitor {Number(screen)} \u2013 {screen.Bounds.Width}\u00d7{screen.Bounds.Height}" + (screen.Primary ? " (Hauptmonitor)" : "");
+        L.F("Monitor_Describe", Number(screen), screen.Bounds.Width, screen.Bounds.Height) + (screen.Primary ? L.T("Monitor_Primary") : "");
 
     /// <summary>Shows each monitor's number in large digits for a few seconds, like Windows' "Identify".</summary>
     public static void Identify(TimeSpan duration)

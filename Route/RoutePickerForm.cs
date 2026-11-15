@@ -15,7 +15,7 @@ public sealed class RoutePickerForm : Form
     private readonly RouteProfile _profile = new() { Dock = DockStyle.Fill, ShowPreview = false };
     private readonly TableLayoutPanel _facts = new() { Dock = DockStyle.Fill, ColumnCount = 2, AutoScroll = true, Padding = new Padding(0, 10, 0, 0) };
     private readonly RecordingNameBox _fileName = new("");
-    private readonly Button _start = new() { Text = "Start", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(100, 0), Enabled = false };
+    private readonly Button _start = new() { Text = L.T("Button_Start"), DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(100, 0), Enabled = false };
 
     /// <summary>The selected route; set when the dialog ends with OK.</summary>
     public GpxRoute? Route { get; private set; }
@@ -27,7 +27,7 @@ public sealed class RoutePickerForm : Form
     {
         _settings = settings;
         _maxWatt = maxWatt;
-        Text = "Strecke fahren";
+        Text = L.T("Route_Title");
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -43,12 +43,12 @@ public sealed class RoutePickerForm : Form
         _list.DoubleClick += (_, _) => { if (_start.Enabled) _start.PerformClick(); };
 
         var nameRow = new FlowLayoutPanel { Dock = DockStyle.Bottom, AutoSize = true, WrapContents = false, Padding = new Padding(0, 8, 0, 0) };
-        nameRow.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 12, 0) });
+        nameRow.Controls.Add(new Label { Text = L.T("Pick_FileName"), AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 12, 0) });
         nameRow.Controls.Add(_fileName);
         var note = new Label
         {
             Dock = DockStyle.Bottom, AutoSize = true, Padding = new Padding(0, 8, 0, 0),
-            Text = "Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst.",
+            Text = L.T("Pick_RouteNote"),
         };
         var graph = new Panel { Dock = DockStyle.Top, Height = 300 };
         graph.Controls.Add(_profile);
@@ -58,13 +58,13 @@ public sealed class RoutePickerForm : Form
         details.Controls.Add(note);
         details.Controls.Add(nameRow);
 
-        var cancel = new Button { Text = "Abbrechen", DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(100, 0) };
+        var cancel = new Button { Text = L.T("Button_Cancel"), DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(100, 0) };
         AcceptButton = _start;
         CancelButton = cancel;
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
         buttons.Controls.AddRange([cancel, _start]);
 
-        var other = new Button { Text = "GPX- oder FIT-Datei aus anderem Ordner …", Dock = DockStyle.Bottom, Height = 36 };
+        var other = new Button { Text = L.T("Route_OtherFolder"), Dock = DockStyle.Bottom, Height = 36 };
         other.Click += (_, _) => PickOtherFile();
         var listPanel = new Panel { Dock = DockStyle.Left, Width = 372, Padding = new Padding(12, 12, 0, 0) };
         listPanel.Controls.Add(_list);
@@ -74,7 +74,7 @@ public sealed class RoutePickerForm : Form
         Controls.Add(buttons);
 
         if (_files.Count == 0)
-            Fact("", $"Im Ordner {settings.GpxDirectory} liegen keine GPX-Strecken.");
+            Fact("", L.F("Route_NoRoutes", settings.GpxDirectory));
         else
             _list.SelectedIndex = 0;
         ActiveControl = _list;
@@ -84,9 +84,9 @@ public sealed class RoutePickerForm : Form
     {
         using var picker = new OpenFileDialog
         {
-            Title = "Strecke auswählen",
+            Title = L.T("Route_Choose"),
             InitialDirectory = Directory.Exists(_settings.GpxDirectory) ? _settings.GpxDirectory : null,
-            Filter = "Strecken (*.gpx, *.fit)|*.gpx;*.fit",
+            Filter = L.T("Route_Filter"),
         };
         if (picker.ShowDialog(this) != DialogResult.OK)
             return;
@@ -118,17 +118,16 @@ public sealed class RoutePickerForm : Form
             var route = GpxRoute.Load(file);
             Route = route;
             var peak = RouteSession.PeakPower(route, _settings.Ride, PeakRpm);
-            var peakText = $"{peak.Watt:0} W  am steilsten Anstieg ({peak.GradePercent:0.0} %), " +
-                $"im 1. Gang bei {PeakRpm} RPM ({peak.SpeedKmh:0} km/h) – schneller kostet mehr";
+            var peakText = L.F("Route_Peak", peak.Watt, peak.GradePercent, PeakRpm, peak.SpeedKmh);
             var overLimit = peak.Watt > _maxWatt;
-            Fact("Strecke:", $"{route.TotalDistance / 1000:0.0} km");
-            Fact("Höhenmeter bergauf:", $"{route.Ascent:0} m   (Höhe {route.MinElevation:0} – {route.MaxElevation:0} m)");
-            Fact("Max. Steigung:", $"{route.MaxGrade * 100:0.0} %" +
-                (_settings.Ride.GradeFactorPercent < 100 ? $"   (gefahren mit {_settings.Ride.GradeFactorPercent} %: {peak.GradePercent:0.0} %)" : ""));
-            Fact("Max. Leistung:", overLimit ? $"{peakText}\nÜber deiner Wattgrenze von {_maxWatt} W – dort wird auf {_maxWatt} W begrenzt." : peakText,
+            Fact(L.T("Route_Distance"), $"{route.TotalDistance / 1000:0.0} km");
+            Fact(L.T("Route_Climbing"), L.F("Route_ClimbingValue", route.Ascent, route.MinElevation, route.MaxElevation));
+            Fact(L.T("Route_MaxGrade"), $"{route.MaxGrade * 100:0.0} %" +
+                (_settings.Ride.GradeFactorPercent < 100 ? L.F("Route_RiddenWith", _settings.Ride.GradeFactorPercent, peak.GradePercent) : ""));
+            Fact(L.T("Route_MaxPower"), overLimit ? L.F("Route_OverLimit", peakText, _maxWatt) : peakText,
                 overLimit ? DialogColors.Warning : null);
-            Fact("Gewicht:", $"{_settings.Ride.RiderWeightKg:0} kg Fahrer + {_settings.Ride.BikeWeightKg:0} kg Rad");
-            Fact("Einstellungen:", $"Steigungsfaktor {_settings.Ride.GradeFactorPercent} %,  {_settings.Ride.Gearing}-Übersetzung,  Startgang {_settings.Ride.StartGear}");
+            Fact(L.T("Route_Weight"), L.F("Route_WeightValue", _settings.Ride.RiderWeightKg, _settings.Ride.BikeWeightKg));
+            Fact(L.T("Route_Settings"), L.F("Route_SettingsValue", _settings.Ride.GradeFactorPercent, RouteSession.GearingName(_settings.Ride.Gearing), _settings.Ride.StartGear));
             _profile.SetRoute(route, _settings.ReplayShowOriginalPulse);
             _profile.SetHighlight(route.MaxGradeDistance,
                 $"▲ {peak.GradePercent:0.0} %  ·  {peak.Watt:0} W  ·  km {route.MaxGradeDistance / 1000:0.0}",
@@ -141,7 +140,7 @@ public sealed class RoutePickerForm : Form
         {
             Route = null;
             _profile.Visible = false;
-            Fact("Nicht lesbar:", string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : ex.Message, DialogColors.Warning);
+            Fact(L.T("Pick_NotReadable"), string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : ex.Message, DialogColors.Warning);
             _start.Enabled = false;
         }
         _facts.ResumeLayout();

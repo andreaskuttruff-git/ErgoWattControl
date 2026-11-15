@@ -40,7 +40,7 @@ public sealed class DaumErgometer : IErgometer
         _openCockpit = openCockpit;
     }
 
-    public string DisplayName => $"Daum ({_portName ?? "kein Port"})";
+    public string DisplayName => $"Daum ({_portName ?? L.T("Daum_NoPortName")})";
     public string? PortName => _portName;
     public ErgometerCapabilities Capabilities => _capabilities;
     public bool IsConnected { get; private set; }
@@ -64,23 +64,23 @@ public sealed class DaumErgometer : IErgometer
     public static string TestPort(string portName, DaumErgometer? running)
     {
         if (running is { IsConnected: true } && portName == running.PortName)
-            return $"OK – Cockpit verbunden (Adresse {running.CockpitAddress})";
+            return L.F("Daum_TestConnected", running.CockpitAddress);
         try
         {
             using var cockpit = new DaumCockpit(portName);
             var address = cockpit.QueryAddress();
             var version = cockpit.CheckCockpit();
-            return $"OK – Cockpit gefunden (Adresse {address}, Version {version})";
+            return L.F("Daum_TestFound", address, version);
         }
         catch (UnauthorizedAccessException)
         {
             return portName == running?.PortName
-                ? "Port wird gerade von der App für Verbindungsversuche benutzt."
-                : "Port ist belegt (läuft noch ein anderes Programm?)";
+                ? L.T("Daum_TestPortInUseByApp")
+                : L.T("Daum_TestPortBusy");
         }
         catch (Exception ex)
         {
-            return $"Fehler: {Describe(ex)}";
+            return L.F("Daum_TestError", Describe(ex));
         }
     }
 
@@ -88,9 +88,9 @@ public sealed class DaumErgometer : IErgometer
     private static ErgometerCapabilities CapabilitiesFor(byte? type, bool known)
     {
         var max = DaumCockpit.MaxWattForType(type);
-        var info = type is { } t ? $"Cockpit {DaumCockpit.DescribeType(t)}: max. {max} W"
-            : known ? $"Cockpit-Typ nicht abfragbar: max. {max} W"
-            : $"Cockpit-Typ noch unbekannt, bis dahin max. {max} W";
+        var info = type is { } t ? L.F("Daum_InfoType", DaumCockpit.DescribeType(t), max)
+            : known ? L.F("Daum_InfoNotQueryable", max)
+            : L.F("Daum_InfoUnknownYet", max);
         return new ErgometerCapabilities(max, 5, RpmRange.For, info);
     }
 
@@ -103,7 +103,7 @@ public sealed class DaumErgometer : IErgometer
 
             if (string.IsNullOrEmpty(port))
             {
-                Report("Kein COM-Port eingestellt (☰ → Einstellungen)", false);
+                Report(L.T("Daum_NoPort"), false);
                 _wake.Wait(RetryDelay);
                 continue;
             }
@@ -111,14 +111,14 @@ public sealed class DaumErgometer : IErgometer
             DaumCockpit? cockpit = null;
             try
             {
-                Report($"Verbinde mit {port} …", false);
+                Report(L.F("Daum_Connecting", port), false);
                 cockpit = _openCockpit(port);
                 cockpit.QueryAddress();
                 QueryCockpitType(cockpit);
                 InitializeCockpit(cockpit);
                 CockpitAddress = cockpit.Address;
                 IsConnected = true;
-                Report($"Verbunden auf {port}", true, _capabilities.Info);
+                Report(L.F("Daum_Connected", port), true, _capabilities.Info);
                 if (_lostAt is { } lost)
                 {
                     AppPaths.Note($"Cockpit on {port} reconnected after {(DateTime.Now - lost).TotalSeconds:0} s");
@@ -134,7 +134,7 @@ public sealed class DaumErgometer : IErgometer
                     _lostAt = DateTime.Now;
                     AppPaths.Log($"Cockpit connection on {port} lost ({ex.GetType().Name})", ex);
                 }
-                Report($"{port}: {Describe(ex)} – neuer Versuch …", false, $"{ex.GetType().Name}: {ex.Message}");
+                Report(L.F("Daum_Retrying", port, Describe(ex)), false, $"{ex.GetType().Name}: {ex.Message}");
             }
             catch
             {
@@ -271,10 +271,10 @@ public sealed class DaumErgometer : IErgometer
 
     private static string Describe(Exception ex) => ex switch
     {
-        TimeoutException => "keine Antwort",
-        CockpitReplyException => "Antwort passt nicht",
-        UnauthorizedAccessException => "Port belegt",
-        IOException => "Port nicht verfügbar",
+        TimeoutException => L.T("Daum_NoAnswer"),
+        CockpitReplyException => L.T("Daum_ReplyMismatch"),
+        UnauthorizedAccessException => L.T("Daum_PortBusy"),
+        IOException => L.T("Daum_PortUnavailable"),
         _ => ex.Message,
     };
 

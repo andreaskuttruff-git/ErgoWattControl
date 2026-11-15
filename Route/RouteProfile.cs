@@ -149,7 +149,7 @@ public sealed class RouteProfile : Control
         DrawProfile(g, route, preview, from, to, lo, hi, _position, labelFont);
 
         using var labelBrush = new SolidBrush(LabelColor);
-        g.DrawString("jetzt", labelFont, labelBrush, XFor(preview, from, to, _position) - 20, preview.Bottom + 4);
+        g.DrawString(L.T("Graph_Now"), labelFont, labelBrush, XFor(preview, from, to, _position) - 20, preview.Bottom + 4);
         var aheadText = "+2 km";
         g.DrawString(aheadText, labelFont, labelBrush, preview.Right - g.MeasureString(aheadText, labelFont).Width, preview.Bottom + 4);
 

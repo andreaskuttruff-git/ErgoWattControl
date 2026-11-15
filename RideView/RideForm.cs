@@ -12,9 +12,9 @@ public sealed class RideForm : Form
     private static readonly Color PowerColor = Color.Gold;
     private static readonly Color PulseColor = Color.FromArgb(255, 110, 110);
     private static readonly Color RpmColor = Color.FromArgb(80, 200, 255);
-    private const string PowerHint = "[↑↓ + − / Mausrad ±5  Bild ±25]";
-    private const string GearHint = "[↑↓ + − / Mausrad Gang ±1  Bild ±5]";
-    private const string ReplayHint = "[↑↓ + − / Mausrad Profil ±5  Bild ±25]";
+    private static string PowerHint => L.T("Ride_PowerHint");
+    private static string GearHint => L.T("Ride_GearHint");
+    private static string ReplayHint => L.T("Ride_ReplayHint");
 
     private readonly AppSettings _settings;
     private readonly ErgoController _controller = new();
@@ -23,7 +23,7 @@ public sealed class RideForm : Form
     // The "ErgoWattControl beenden" dialog is open while the ride keeps running behind it (closing via ✕ or "Beenden").
     private bool _closeDialogOpen;
     private readonly RouteProfile _profile = new() { Dock = DockStyle.Fill, Visible = false };
-    private readonly Label _powerCaption = CreateValueCaption("LEISTUNG");
+    private readonly Label _powerCaption = CreateValueCaption(L.T("Ride_Power"));
     private ToolStripMenuItem _menuRouteStart = null!;
     private readonly WorkoutProfile _workoutProfile = new() { Dock = DockStyle.Fill, Visible = false };
     private ToolStripMenuItem _menuReplayStart = null!;
@@ -42,19 +42,19 @@ public sealed class RideForm : Form
     private readonly Label _rpm = CreateSecondaryValue(RpmColor, "188");
     private readonly Label _speed = CreateSecondaryValue(Color.White, "88");
     private readonly Label _time = CreateSecondaryValue(Color.White, "8:88:88");
-    private readonly Label _timeCaption = CreateSecondaryText("ZEIT", Color.White);
-    private readonly TrendGraph _powerGraph = new([new("Leistung (W)", PowerColor), new("RPM", RpmColor)], bottom: 0, minTop: 200, gridStep: 50, bandColor: RpmColor) { Dock = DockStyle.Fill, Margin = new Padding(10, 4, 10, 4) };
+    private readonly Label _timeCaption = CreateSecondaryText(L.T("Ride_Time"), Color.White);
+    private readonly TrendGraph _powerGraph = new([new(L.T("Ride_GraphPower"), PowerColor), new("RPM", RpmColor)], bottom: 0, minTop: 200, gridStep: 50, bandColor: RpmColor) { Dock = DockStyle.Fill, Margin = new Padding(10, 4, 10, 4) };
     private readonly Label _rpmCaption = CreateSecondaryText("RPM", RpmColor);
     // Fixed width even when empty, so the RPM group does not jump when the arrow appears.
     private readonly Label _rpmHint = CreateSecondaryValue(Color.OrangeRed, "▲");
-    private readonly TrendGraph _pulseGraph = new([new("Puls (bpm)", PulseColor)], bottom: 60, minTop: 160, gridStep: 20) { Dock = DockStyle.Fill, Margin = new Padding(10, 4, 10, 4) };
+    private readonly TrendGraph _pulseGraph = new([new(L.T("Ride_GraphPulse"), PulseColor)], bottom: 60, minTop: 160, gridStep: 20) { Dock = DockStyle.Fill, Margin = new Padding(10, 4, 10, 4) };
     // Right-aligned in equal cells: the unit stays put and extra digits grow leftwards into reserved space.
     private readonly Label _km = CreateTotal();
     private readonly Label _kj = CreateTotal();
     private readonly Label _revs = CreateTotal();
-    private readonly Button _btnRecord = CreateButton("● Aufnahme", 16);
+    private readonly Button _btnRecord = CreateButton(L.T("Ride_Record"), 16);
     /// <summary>Switches between ride monitor and main monitor; named after where it moves the window.</summary>
-    private readonly Button _btnScreen = CreateButton("Fahransicht", 16);
+    private readonly Button _btnScreen = CreateButton(L.T("Ride_ToRideView"), 16);
     private readonly ToolTip _toolTip = new() { InitialDelay = 300, AutoPopDelay = 15000 };
     private readonly Label _status = new() { Dock = DockStyle.Fill, Font = new Font("Segoe UI", 18), TextAlign = ContentAlignment.MiddleRight, AutoEllipsis = true };
 
@@ -120,7 +120,7 @@ public sealed class RideForm : Form
         };
 
         ShowTarget(_controller.TargetWatt);
-        ShowStatus("Verbinde …", false);
+        ShowStatus(L.T("Ride_Connecting"), false);
     }
 
     private void BuildLayout()
@@ -136,7 +136,7 @@ public sealed class RideForm : Form
         grid.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
         grid.Controls.Add(CreatePowerCell(), 0, 0);
-        var closeButton = CreateIconButton("Beenden", (g, pen, c) =>
+        var closeButton = CreateIconButton(L.T("Ride_Close"), (g, pen, c) =>
         {
             const int r = 8;
             g.DrawLine(pen, c.X - r, c.Y - r, c.X + r, c.Y + r);
@@ -156,7 +156,7 @@ public sealed class RideForm : Form
         // Right next to the big number: the pulse of the original ride at this point, green (positioned in ShowPulseThen).
         _pulse.Controls.Add(_pulseThen);
         _pulse.Resize += (_, _) => PlacePulseThen();
-        pulseCell.Controls.Add(CreateValueCaption("PULS"));
+        pulseCell.Controls.Add(CreateValueCaption(L.T("Ride_Pulse")));
         pulseCell.Controls.Add(pulseHeader);
         grid.Controls.Add(pulseCell, 1, 0);
 
@@ -225,7 +225,7 @@ public sealed class RideForm : Form
 
     private Control CreatePowerCell()
     {
-        var menuButton = CreateIconButton("Menü", (g, pen, c) =>
+        var menuButton = CreateIconButton(L.T("Ride_Menu"), (g, pen, c) =>
         {
             const int halfWidth = 10, gap = 7;
             for (var dy = -gap; dy <= gap; dy += gap)
@@ -234,26 +234,26 @@ public sealed class RideForm : Form
         menuButton.Dock = DockStyle.Left;
         menuButton.Width = 48;
         var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 14) };
-        _menuRouteStart = new ToolStripMenuItem("Strecke fahren …", null, (_, _) => StartRoute());
-        _menuReplayStart = new ToolStripMenuItem("Aufzeichnung nachfahren …", null, (_, _) => StartReplay());
-        _menuProgramStart = new ToolStripMenuItem("Trainingsprogramm starten …", null, (_, _) => StartProgram());
-        _menuTrainingEnd = new ToolStripMenuItem("Training beenden", null, (_, _) => EndTraining()) { Enabled = false };
+        _menuRouteStart = new ToolStripMenuItem(L.T("Menu_Route"), null, (_, _) => StartRoute());
+        _menuReplayStart = new ToolStripMenuItem(L.T("Menu_Replay"), null, (_, _) => StartReplay());
+        _menuProgramStart = new ToolStripMenuItem(L.T("Menu_Program"), null, (_, _) => StartProgram());
+        _menuTrainingEnd = new ToolStripMenuItem(L.T("Menu_EndTraining"), null, (_, _) => EndTraining()) { Enabled = false };
         menu.Items.Add(_menuRouteStart);
         menu.Items.Add(_menuReplayStart);
         menu.Items.Add(_menuProgramStart);
         menu.Items.Add(_menuTrainingEnd);
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("Aufzeichnung exportieren …", null, (_, _) => OpenExport());
+        menu.Items.Add(L.T("Menu_Export"), null, (_, _) => OpenExport());
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("Einstellungen …", null, (_, _) => OpenSettings());
-        menu.Items.Add(new ToolStripMenuItem("Hilfe", null, (_, _) => HelpWindow.Show(this, "start")) { ShortcutKeyDisplayString = "F1" });
-        menu.Items.Add("Info …", null, (_, _) =>
+        menu.Items.Add(L.T("Menu_Settings"), null, (_, _) => OpenSettings());
+        menu.Items.Add(new ToolStripMenuItem(L.T("Menu_Help"), null, (_, _) => HelpWindow.Show(this, "start")) { ShortcutKeyDisplayString = "F1" });
+        menu.Items.Add(L.T("Menu_Info"), null, (_, _) =>
         {
             using var info = new InfoForm();
             info.ShowDialog(this);
         });
         menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add("Beenden", null, (_, _) => Close());
+        menu.Items.Add(L.T("Menu_Exit"), null, (_, _) => Close());
         menuButton.Click += (_, _) => menu.Show(menuButton, new Point(0, menuButton.Height));
 
         var header = new Panel { Dock = DockStyle.Top, Height = 36 };
@@ -356,7 +356,7 @@ public sealed class RideForm : Form
         if (_training.Mode is not RouteTraining { Session: var route })
             return;
         _power.Text = $"G {route.Gear}";
-        _powerCaption.Text = $"GANG   {route.TargetWatt} W";
+        _powerCaption.Text = L.F("Ride_GearCaption", route.TargetWatt);
     }
 
     private void ShowReplay()
@@ -364,10 +364,10 @@ public sealed class RideForm : Form
         if (_training.Mode is not ReplayTraining { Session: var replay })
             return;
         _power.Text = $"{replay.TargetWatt} W";
-        _powerCaption.Text = replay.Offset == 0 ? "PROFIL" : $"PROFIL   {replay.Offset:+0;-0} W";
+        _powerCaption.Text = replay.Offset == 0 ? L.T("Ride_Profile") : L.F("Ride_ProfileShifted", replay.Offset);
         var next = replay.NextChange() is { } change
-            ? $"nächster Wechsel in {WorkoutProfile.Format(change.In.TotalSeconds)} \u2192 {change.Watt} W"
-            : "bis zum Ende gleichbleibend";
+            ? L.F("Ride_NextChange", WorkoutProfile.Format(change.In.TotalSeconds), change.Watt)
+            : L.T("Ride_NoMoreChange");
         _workoutProfile.SetPosition(replay.Elapsed.TotalSeconds,
             $"{next}      {WorkoutProfile.Format(replay.Elapsed.TotalSeconds)} / {WorkoutProfile.Format(replay.Workout.Duration)}");
     }
@@ -392,7 +392,7 @@ public sealed class RideForm : Form
                 break;
             default:
                 // The big number is the target the rider controls; show the cockpit's actual value only when it deviates.
-                _powerHint.Text = Math.Abs(d.Watt - _controller.TargetWatt) > 5 ? $"[Ist {d.Watt} W]" : PowerHint;
+                _powerHint.Text = Math.Abs(d.Watt - _controller.TargetWatt) > 5 ? L.F("Ride_Actual", d.Watt) : PowerHint;
                 break;
         }
         _pulse.Text = d.Pulse > 0 ? d.Pulse.ToString() : "--";
@@ -427,7 +427,7 @@ public sealed class RideForm : Form
         {
             AppPaths.Log("Recording stopped", ex);
             StopRecording();
-            MessageBox.Show(this, $"Aufzeichnung abgebrochen:\n{ex.Message}", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, L.F("Rec_Stopped", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -435,7 +435,7 @@ public sealed class RideForm : Form
     {
         _km.Text = $"{km:0.0} km";
         _kj.Text = $"{kj:0} kJ";
-        _revs.Text = $"{revolutions:0} U";
+        _revs.Text = L.F("Ride_Revolutions", revolutions);
         _km.ForeColor = _kj.ForeColor = _revs.ForeColor = color;
     }
 
@@ -451,7 +451,7 @@ public sealed class RideForm : Form
     {
         if (!_controller.IsConnected)
         {
-            MessageBox.Show(this, "Das Ergometer ist noch nicht verbunden.", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(this, L.T("Rec_NotConnected"), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
         try
@@ -463,9 +463,9 @@ public sealed class RideForm : Form
             AppPaths.Log("Creating the recording", ex);
             // Route, replay and program: shown once – the controller doesn't try again in this run, the ride goes on.
             var text = Guided
-                ? $"Die Aufzeichnung konnte nicht angelegt werden – auch nicht im Ersatzordner. Das Training läuft ohne Aufzeichnung weiter:\n{ex.Message}\n\nOrdner: {_settings.RecordingDirectory}"
-                : $"Datei konnte nicht angelegt werden:\n{ex.Message}";
-            MessageBox.Show(this, text, "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ? L.F("Rec_CreateFailedGuided", ex.Message, _settings.RecordingDirectory)
+                : L.F("Rec_CreateFailed", ex.Message);
+            MessageBox.Show(this, text, L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
         UpdateRecordButton();
@@ -474,10 +474,8 @@ public sealed class RideForm : Form
         ShowTotals(0, 0, 0, Color.OrangeRed);
         // Recording already runs (a guided ride goes on behind the message); just say where it ends up.
         if (_training.RecordingInFallbackFolder && _training.Recorder is { } recorder)
-            MessageBox.Show(this, $"Der Ablageordner ist nicht beschreibbar:\n{_settings.RecordingDirectory}\n\n"
-                + $"Die Aufzeichnung wird stattdessen hier gespeichert:\n{Path.GetDirectoryName(recorder.FilePath)}\n\n"
-                + "Export und „Aufzeichnung nachfahren“ finden sie dort. Der Grund steht im Protokoll ErgoWattControl.log.",
-                "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(this, L.F("Rec_InFallbackFolder", _settings.RecordingDirectory, Path.GetDirectoryName(recorder.FilePath)),
+                L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
     private JsonRecorder? StopRecording()
@@ -508,8 +506,8 @@ public sealed class RideForm : Form
     /// <summary>Free training: start/stop recording. Route, replay, program: recording runs automatically, the button ends the training.</summary>
     private void UpdateRecordButton()
     {
-        _btnRecord.Text = Guided ? "■ Training beenden"
-            : _training.Recorder is null ? "● Aufnahme" : "■ Stop";
+        _btnRecord.Text = Guided ? L.T("Ride_EndTraining")
+            : _training.Recorder is null ? L.T("Ride_Record") : L.T("Ride_Stop");
         _btnRecord.ForeColor = _training.Recorder is null ? Color.White : Color.OrangeRed;
         _menuTrainingEnd.Enabled = Guided || _training.Recorder is not null;
     }
@@ -562,7 +560,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            ShowLoadError("Die Aufzeichnung", "Aufzeichnung nachfahren", csvPath, ex);
+            ShowLoadError("Load_RecordingFailed", L.T("Caption_Replay"), csvPath, ex);
             return;
         }
         // A program given on the command line is recorded like one started from the dialog (Prog_… file name).
@@ -660,12 +658,12 @@ public sealed class RideForm : Form
     private string HelpSection => _training.Mode.HelpSection;
 
     /// <summary>Shows why a route or training could not be loaded and keeps the full exception in the log.</summary>
-    private void ShowLoadError(string what, string caption, string path, Exception ex)
+    /// <param name="messageKey">Text with the placeholders {0} = reason, {1} = log file.</param>
+    private void ShowLoadError(string messageKey, string caption, string path, Exception ex)
     {
         AppPaths.Log(path, ex);
-        var log = AppPaths.LogFile;
         var reason = string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : $"{ex.GetType().Name}: {ex.Message}";
-        MessageBox.Show(this, $"{what} konnte nicht geladen werden:\n{reason}\n\nDetails: {log}", caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        MessageBox.Show(this, L.F(messageKey, reason, AppPaths.LogFile), caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
     private void StartRoute()
@@ -688,7 +686,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            ShowLoadError("Die Strecke", "Strecke fahren", gpxPath, ex);
+            ShowLoadError("Load_RouteFailed", L.T("Caption_Route"), gpxPath, ex);
             return;
         }
         BeginRoute(route, customName: null);
@@ -719,7 +717,7 @@ public sealed class RideForm : Form
         // Ended by the rider: one dialog before anything ends – OK, Verwerfen, or Weiterfahren (keeps riding).
         if (!completed && recorded is not null)
         {
-            using var ask = new SummaryForm("Training beenden", mode.Name, mode.Facts(recorded), recorded.FilePath, canResume: true);
+            using var ask = new SummaryForm(L.T("End_Ask"), mode.Name, mode.Facts(recorded), recorded.FilePath, canResume: true);
             var answer = ShowEndDialog(ask);
             if (answer == DialogResult.Cancel)
                 return;
@@ -730,7 +728,7 @@ public sealed class RideForm : Form
         FinishGuided();
         if (recorded is null)
             return;
-        var (title, heading) = completed ? mode.CompletedTitles : ("Training beendet", mode.Name);
+        var (title, heading) = completed ? mode.CompletedTitles : (L.T("End_Ended"), mode.Name);
         using var summary = new SummaryForm(title, heading, mode.Facts(recorded), recorded.FilePath);
         var result = ShowEndDialog(summary);
         RenameRecordingForm.Apply(this, recorded.FilePath, result == DialogResult.Abort ? DialogResult.Abort : DialogResult.OK, summary.NewName);
@@ -755,7 +753,7 @@ public sealed class RideForm : Form
         _pulseGraph.Visible = true;
         UpdateRecordButton();
         SetGuidedMenus();
-        _powerCaption.Text = "LEISTUNG";
+        _powerCaption.Text = L.T("Ride_Power");
         _powerHint.Text = PowerHint;
         ShowTarget(_controller.TargetWatt);
     }
@@ -766,6 +764,8 @@ public sealed class RideForm : Form
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return;
         var monitorChanged = dialog.RideMonitor != _settings.RideMonitor;
+        var languageChanged = dialog.Language != _settings.Language;
+        _settings.Language = dialog.Language;
         var before = _settings.Snapshot();
         _settings.Device = dialog.Device;
         _settings.PortName = dialog.PortName;
@@ -792,7 +792,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Einstellungen konnten nicht gespeichert werden:\n{ex.Message}", "Einstellungen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(this, L.F("Settings_SaveFailed", ex.Message), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         // A new device (or port) takes over at once; the target power carries over.
         if (deviceChanged)
@@ -802,6 +802,23 @@ public sealed class RideForm : Form
             MaximumSize = Monitors.MaxRideViewSize(RiderScreen());
             FitTo(RiderScreen());
         }
+        if (languageChanged)
+            OfferRestart();
+    }
+
+    /// <summary>
+    /// The language applies from the next start (windows are built once). Restart right away only when nothing runs –
+    /// never in the middle of a training or recording.
+    /// </summary>
+    private void OfferRestart()
+    {
+        if (Guided || _training.Recorder is not null)
+        {
+            MessageBox.Show(this, L.T("Settings_RestartLater"), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        if (MessageBox.Show(this, L.T("Settings_RestartNow"), L.T("Settings_Title"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            Application.Restart();
     }
 
     private Screen RiderScreen() => Monitors.RideScreen(_settings.RideMonitor);
@@ -819,7 +836,7 @@ public sealed class RideForm : Form
     private void UpdateScreenButton()
     {
         var single = RiderScreen().DeviceName == Screen.PrimaryScreen!.DeviceName;
-        _btnScreen.Text = OnRiderScreen && !single ? "Hauptbildschirm" : "Fahransicht";
+        _btnScreen.Text = OnRiderScreen && !single ? L.T("Ride_ToMainScreen") : L.T("Ride_ToRideView");
     }
 
     /// <summary>Size of the small rider monitor at the ergometer (KellerPC); the demo shows the ride view in it.</summary>

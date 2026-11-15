@@ -159,7 +159,7 @@ public sealed class TrainingController
             }
         }
         // Not even the fallback works: report why the chosen folder failed.
-        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw(first ?? new IOException("Kein Ordner für Aufzeichnungen."));
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw(first ?? new IOException(L.T("Rec_NoFolder")));
         return null!;
     }
 

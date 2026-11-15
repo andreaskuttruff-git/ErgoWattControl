@@ -38,8 +38,8 @@ public sealed class SummaryForm : Form
         var hint = new Label
         {
             Text = canResume
-                ? $"OK beendet das Training und speichert die Aufnahme in {Path.GetDirectoryName(savedFile)}."
-                : $"Gespeichert in {Path.GetDirectoryName(savedFile)}",
+                ? L.F("End_OkEndsTraining", Path.GetDirectoryName(savedFile))
+                : L.F("End_SavedIn", Path.GetDirectoryName(savedFile)),
             AutoSize = true,
             ForeColor = SystemColors.GrayText,
             MaximumSize = new Size(620, 0),
@@ -48,22 +48,22 @@ public sealed class SummaryForm : Form
         layout.Controls.Add(hint);
         layout.SetColumnSpan(hint, 2);
         _fileName = new RecordingNameBox(Path.GetFileNameWithoutExtension(savedFile));
-        layout.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 16, 2) });
+        layout.Controls.Add(new Label { Text = L.T("Pick_FileName"), AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 16, 2) });
         layout.Controls.Add(_fileName);
 
-        var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0) };
-        var discard = new Button { Text = "Verwerfen", DialogResult = DialogResult.Abort, AutoSize = true, MinimumSize = new Size(90, 0) };
-        var folder = new Button { Text = "Ordner öffnen", AutoSize = true, Margin = new Padding(3, 3, 24, 3) };
+        var ok = new Button { Text = L.T("Button_Ok"), DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0) };
+        var discard = new Button { Text = L.T("Button_Discard"), DialogResult = DialogResult.Abort, AutoSize = true, MinimumSize = new Size(90, 0) };
+        var folder = new Button { Text = L.T("Button_OpenFolder"), AutoSize = true, Margin = new Padding(3, 3, 24, 3) };
         folder.Click += (_, _) =>
         {
             try { System.Diagnostics.Process.Start("explorer.exe", File.Exists(savedFile) ? $"/select,\"{savedFile}\"" : $"\"{Path.GetDirectoryName(savedFile)}\""); }
-            catch (Exception ex) { MessageBox.Show(this, ex.Message, "Ordner", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception ex) { MessageBox.Show(this, ex.Message, L.T("Caption_Folder"), MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         };
         var buttons = new FlowLayoutPanel { AutoSize = true, Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
         buttons.Controls.Add(folder);
         if (canResume)
         {
-            var resume = new Button { Text = "Weiterfahren", DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
+            var resume = new Button { Text = L.T("Button_Resume"), DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
             buttons.Controls.Add(resume);
             CancelButton = resume;
         }

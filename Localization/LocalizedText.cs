@@ -70,7 +70,7 @@ public sealed class LocalizedTextConverter : JsonConverter<LocalizedText>
                 var texts = JsonSerializer.Deserialize<Dictionary<string, string>>(ref reader, options) ?? [];
                 return new LocalizedText(texts);
             default:
-                throw new JsonException("Erwartet: ein Text oder ein Objekt mit einem Text je Sprache, z. B. { \"de\": \"…\", \"en\": \"…\" }.");
+                throw new JsonException(L.T("Program_TextExpected"));
         }
     }
 

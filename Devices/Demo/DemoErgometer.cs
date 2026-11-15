@@ -23,13 +23,13 @@ public sealed class DemoErgometer : IErgometer
 
     public string DisplayName => "Demo";
     public ErgometerCapabilities Capabilities { get; } =
-        new(ErgoController.AbsoluteMaxWatt, 5, RpmRange.For, "Demo (simulierter Fahrer, wie Cockpit 8008): max. 800 W");
+        new(ErgoController.AbsoluteMaxWatt, 5, RpmRange.For, L.T("Demo_Info"));
     public bool IsConnected => _timer is not null && !_disposed;
 
     public void Start()
     {
         _timer = new System.Threading.Timer(_ => Tick(), null, Interval, Interval);
-        StatusChanged?.Invoke(new ErgometerStatus("Demo-Modus (kein Cockpit)", true));
+        StatusChanged?.Invoke(new ErgometerStatus(L.T("Demo_Status"), true));
     }
 
     public void SetTargetPower(int watt) => _targetWatt = watt;

@@ -6,9 +6,9 @@ namespace ErgoWattControl;
 
 /// <summary>A platform the exported FIT files can be uploaded to in the <see cref="UploadWindow"/>.</summary>
 /// <param name="IsLoginPage">Pages of the sign-in (the session marker is removed there, the rider signs in).</param>
-/// <param name="LoginHint">Status text while signing in: how the sign-in is kept for next time.</param>
-/// <param name="PageName">What the platform calls its upload page, for the status texts.</param>
-/// <param name="NextStep">What is left to do on the page once the files are in.</param>
+/// <param name="LoginHint">Key of the status text while signing in: how the sign-in is kept for next time.</param>
+/// <param name="PageName">Key of what the platform calls its upload page, for the status texts.</param>
+/// <param name="NextStep">Key of what is left to do on the page once the files are in.</param>
 public sealed record UploadService(
     string Name, string ProfileName,
     Func<AppSettings, string> LoginUrl, Func<AppSettings, string> UploadUrl,
@@ -23,8 +23,7 @@ public sealed record UploadService(
         "Garmin Connect", "Garmin",
         s => s.GarminLoginUrl, s => s.GarminImportUrl,
         uri => uri.Host.StartsWith("sso.", StringComparison.OrdinalIgnoreCase),
-        "Bitte bei Garmin anmelden. „Daten speichern“ ist vorausgewählt – so geht es beim nächsten Mal direkt zur Import-Seite.",
-        "Import-Seite", "jetzt auf der Seite „Daten importieren“ klicken.");
+        "Upload_GarminLoginHint", "Upload_GarminPageName", "Upload_GarminNextStep");
 
     public static readonly UploadService Strava = new(
         "Strava", "Strava",
@@ -35,8 +34,7 @@ public sealed record UploadService(
             || uri.AbsolutePath.StartsWith("/register", StringComparison.OrdinalIgnoreCase)
             || uri.AbsolutePath.StartsWith("/oauth", StringComparison.OrdinalIgnoreCase)
             || !uri.Host.EndsWith("strava.com", StringComparison.OrdinalIgnoreCase),
-        "Bitte bei Strava anmelden (am besten per E-Mail – Google lässt die Anmeldung in eingebetteten Fenstern oft nicht zu). „Eingeloggt bleiben“ ist vorausgewählt – so geht es beim nächsten Mal direkt zur Upload-Seite.",
-        "Upload-Seite", "Strava lädt die Datei hoch – danach Titel prüfen und „Speichern & anzeigen“ klicken.");
+        "Upload_StravaLoginHint", "Upload_StravaPageName", "Upload_StravaNextStep");
 
     /// <summary>Own browser profile (cookies) per platform, apart from the help window's, so signing out can simply delete it.</summary>
     public string ProfileFolder =>
@@ -182,7 +180,7 @@ public sealed class UploadWindow : Form
         _service = service;
         _settings = settings;
         _signIn = signIn;
-        Text = signIn ? $"{service.Name} – Anmelden" : $"{service.Name} – Aufzeichnung hochladen";
+        Text = signIn ? L.F("Upload_TitleSignIn", service.Name) : L.F("Upload_TitleUpload", service.Name);
         Icon = AppIcon.Value;
         // Most of the main monitor (never the rider monitor): the platforms' pages need the room. With two
         // windows open the second one is offset a little so both title bars stay visible.
@@ -198,11 +196,11 @@ public sealed class UploadWindow : Form
         var caption = new Label
         {
             Dock = DockStyle.Top, AutoSize = false, Height = 26, Padding = new Padding(8, 6, 0, 0),
-            Text = $"Exportierte Dateien – werden auf der {service.PageName} eingesetzt, lassen sich aber auch hineinziehen:",
+            Text = L.F("Upload_FilesStrip", L.T(service.PageName)),
         };
-        var insert = new Button { Text = "Erneut einsetzen", AutoSize = true, Margin = new Padding(8, 4, 4, 4) };
+        var insert = new Button { Text = L.T("Upload_InsertAgain"), AutoSize = true, Margin = new Padding(8, 4, 4, 4) };
         insert.Click += (_, _) => StartInsert();
-        var openFolder = new Button { Text = "Ordner öffnen", AutoSize = true, Margin = new Padding(4) };
+        var openFolder = new Button { Text = L.T("Button_OpenFolder"), AutoSize = true, Margin = new Padding(4) };
         openFolder.Click += (_, _) =>
         {
             if (_files.Count > 0 && Path.GetDirectoryName(_files[0]) is { } folder)
@@ -320,7 +318,7 @@ public sealed class UploadWindow : Form
         catch (Exception ex) when (ex is WebView2RuntimeNotFoundException or InvalidOperationException or System.Runtime.InteropServices.COMException or IOException or UnauthorizedAccessException)
         {
             // Without WebView2: the normal browser at least gets the rider to the page.
-            _status.Text = $"Eingebettetes Browserfenster nicht verfügbar ({ex.Message}) – {_service.Name} wird im Standardbrowser geöffnet.";
+            _status.Text = L.F("Upload_NoWebView", ex.Message, _service.Name);
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(UploadUrl) { UseShellExecute = true });
             return;
         }
@@ -347,7 +345,7 @@ public sealed class UploadWindow : Form
         if (_service.IsLoginPage(uri))
         {
             TryDelete(_service.SessionMarker);
-            _status.Text = _service.LoginHint;
+            _status.Text = L.T(_service.LoginHint);
             TickRemember();
             return;
         }
@@ -360,7 +358,7 @@ public sealed class UploadWindow : Form
             if (_closing)
                 return;
             _closing = true;
-            _status.Text = $"✓ Bei {_service.Name} angemeldet – das Fenster schließt sich.";
+            _status.Text = L.F("Upload_SignedIn", _service.Name);
             var close = new System.Windows.Forms.Timer { Interval = 2500 };
             close.Tick += (_, _) =>
             {
@@ -391,7 +389,7 @@ public sealed class UploadWindow : Form
             return;
         _inserted = false;
         _insertTries = 0;
-        _status.Text = $"Suche das Dateifeld der {_service.PageName} …";
+        _status.Text = L.F("Upload_FindingField", L.T(_service.PageName));
         _insertTimer.Start();
     }
 
@@ -409,7 +407,7 @@ public sealed class UploadWindow : Form
         if (++_insertTries > 20)
         {
             _insertTimer.Stop();
-            _status.Text = "Dateifeld nicht gefunden – bitte die Datei oben auf die Seite ziehen oder dort die Datei auswählen.";
+            _status.Text = L.T("Upload_FieldNotFound");
             return;
         }
         _insertTimer.Stop();
@@ -441,8 +439,8 @@ public sealed class UploadWindow : Form
                 existing = existing.Take(1).ToArray();
             }
             _inserted = true;
-            _status.Text = (existing.Length == 1 ? $"✓ {Path.GetFileName(existing[0])} eingesetzt – " : $"✓ {existing.Length} Dateien eingesetzt – ")
-                + _service.NextStep;
+            _status.Text = (existing.Length == 1 ? L.F("Upload_InsertedOne", Path.GetFileName(existing[0])) : L.F("Upload_InsertedMany", existing.Length))
+                + L.T(_service.NextStep);
         }
         catch (Exception ex) when (ex is System.Runtime.InteropServices.COMException or ArgumentException or JsonException or KeyNotFoundException or InvalidOperationException)
         {

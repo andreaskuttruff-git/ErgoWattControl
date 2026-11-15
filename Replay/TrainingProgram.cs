@@ -39,13 +39,13 @@ public sealed partial class TrainingProgram
         try
         {
             program = JsonSerializer.Deserialize<TrainingProgram>(File.ReadAllText(path), Options)
-                ?? throw new InvalidDataException("Die Datei ist leer.");
+                ?? throw new InvalidDataException(L.T("File_Empty"));
         }
         catch (JsonException ex)
         {
             // Hand-written files: say where the JSON breaks (line from the parser, 0-based).
-            var where = ex.LineNumber is { } line ? $" (Zeile {line + 1})" : "";
-            throw new InvalidDataException($"Kein gültiges JSON{where}: {ex.Message.Split(". Path:")[0]}", ex);
+            var where = ex.LineNumber is { } line ? L.F("Program_Line", line + 1) : "";
+            throw new InvalidDataException(L.F("Program_InvalidJson", where, ex.Message.Split(". Path:")[0]), ex);
         }
         Validate(program.Profile);
         program.FilePath = path;
@@ -58,19 +58,19 @@ public sealed partial class TrainingProgram
     private static void Validate(int[][] profile)
     {
         if (profile is null || profile.Length < 2)
-            throw new InvalidDataException("\"Profile\" braucht mindestens zwei Punkte [Sekunde, Watt] – der letzte markiert das Ende.");
+            throw new InvalidDataException(L.T("Program_TooFewPoints"));
         for (var i = 0; i < profile.Length; i++)
         {
             var point = profile[i];
-            var where = $"Profile, Punkt {i + 1}";
+            var where = L.F("Program_Point", i + 1);
             if (point is null || point.Length != 2)
-                throw new InvalidDataException($"{where}: erwartet [Sekunde, Watt].");
+                throw new InvalidDataException(L.F("Program_PointShape", where));
             if (i == 0 && point[0] != 0)
-                throw new InvalidDataException($"{where}: Der erste Punkt muss bei Sekunde 0 beginnen.");
+                throw new InvalidDataException(L.F("Program_FirstAtZero", where));
             if (i > 0 && point[0] <= profile[i - 1][0])
-                throw new InvalidDataException($"{where}: Sekunde {point[0]} muss größer sein als beim Punkt davor ({profile[i - 1][0]}).");
+                throw new InvalidDataException(L.F("Program_NotIncreasing", where, point[0], profile[i - 1][0]));
             if (point[1] is < 0 or > 800)
-                throw new InvalidDataException($"{where}: {point[1]} W liegt außerhalb von 0–800 W.");
+                throw new InvalidDataException(L.F("Program_WattRange", where, point[1]));
         }
     }
 

@@ -50,12 +50,12 @@ public abstract class TrainingMode
     public virtual List<(string Label, string Value)> Facts(JsonRecorder recorded) => [];
 
     /// <summary>Title and heading of the end dialog after reaching the end.</summary>
-    public virtual (string Title, string Heading) CompletedTitles => ("Training abgeschlossen", Name);
+    public virtual (string Title, string Heading) CompletedTitles => (L.T("End_Completed"), Name);
 
     protected static void AddTotals(List<(string, string)> facts, JsonRecorder recorded)
     {
-        facts.Add(("Energie", $"{recorded.EnergyKJ:0} kJ"));
-        facts.Add(("Umdrehungen", $"{recorded.Revolutions:0}"));
+        facts.Add((L.T("Fact_Energy"), $"{recorded.EnergyKJ:0} kJ"));
+        facts.Add((L.T("Fact_Revolutions"), $"{recorded.Revolutions:0}"));
     }
 }
 
@@ -85,10 +85,10 @@ public sealed class RouteTraining(RouteSession session) : TrainingMode
     public override string HelpSection => "strecke";
     public override string Name => Session.Route.Name;
     public override (string Kind, string Name, string? File) RunName =>
-        ("Strecke", $"{Session.Route.Name} ({Session.Route.TotalDistance / 1000:0.0} km)", Session.Route.FilePath);
+        (L.T("Kind_Route"), $"{Session.Route.Name} ({Session.Route.TotalDistance / 1000:0.0} km)", Session.Route.FilePath);
     public override bool Finished => Session.Finished;
     public override double? SpeedKmh => Session.SpeedKmh;
-    public override (string Title, string Heading) CompletedTitles => ("Ziel erreicht", $"Ziel erreicht – {Name}");
+    public override (string Title, string Heading) CompletedTitles => (L.T("End_Finish"), L.F("End_FinishHeading", Name));
 
     public override string DefaultFileName(AppSettings settings, DateTime now) =>
         AppSettings.BuildFileName(settings.FileNameRoute, now, Session.Route.Name);
@@ -108,14 +108,14 @@ public sealed class RouteTraining(RouteSession session) : TrainingMode
     {
         var facts = new List<(string, string)>
         {
-            ("Strecke", $"{Session.Position / 1000:0.0} von {Session.Route.TotalDistance / 1000:0.0} km"),
-            ("Fahrzeit", $"{Session.MovingTime:h\\:mm\\:ss}"),
+            (L.T("Fact_Route"), L.F("Fact_RouteValue", Session.Position / 1000, Session.Route.TotalDistance / 1000)),
+            (L.T("Fact_MovingTime"), $"{Session.MovingTime:h\\:mm\\:ss}"),
         };
         if (Session.MovingTime.TotalSeconds > 0)
-            facts.Add(("Ø Geschwindigkeit", $"{Session.Position / Session.MovingTime.TotalSeconds * 3.6:0.0} km/h"));
-        facts.Add(("Ø Leistung", $"{Session.AverageWatt:0} W"));
+            facts.Add((L.T("Fact_AvgSpeed"), $"{Session.Position / Session.MovingTime.TotalSeconds * 3.6:0.0} km/h"));
+        facts.Add((L.T("Fact_AvgPower"), $"{Session.AverageWatt:0} W"));
         if (Session.AveragePulse > 0)
-            facts.Add(("Ø Puls", $"{Session.AveragePulse:0}"));
+            facts.Add((L.T("Fact_AvgPulse"), $"{Session.AveragePulse:0}"));
         AddTotals(facts, recorded);
         return facts;
     }
@@ -138,9 +138,9 @@ public sealed class ReplayTraining(ReplaySession session, string? programFile) :
     public override string HelpSection => IsProgram ? "programm" : "training";
     public override string Name => Session.Workout.Name;
     public override (string Kind, string Name, string? File) RunName =>
-        (IsProgram || Session.Workout.IsProgram ? "Programm" : "Aufzeichnung", Session.Workout.Name, Session.Workout.FilePath);
+        (IsProgram || Session.Workout.IsProgram ? L.T("Kind_Program") : L.T("Kind_Recording"), Session.Workout.Name, Session.Workout.FilePath);
     public override bool Finished => Session.Finished;
-    public override (string Title, string Heading) CompletedTitles => ("Training abgeschlossen", $"Geschafft – {Name}");
+    public override (string Title, string Heading) CompletedTitles => (L.T("End_Completed"), L.F("End_DoneHeading", Name));
 
     public override string DefaultFileName(AppSettings settings, DateTime now) => IsProgram
         ? AppSettings.BuildFileName(settings.FileNameProgram, now, ProgramFile)
@@ -164,14 +164,14 @@ public sealed class ReplayTraining(ReplaySession session, string? programFile) :
         var then = Session.Workout.AveragesUntil(Session.Elapsed.TotalSeconds);
         var facts = new List<(string, string)>
         {
-            ("Gefahren", $"{WorkoutProfile.Format(Session.Elapsed.TotalSeconds)} von {WorkoutProfile.Format(Session.Workout.Duration)}"),
-            ("Ø Leistung", $"{Session.AverageWatt:0} W   (damals Ø {then.Watt:0} W)"),
+            (L.T("Fact_Ridden"), L.F("Fact_RiddenValue", WorkoutProfile.Format(Session.Elapsed.TotalSeconds), WorkoutProfile.Format(Session.Workout.Duration))),
+            (L.T("Fact_AvgPower"), L.F("Fact_AvgPowerThen", Session.AverageWatt, then.Watt)),
         };
         if (Session.Offset != 0)
-            facts.Add(("Profil verschoben", $"{Session.Offset:+0;-0} W"));
+            facts.Add((L.T("Fact_ProfileShifted"), $"{Session.Offset:+0;-0} W"));
         if (Session.AveragePulse > 0)
-            facts.Add(("Ø Puls", then.Pulse > 0
-                ? $"{Session.AveragePulse:0}   (damals Ø {then.Pulse:0})"
+            facts.Add((L.T("Fact_AvgPulse"), then.Pulse > 0
+                ? L.F("Fact_AvgPulseThen", Session.AveragePulse, then.Pulse)
                 : $"{Session.AveragePulse:0}"));
         AddTotals(facts, recorded);
         return facts;

@@ -83,7 +83,7 @@ public static class HelpWindow
         var size = new Size(Math.Min(1150, area.Width - 80), Math.Min(900, area.Height - 80));
         var form = new Form
         {
-            Text = "ErgoWattControl – Hilfe",
+            Text = L.T("Help_Title"),
             Icon = AppIcon.Value,
             StartPosition = FormStartPosition.Manual,
             Bounds = new Rectangle(area.X + (area.Width - size.Width) / 2, area.Y + (area.Height - size.Height) / 2, size.Width, size.Height),
@@ -191,7 +191,7 @@ public static class HelpWindow
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            MessageBox.Show($"Die Hilfe konnte nicht geöffnet werden:\n{ex.Message}", "Hilfe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(L.F("Help_OpenFailed", ex.Message), L.T("Help_Caption"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 
@@ -203,7 +203,7 @@ public static class HelpWindow
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            MessageBox.Show($"Konnte nicht geöffnet werden:\n{target}\n{ex.Message}", "Hilfe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(L.F("Help_TargetFailed", target, ex.Message), L.T("Help_Caption"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

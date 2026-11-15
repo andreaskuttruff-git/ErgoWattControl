@@ -2,35 +2,6 @@ namespace ErgoWattControl;
 
 static class Program
 {
-    private const string HelpText =
-        """
-        ErgoWattControl – Steuerung für Daum ergo_bike 8008 TRS
-
-        Aufruf:
-          ErgoWattControl.exe
-              Normalbetrieb: verbindet sich mit dem Cockpit am eingestellten COM-Port.
-
-          ErgoWattControl.exe -demo [GPX-Datei oder Aufzeichnung]
-              Demo-Modus ohne Cockpit: ein simulierter Fahrer (ca. 75 RPM) ersetzt das
-              Ergometer, die serielle Schnittstelle wird nicht benutzt.
-              Mit GPX-Datei startet diese Strecke sofort, ohne Übersicht;
-              mit einer Aufzeichnung (JSON/CSV) oder einem Programm wird dieses wiederholt.
-              Beispiel: ErgoWattControl.exe -demo "GPX\Tour.gpx"
-
-          ErgoWattControl.exe -main
-              Startet auf dem Hauptbildschirm statt auf dem Fahrer-Monitor.
-              "Fahransicht" bzw. Taste 0 schiebt das Fenster auf den Fahrer-Monitor.
-              Kombinierbar: ErgoWattControl.exe -main -demo
-
-          ErgoWattControl.exe -help
-              Zeigt diese Hilfe.
-
-        Schreibweisen: -demo, --demo, /demo,  -main, --main, /main  sowie  -help, --help, -h, -?, /?
-        Einstellungen: %AppData%\ErgoWattControl\settings.json, Aufzeichnungen, Strecken
-        und Programme in Dokumente\ErgoWattControl. Liegt eine settings.json neben der exe,
-        bleibt alles im Programmordner (portabel).
-        """;
-
     /// <param name="args">"-demo [gpx/json/csv]": simulated cockpit, optionally starting a route or replay; "-main": open on the primary monitor; "-help": usage.</param>
     [STAThread]
     static void Main(string[] args)
@@ -45,6 +16,9 @@ static class Program
                 AppPaths.Log("Unhandled error (app ends)", ex);
         };
         ApplicationConfiguration.Initialize();
+        // Settings first: they set the language of everything that follows (also the -help window).
+        var settings = AppSettings.Load();
+        Language.Apply(settings.Language);
         // All dialogs dark like the ride view (and the Windows dark title bar); MessageBox stays as Windows draws it.
         Application.SetColorMode(SystemColorMode.Dark);
 
@@ -74,12 +48,12 @@ static class Program
                     ShowHelp(null);
                     return;
                 default:
-                    ShowHelp($"Unbekannter Parameter: {args[i]}");
+                    ShowHelp(L.F("Start_UnknownParameter", args[i]));
                     return;
             }
         }
         ProgramFiles.Install();
-        Application.Run(new RideForm(AppSettings.Load(), demo, demoRoute, mainScreen));
+        Application.Run(new RideForm(settings, demo, demoRoute, mainScreen));
         HelpWindow.Close();
     }
 
@@ -94,7 +68,7 @@ static class Program
         _reporting = true;
         try
         {
-            MessageBox.Show($"Unerwarteter Fehler: {ex.Message}\n\nDie App läuft weiter. Details stehen in {AppPaths.LogFile}.",
+            MessageBox.Show(L.F("Error_Unexpected", ex.Message, AppPaths.LogFile),
                 "ErgoWattControl", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         catch (Exception) { /* nothing left to report with */ }
@@ -110,7 +84,7 @@ static class Program
         // Own dialog instead of MessageBox: it wraps long lines early and breaks the indentation.
         using var form = new Form
         {
-            Text = "ErgoWattControl – Parameter",
+            Text = L.T("Start_HelpTitle"),
             FormBorderStyle = FormBorderStyle.FixedDialog,
             MaximizeBox = false,
             MinimizeBox = false,
@@ -123,7 +97,7 @@ static class Program
         var layout = new FlowLayoutPanel { AutoSize = true, FlowDirection = FlowDirection.TopDown, Dock = DockStyle.Fill };
         if (error is not null)
             layout.Controls.Add(new Label { Text = error, AutoSize = true, ForeColor = DialogColors.Warning, Font = new Font("Segoe UI", 10, FontStyle.Bold), Margin = new Padding(0, 0, 0, 12) });
-        layout.Controls.Add(new Label { Text = HelpText, AutoSize = true, Font = new Font("Consolas", 10) });
+        layout.Controls.Add(new Label { Text = L.T("Start_Help"), AutoSize = true, Font = new Font("Consolas", 10) });
         var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0), Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
         layout.Controls.Add(ok);
         form.Controls.Add(layout);

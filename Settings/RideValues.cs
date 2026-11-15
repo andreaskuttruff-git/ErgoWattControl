@@ -12,7 +12,8 @@ public sealed class RideValues
     /// <summary>Percentage of the real gradient that is ridden (100 = original, 50 = half as steep).</summary>
     public int GradeFactorPercent { get; set; } = 100;
     /// <summary>Gear table for route riding: "Rennrad" (daum table, 42:24 – 53:12) or "MTB" (moderately lower gears).</summary>
-    public string Gearing { get; set; } = RouteSession.GearingMtb;
+    public string Gearing { get => _gearing; set => _gearing = value == "Rennrad" ? RouteSession.GearingRoad : value; }
+    private string _gearing = RouteSession.GearingMtb;
     public int StartGear { get; set; } = 8;
     /// <summary>Physics constants, only editable in settings.json and the start dialogs: MTB tyres on mixed surface, upright rider.</summary>
     public double RollingResistance { get; set; } = 0.010;

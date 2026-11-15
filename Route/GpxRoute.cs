@@ -66,7 +66,7 @@ public sealed class GpxRoute
             .Where(p => !double.IsNaN(p.Ele))
             .ToList();
         if (points.Count < 2)
-            throw new InvalidDataException("Die GPX-Datei enthält keinen Track mit Höhenangaben.");
+            throw new InvalidDataException(L.T("Gpx_NoTrack"));
         return FromTrack(Path.GetFileNameWithoutExtension(path), path, points);
     }
 
@@ -74,12 +74,12 @@ public sealed class GpxRoute
     public static GpxRoute FromTrack(string name, string? path, IReadOnlyList<(double Lat, double Lon, double Ele)> points)
     {
         if (points.Count < 2)
-            throw new InvalidDataException("Die Strecke enthält keine Punkte mit Höhenangaben.");
+            throw new InvalidDataException(L.T("Route_NoPoints"));
         var cumulative = new double[points.Count];
         for (var i = 1; i < points.Count; i++)
             cumulative[i] = cumulative[i - 1] + Haversine(points[i - 1], points[i]);
         if (cumulative[^1] < 100)
-            throw new InvalidDataException("Die Strecke ist kürzer als 100 m.");
+            throw new InvalidDataException(L.T("Route_TooShort"));
 
         var count = (int)(cumulative[^1] / Step) + 1;
         var raw = new double[count];
@@ -117,11 +117,11 @@ public sealed class GpxRoute
     public static GpxRoute FromPoints(string name, string? filePath, IReadOnlyList<double[]> points)
     {
         if (points.Count < 2 || points.Any(p => p.Length < 2))
-            throw new InvalidDataException("Die gespeicherte Strecke ist unvollständig.");
+            throw new InvalidDataException(L.T("Route_StoredIncomplete"));
         for (var i = 0; i < points.Count; i++)
         {
             if (Math.Abs(points[i][0] - i * Step) > 0.5)
-                throw new InvalidDataException($"Die gespeicherte Strecke hat nicht alle {Step:0} m einen Punkt.");
+                throw new InvalidDataException(L.F("Route_StoredGaps", Step));
         }
         double Value(double[] p, int index) => p.Length > index ? p[index] : 0;
         return new GpxRoute(name, filePath, [.. points.Select(p => p[1])], [.. points.Select(p => Value(p, 2))], [.. points.Select(p => Value(p, 3))]);

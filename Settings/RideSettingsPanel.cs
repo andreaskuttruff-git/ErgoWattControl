@@ -17,19 +17,25 @@ public sealed class RideSettingsPanel : TableLayoutPanel
     private readonly Control[] _routeOnly;
     private bool _route;
 
+    /// <summary>A gear table in a list: its id, shown under its name in the current language.</summary>
+    public sealed record GearingItem(string Id)
+    {
+        public override string ToString() => RouteSession.GearingName(Id);
+    }
+
     public RideSettingsPanel()
     {
         AutoSize = true;
         ColumnCount = 1;
         Margin = Padding.Empty;
-        _gearing.Items.AddRange([RouteSession.GearingMtb, RouteSession.GearingRoad]);
-        var weights = Row(Unit("Fahrer"), _rider, Unit("kg   Rad"), _bike, Unit("kg   Steigung"), _gradeFactor, Unit("%"));
-        var gears = Row(Unit("Übersetzung"), _gearing, Unit("   Startgang"), _startGear);
-        var resistances = Row(Unit("Rollwiderstand"), _rolling, Unit("   Luftwiderstand (cw·A)"), _drag, Unit("m²"));
+        _gearing.Items.AddRange([.. RouteSession.Gearings.Select(g => new GearingItem(g))]);
+        var weights = Row(Unit(L.T("Settings_Rider")), _rider, Unit(L.T("Settings_KgBike")), _bike, Unit(L.T("Settings_KgGrade")), _gradeFactor, Unit("%"));
+        var gears = Row(Unit(L.T("Settings_Gearing")), _gearing, Unit(L.T("Settings_StartGear")), _startGear);
+        var resistances = Row(Unit(L.T("RideValues_Rolling")), _rolling, Unit(L.T("RideValues_Drag")), _drag, Unit("m²"));
         Controls.Add(weights);
         Controls.Add(gears);
         Controls.Add(resistances);
-        Controls.Add(Row(Unit("Wattgrenze"), _maxWatt, Unit("W")));
+        Controls.Add(Row(Unit(L.T("RideValues_PowerLimit")), _maxWatt, Unit("W")));
         _routeOnly = [weights, gears, resistances];
     }
 
@@ -42,7 +48,7 @@ public sealed class RideSettingsPanel : TableLayoutPanel
         _rider.Value = (decimal)Math.Clamp(ride.RiderWeightKg, 30, 250);
         _bike.Value = (decimal)Math.Clamp(ride.BikeWeightKg, 5, 40);
         _gradeFactor.Value = Math.Clamp(ride.GradeFactorPercent, 10, 100);
-        _gearing.SelectedItem = ride.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
+        _gearing.SelectedItem = new GearingItem(ride.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb);
         _startGear.Value = Math.Clamp(ride.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
         _rolling.Value = Math.Clamp((decimal)ride.RollingResistance, _rolling.Minimum, _rolling.Maximum);
         _drag.Value = Math.Clamp((decimal)ride.DragAreaM2, _drag.Minimum, _drag.Maximum);
@@ -62,7 +68,7 @@ public sealed class RideSettingsPanel : TableLayoutPanel
         ride.RiderWeightKg = (double)_rider.Value;
         ride.BikeWeightKg = (double)_bike.Value;
         ride.GradeFactorPercent = (int)_gradeFactor.Value;
-        ride.Gearing = (string)_gearing.SelectedItem!;
+        ride.Gearing = ((GearingItem)_gearing.SelectedItem!).Id;
         ride.StartGear = (int)_startGear.Value;
         ride.RollingResistance = (double)_rolling.Value;
         ride.DragAreaM2 = (double)_drag.Value;

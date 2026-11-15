@@ -16,7 +16,7 @@ public sealed class RenameRecordingForm : Form
     public RenameRecordingForm(string savedFile, bool closingApp = false, bool endTraining = false)
     {
         _fileName = new RecordingNameBox(Path.GetFileNameWithoutExtension(savedFile));
-        Text = closingApp ? "ErgoWattControl beenden" : endTraining ? "Training beenden" : "Aufnahme gespeichert";
+        Text = closingApp ? L.T("End_CloseApp") : endTraining ? L.T("End_Ask") : L.T("End_Saved");
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -30,10 +30,10 @@ public sealed class RenameRecordingForm : Form
         var layout = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill };
         var folder = new Label
         {
-            Text = endTraining ? $"OK beendet die Aufnahme und speichert sie in {Path.GetDirectoryName(savedFile)}."
-                : !closingApp ? $"Gespeichert in {Path.GetDirectoryName(savedFile)}"
-                : File.Exists(savedFile) ? $"Die Aufnahme läuft noch. OK speichert sie in {Path.GetDirectoryName(savedFile)} und beendet die App."
-                : "Noch nichts aufgezeichnet – die Aufnahme beginnt mit dem ersten Tritt. OK beendet die App.",
+            Text = endTraining ? L.F("End_OkEndsRecording", Path.GetDirectoryName(savedFile))
+                : !closingApp ? L.F("End_SavedIn", Path.GetDirectoryName(savedFile))
+                : File.Exists(savedFile) ? L.F("End_StillRecording", Path.GetDirectoryName(savedFile))
+                : L.T("End_NothingYet"),
             AutoSize = true,
             ForeColor = SystemColors.GrayText,
             MaximumSize = new Size(620, 0),
@@ -41,15 +41,15 @@ public sealed class RenameRecordingForm : Form
         };
         layout.Controls.Add(folder);
         layout.SetColumnSpan(folder, 2);
-        layout.Controls.Add(new Label { Text = "Dateiname:", AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 16, 2) });
+        layout.Controls.Add(new Label { Text = L.T("Pick_FileName"), AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 6, 16, 2) });
         layout.Controls.Add(_fileName);
 
-        var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0) };
-        var discard = new Button { Text = "Verwerfen", DialogResult = DialogResult.Abort, AutoSize = true, MinimumSize = new Size(90, 0) };
+        var ok = new Button { Text = L.T("Button_Ok"), DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0) };
+        var discard = new Button { Text = L.T("Button_Discard"), DialogResult = DialogResult.Abort, AutoSize = true, MinimumSize = new Size(90, 0) };
         var buttons = new FlowLayoutPanel { AutoSize = true, Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
         if (closingApp || endTraining)
         {
-            var resume = new Button { Text = "Weiterfahren", DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
+            var resume = new Button { Text = L.T("Button_Resume"), DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(90, 0) };
             buttons.Controls.Add(resume);
             CancelButton = resume;
         }
@@ -83,7 +83,7 @@ public sealed class RenameRecordingForm : Form
             }
             catch (Exception ex)
             {
-                MessageBox.Show(owner, $"Löschen nicht möglich, die Datei bleibt erhalten:\n{ex.Message}", "Aufnahme", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(owner, L.F("End_DeleteFailed", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return savedFile;
             }
         }
@@ -97,7 +97,7 @@ public sealed class RenameRecordingForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(owner, $"Umbenennen nicht möglich, die Datei behält ihren Namen:\n{ex.Message}", "Aufnahme", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show(owner, L.F("End_RenameFailed", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return savedFile;
         }
     }

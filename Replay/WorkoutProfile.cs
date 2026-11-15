@@ -91,7 +91,7 @@ public sealed class WorkoutProfile : Control
         var from = _position - PreviewBehind;
         var to = _position + PreviewAhead;
         // Only the time labels go below the preview, so it reaches down to just above them.
-        var labelHeight = (int)Math.Ceiling(g.MeasureString("jetzt", labelFont).Height);
+        var labelHeight = (int)Math.Ceiling(g.MeasureString(L.T("Graph_Now"), labelFont).Height);
         var preview = new Rectangle(60, strip.Bottom + 12, Width - 120, Height - strip.Bottom - 12 - labelHeight);
         // The marker line starts below the announcement so it doesn't strike through the text.
         var infoBottom = preview.Top + 4 + (string.IsNullOrEmpty(_info) ? 0 : g.MeasureString(_info, infoFont).Height);
@@ -99,7 +99,7 @@ public sealed class WorkoutProfile : Control
         Draw(g, workout, wattAt, preview, from, to, top, _position, labelFont, infoBottom, withPulse: false);
 
         var x = XFor(preview, from, to, _position);
-        g.DrawString("jetzt", labelFont, labelBrush, x - 20, preview.Bottom);
+        g.DrawString(L.T("Graph_Now"), labelFont, labelBrush, x - 20, preview.Bottom);
         var ahead = $"+{PreviewAhead / 60:0} min";
         g.DrawString(ahead, labelFont, labelBrush, preview.Right - g.MeasureString(ahead, labelFont).Width, preview.Bottom);
         using var infoBrush = new SolidBrush(PowerLine);

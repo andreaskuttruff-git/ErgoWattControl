@@ -37,7 +37,7 @@ public class RideValuesTests : IDisposable
         Assert.Equal(142, ride.TotalMassKg);
         Assert.Equal(70, ride.GradeFactorPercent);
         Assert.Equal(5, ride.StartGear);
-        Assert.Equal("Rennrad", ride.Gearing);
+        Assert.Equal(RouteSession.GearingRoad, ride.Gearing); // "Rennrad" of v1.x
         Assert.Equal(0.008, ride.RollingResistance);
         Assert.Equal(0.4, ride.DragAreaM2);
         Assert.Equal(300, ride.MaxWattLimit);

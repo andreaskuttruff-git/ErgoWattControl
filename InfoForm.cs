@@ -5,7 +5,7 @@ public sealed class InfoForm : Form
 {
     public InfoForm()
     {
-        Text = "Info";
+        Text = L.T("Info_Title");
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -25,20 +25,20 @@ public sealed class InfoForm : Form
         };
         var text = new TableLayoutPanel { AutoSize = true, ColumnCount = 1, Margin = Padding.Empty };
         text.Controls.Add(new Label { Text = "ErgoWattControl", AutoSize = true, Font = new Font("Segoe UI", 16, FontStyle.Bold) });
-        text.Controls.Add(new Label { Text = $"Version {AppInfo.Version}", AutoSize = true, Margin = new Padding(3, 2, 3, 8) });
-        text.Controls.Add(new Label { Text = "Steuerung für das Daum ergo_bike 8008 TRS (RS232)", AutoSize = true, ForeColor = SystemColors.GrayText, Margin = new Padding(3, 0, 3, 12) });
-        text.Controls.Add(Link("Projektseite auf GitHub", AppInfo.ProjectUrl));
-        text.Controls.Add(Link("Neue Versionen (Releases)", AppInfo.ProjectUrl + "/releases/latest"));
-        text.Controls.Add(Link("Hilfe online", "https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html"));
+        text.Controls.Add(new Label { Text = L.F("Info_Version", AppInfo.Version), AutoSize = true, Margin = new Padding(3, 2, 3, 8) });
+        text.Controls.Add(new Label { Text = L.T("Info_Subtitle"), AutoSize = true, ForeColor = SystemColors.GrayText, Margin = new Padding(3, 0, 3, 12) });
+        text.Controls.Add(Link(L.T("Info_Project"), AppInfo.ProjectUrl));
+        text.Controls.Add(Link(L.T("Info_Releases"), AppInfo.ProjectUrl + "/releases/latest"));
+        text.Controls.Add(Link(L.T("Info_HelpOnline"), L.T("Info_HelpUrl")));
         text.Controls.Add(new Label
         {
             AutoSize = true,
             ForeColor = SystemColors.GrayText,
             Margin = new Padding(3, 12, 3, 0),
-            Text = $"Einstellungen: {AppPaths.SettingsFolder}\nDaten: {AppPaths.DataFolder}" + (AppPaths.Portable ? "\n(portabel – alles neben der exe)" : ""),
+            Text = L.F("Info_Folders", AppPaths.SettingsFolder, AppPaths.DataFolder) + (AppPaths.Portable ? L.T("Info_Portable") : ""),
         });
 
-        var ok = new Button { Text = "OK", DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0), Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
+        var ok = new Button { Text = L.T("Button_Ok"), DialogResult = DialogResult.OK, AutoSize = true, MinimumSize = new Size(90, 0), Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
         var layout = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill };
         layout.Controls.Add(icon, 0, 0);
         layout.Controls.Add(text, 1, 0);

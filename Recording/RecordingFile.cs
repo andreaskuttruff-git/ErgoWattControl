@@ -106,7 +106,7 @@ public sealed partial class RecordingFile
 
     public static RecordingFile Load(string path)
     {
-        var file = JsonSerializer.Deserialize<RecordingFile>(File.ReadAllText(path), Options) ?? throw new InvalidDataException("Die Datei ist leer.");
+        var file = JsonSerializer.Deserialize<RecordingFile>(File.ReadAllText(path), Options) ?? throw new InvalidDataException(L.T("File_Empty"));
         // Version 1: German column names and kinds.
         file.Columns = [.. file.Columns.Select(ColumnId)];
         file.Kind = file.Kind switch

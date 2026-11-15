@@ -38,7 +38,7 @@ public sealed class SettingsForm : Form
             ride.BikeWeightKg = (double)_numBike.Value;
             ride.GradeFactorPercent = (int)_numGradeFactor.Value;
             ride.StartGear = (int)_numStartGear.Value;
-            ride.Gearing = (string)_cmbGearing.SelectedItem!;
+            ride.Gearing = ((RideSettingsPanel.GearingItem)_cmbGearing.SelectedItem!).Id;
             ride.MaxWattLimit = (int)_numMaxWatt.Value / 5 * 5;
             return ride;
         }
@@ -69,9 +69,9 @@ public sealed class SettingsForm : Form
     private void AddUploadRows(TableLayoutPanel grid, int row, UploadService service, CheckBox enabled, bool isEnabled, TextBox login, TextBox upload,
         string uploadLabel, string loginUrl, string uploadUrl, string defaultLogin, string defaultUpload, string uploadPage)
     {
-        var btnDefault = new Button { Text = "Standard", AutoSize = true };
-        var btnLogout = new Button { Text = "Abmelden", AutoSize = true };
-        var btnLogin = new Button { Text = "Anmelden", AutoSize = true };
+        var btnDefault = new Button { Text = L.T("Button_Default"), AutoSize = true };
+        var btnLogout = new Button { Text = L.T("Button_SignOut"), AutoSize = true };
+        var btnLogin = new Button { Text = L.T("Button_SignIn"), AutoSize = true };
         var status = Unit("");
         enabled.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         enabled.Margin = new Padding(3, 8, 12, 3);
@@ -79,7 +79,7 @@ public sealed class SettingsForm : Form
         enabled.Checked = isEnabled;
         // Labels and fields in a table of their own so the fields line up at any display scaling.
         var block = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Margin = new Padding(0, 4, 0, 4), Anchor = AnchorStyles.Left };
-        block.Controls.Add(Unit("Anmeldung"), 0, 0);
+        block.Controls.Add(Unit(L.T("Upload_SignInLabel")), 0, 0);
         block.Controls.Add(login, 1, 0);
         block.Controls.Add(Unit(uploadLabel), 0, 1);
         block.Controls.Add(upload, 1, 1);
@@ -104,23 +104,23 @@ public sealed class SettingsForm : Form
         }
         enabled.CheckedChanged += (_, _) => Enable();
         Enable();
-        ShowState(service.HasSession ? "Anmeldung gespeichert" : "Nicht angemeldet");
-        Tip(enabled, $"Upload zu {service.Name} verwenden: Der Exportdialog bietet dann „Danach hochladen bei {service.Name}“ an.");
+        ShowState(service.HasSession ? L.T("Upload_SessionSaved") : L.T("Upload_NotSignedIn"));
+        Tip(enabled, L.F("Upload_EnableTip", service.Name));
 
         // Is the saved sign-in still valid? Checked in an invisible browser once the dialog is up.
         Shown += async (_, _) =>
         {
             if (!service.HasSession)
                 return;
-            ShowState("Anmeldung gespeichert – wird geprüft …");
+            ShowState(L.T("Upload_SessionChecking"));
             var valid = await UploadWindow.CheckSessionAsync(service, _appSettings, Handle);
             if (IsDisposed)
                 return;
             ShowState(valid switch
             {
-                true => "Anmeldung gespeichert und gültig",
-                false => "Anmeldung abgelaufen – bitte neu anmelden",
-                null => "Anmeldung gespeichert (Prüfung nicht möglich)",
+                true => L.T("Upload_SessionValid"),
+                false => L.T("Upload_SessionExpired"),
+                null => L.T("Upload_SessionUnknown"),
             });
         };
         btnDefault.Click += (_, _) =>
@@ -131,16 +131,16 @@ public sealed class SettingsForm : Form
         btnLogin.Click += (_, _) =>
         {
             // Modal: the settings wait until the sign-in window has closed.
-            ShowState(UploadWindow.SignIn(service, _appSettings, this) ? "Anmeldung gespeichert und gültig" : "Nicht angemeldet");
+            ShowState(UploadWindow.SignIn(service, _appSettings, this) ? L.T("Upload_SessionValid") : L.T("Upload_NotSignedIn"));
         };
         btnLogout.Click += (_, _) => ShowState(UploadWindow.SignOut(service)
-            ? "Abgemeldet – gespeicherte Anmeldung gelöscht"
-            : $"Abmelden nicht möglich, solange das {service.Name}-Fenster offen ist");
-        Tip(btnLogin, $"Öffnet die Anmeldeseite von {service.Name} im Browserfenster.\nNur ohne gespeicherte (gültige) Anmeldung.");
-        Tip(login, $"Anmeldeseite von {service.Name}. Wird geöffnet, solange keine Anmeldung gespeichert ist.");
-        Tip(upload, $"{uploadPage}. Wird nach der Anmeldung bzw. bei gespeicherter Anmeldung direkt geöffnet.");
-        Tip(btnDefault, $"Beide Adressen auf den Standard von {service.Name} zurücksetzen.");
-        Tip(btnLogout, $"Löscht die im {service.Name}-Fenster gespeicherte Anmeldung (Cookies) dieses Rechners.\nBeim nächsten Mal musst du dich neu anmelden.");
+            ? L.T("Upload_SignedOut")
+            : L.F("Upload_SignOutBlocked", service.Name));
+        Tip(btnLogin, L.F("Upload_SignInTip", service.Name));
+        Tip(login, L.F("Upload_LoginUrlTip", service.Name));
+        Tip(upload, L.F("Upload_UploadUrlTip", uploadPage));
+        Tip(btnDefault, L.F("Upload_DefaultTip", service.Name));
+        Tip(btnLogout, L.F("Upload_SignOutTip", service.Name));
     }
 
     private sealed record MonitorItem(string? DeviceName, string Text)
@@ -148,12 +148,23 @@ public sealed class SettingsForm : Form
         public override string ToString() => Text;
     }
 
+    /// <summary>A language in the list; Code "auto" = as Windows.</summary>
+    private sealed record LanguageItem(string Code, string Text)
+    {
+        public override string ToString() => Text;
+    }
+
+    private readonly ComboBox _cmbLanguage = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 260 };
+
+    /// <summary>"auto", "de" or "en" (<see cref="ErgoWattControl.Language"/>).</summary>
+    public string Language => ((LanguageItem)_cmbLanguage.SelectedItem!).Code;
+
 
     public SettingsForm(AppSettings settings, ErgoController controller)
     {
         _controller = controller;
         _appSettings = settings;
-        Text = "Einstellungen";
+        Text = L.T("Settings_Title");
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -164,46 +175,60 @@ public sealed class SettingsForm : Form
         HelpWindow.Attach(this, "einstellungen");
         Padding = new Padding(12);
 
-        var btnRefresh = new Button { Text = "Aktualisieren", AutoSize = true };
-        var btnTest = new Button { Text = "Verbindung testen", AutoSize = true };
-        var btnBrowse = new Button { Text = "Durchsuchen…", AutoSize = true };
-        var btnOpen = new Button { Text = "Öffnen", AutoSize = true };
-        var btnIdentify = new Button { Text = "Identifizieren", AutoSize = true };
-        var btnOk = new Button { Text = "OK", AutoSize = true, DialogResult = DialogResult.OK, MinimumSize = new Size(90, 0) };
-        var btnCancel = new Button { Text = "Abbrechen", AutoSize = true, DialogResult = DialogResult.Cancel, MinimumSize = new Size(90, 0) };
+        var btnRefresh = new Button { Text = L.T("Button_Refresh"), AutoSize = true };
+        var btnTest = new Button { Text = L.T("Button_TestConnection"), AutoSize = true };
+        var btnBrowse = new Button { Text = L.T("Button_Browse"), AutoSize = true };
+        var btnOpen = new Button { Text = L.T("Button_Open"), AutoSize = true };
+        var btnIdentify = new Button { Text = L.T("Button_Identify"), AutoSize = true };
+        var btnOk = new Button { Text = L.T("Button_Ok"), AutoSize = true, DialogResult = DialogResult.OK, MinimumSize = new Size(90, 0) };
+        var btnCancel = new Button { Text = L.T("Button_Cancel"), AutoSize = true, DialogResult = DialogResult.Cancel, MinimumSize = new Size(90, 0) };
         AcceptButton = btnOk;
         CancelButton = btnCancel;
 
         var grid = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill };
         // Anchoring only Left (not Top) centres each control vertically in its row, so labels, fields and buttons line up.
-        grid.Controls.Add(RowLabel("Gerät:"), 0, 0);
-        grid.Controls.Add(Row(_cmbDevice), 1, 0);
+        // The language label is always in both languages, so it is found even in a language one doesn't read.
+        grid.Controls.Add(RowLabel(L.T("Settings_Language")), 0, 0);
+        grid.Controls.Add(Row(_cmbLanguage), 1, 0);
+        grid.Controls.Add(RowLabel(L.T("Settings_Device")), 0, 1);
+        grid.Controls.Add(Row(_cmbDevice), 1, 1);
         // Connection fields of the Daum cockpit; other kinds of device bring their own (none for the demo).
-        var portLabel = RowLabel("COM-Port:");
+        var portLabel = RowLabel(L.T("Settings_ComPort"));
         var portRow = Row(_cmbPorts, btnRefresh, btnTest);
-        grid.Controls.Add(portLabel, 0, 1);
-        grid.Controls.Add(portRow, 1, 1);
-        grid.Controls.Add(_lblTest, 1, 2);
-        grid.Controls.Add(RowLabel("Ablageordner:"), 0, 3);
-        grid.Controls.Add(Row(_txtFolder, btnBrowse, btnOpen), 1, 3);
-        grid.Controls.Add(RowLabel("Fahransicht auf:"), 0, 4);
-        grid.Controls.Add(Row(_cmbMonitor, btnIdentify), 1, 4);
-        grid.Controls.Add(RowLabel("Strecke fahren:"), 0, 5);
+        grid.Controls.Add(portLabel, 0, 2);
+        grid.Controls.Add(portRow, 1, 2);
+        grid.Controls.Add(_lblTest, 1, 3);
+        grid.Controls.Add(RowLabel(L.T("Settings_Folder")), 0, 4);
+        grid.Controls.Add(Row(_txtFolder, btnBrowse, btnOpen), 1, 4);
+        grid.Controls.Add(RowLabel(L.T("Settings_Monitor")), 0, 5);
+        grid.Controls.Add(Row(_cmbMonitor, btnIdentify), 1, 5);
+        grid.Controls.Add(RowLabel(L.T("Settings_Route")), 0, 6);
         grid.Controls.Add(Row(
-            Unit("Fahrer"), _numRider, Unit("kg   Rad"), _numBike, Unit("kg   Steigung"), _numGradeFactor, Unit("%")), 1, 5);
-        grid.Controls.Add(Row(Unit("Übersetzung"), _cmbGearing, Unit("   Startgang"), _numStartGear), 1, 6);
-        grid.Controls.Add(RowLabel("Wattgrenze:"), 0, 7);
-        grid.Controls.Add(Row(_numMaxWatt, Unit($"W   ({controller.Capabilities.Info})")), 1, 7);
-        AddUploadRows(grid, 8, UploadService.Garmin, _chkGarmin, settings.GarminEnabled, _txtGarminLogin, _txtGarminImport, "Import",
+            Unit(L.T("Settings_Rider")), _numRider, Unit(L.T("Settings_KgBike")), _numBike, Unit(L.T("Settings_KgGrade")), _numGradeFactor, Unit("%")), 1, 6);
+        grid.Controls.Add(Row(Unit(L.T("Settings_Gearing")), _cmbGearing, Unit(L.T("Settings_StartGear")), _numStartGear), 1, 7);
+        grid.Controls.Add(RowLabel(L.T("Settings_PowerLimit")), 0, 8);
+        grid.Controls.Add(Row(_numMaxWatt, Unit(L.F("Settings_PowerLimitUnit", controller.Capabilities.Info))), 1, 8);
+        AddUploadRows(grid, 9, UploadService.Garmin, _chkGarmin, settings.GarminEnabled, _txtGarminLogin, _txtGarminImport, L.T("Upload_ImportLabel"),
             settings.GarminLoginUrl, settings.GarminImportUrl, UploadService.GarminDefaultLoginUrl, UploadService.GarminDefaultImportUrl,
-            "Seite \"Daten importieren\" von Garmin Connect");
-        AddUploadRows(grid, 9, UploadService.Strava, _chkStrava, settings.StravaEnabled, _txtStravaLogin, _txtStravaUpload, "Upload",
+            L.T("Upload_GarminPage"));
+        AddUploadRows(grid, 10, UploadService.Strava, _chkStrava, settings.StravaEnabled, _txtStravaLogin, _txtStravaUpload, L.T("Upload_UploadLabel"),
             settings.StravaLoginUrl, settings.StravaUploadUrl, UploadService.StravaDefaultLoginUrl, UploadService.StravaDefaultUploadUrl,
-            "Upload-Seite von Strava (\"Datei hochladen\")");
+            L.T("Upload_StravaPage"));
         var buttons = Row(btnOk, btnCancel);
         buttons.Anchor = AnchorStyles.Right;
         buttons.Margin = new Padding(3, 18, 3, 3);
-        grid.Controls.Add(buttons, 1, 10);
+        grid.Controls.Add(buttons, 1, 11);
+
+        // Languages: "automatic" names the one Windows gives; each language under its own name.
+        _cmbLanguage.Items.Add(new LanguageItem(ErgoWattControl.Language.Auto,
+            L.F("Settings_LanguageAuto", ErgoWattControl.Language.Available.First(l => l.Code == ErgoWattControl.Language.Resolve(null).TwoLetterISOLanguageName).Name)));
+        foreach (var (code, name) in ErgoWattControl.Language.Available)
+            _cmbLanguage.Items.Add(new LanguageItem(code, name));
+        // Pseudo-localization (set by hand in settings.json) stays selected instead of falling back to "automatic".
+        if (settings.Language == ErgoWattControl.Language.PseudoCode)
+            _cmbLanguage.Items.Add(new LanguageItem(ErgoWattControl.Language.PseudoCode, "Pseudo (test)"));
+        _cmbLanguage.SelectedItem = _cmbLanguage.Items.Cast<LanguageItem>().FirstOrDefault(l => l.Code == settings.Language) ?? _cmbLanguage.Items[0];
+        Tip(_cmbLanguage, L.T("Settings_LanguageTip"));
 
         _cmbDevice.Items.AddRange([.. ErgometerTypes.All]);
         _cmbDevice.SelectedItem = ErgometerTypes.Find(settings.Device);
@@ -224,32 +249,32 @@ public sealed class SettingsForm : Form
         _numGradeFactor.Value = Math.Clamp(ride.GradeFactorPercent, 10, 100);
         _numStartGear.Value = Math.Clamp(ride.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
         _numMaxWatt.Value = Math.Clamp(ride.MaxWattLimit, ErgoController.MinWatt, ErgoController.AbsoluteMaxWatt);
-        _cmbGearing.Items.AddRange([RouteSession.GearingMtb, RouteSession.GearingRoad]);
-        _cmbGearing.SelectedItem = ride.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
-        _cmbMonitor.Items.Add(new MonitorItem(null, "Automatisch (erster Nebenmonitor)"));
+        _cmbGearing.Items.AddRange([.. RouteSession.Gearings.Select(g => new RideSettingsPanel.GearingItem(g))]);
+        _cmbGearing.SelectedItem = new RideSettingsPanel.GearingItem(ride.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb);
+        _cmbMonitor.Items.Add(new MonitorItem(null, L.T("Settings_MonitorAuto")));
         foreach (var screen in Screen.AllScreens.OrderBy(Monitors.Number))
             _cmbMonitor.Items.Add(new MonitorItem(screen.DeviceName, Monitors.Describe(screen)));
         _cmbMonitor.SelectedItem = _cmbMonitor.Items.Cast<MonitorItem>().FirstOrDefault(m => m.DeviceName == settings.RideMonitor)
             ?? _cmbMonitor.Items[0]; // saved monitor no longer connected
         btnIdentify.Click += (_, _) => Monitors.Identify(TimeSpan.FromSeconds(3));
 
-        Tip(_cmbDevice, "Welches Ergometer die App steuert.\nDemo: ein simulierter Fahrer zum Ausprobieren ohne Ergometer.\nNach dem Speichern verbindet sich die App sofort neu.");
-        Tip(_cmbPorts, "Serielle Schnittstelle, an der das Cockpit hängt (Update-Kabel bzw. USB-RS232-Adapter).\nNach dem Speichern verbindet sich die App sofort neu.");
-        Tip(btnRefresh, "Liste der COM-Ports neu einlesen, z. B. nach dem Einstecken eines USB-Adapters.");
-        Tip(btnTest, "Prüft, ob am gewählten Port ein Cockpit antwortet. Ändert nichts am Cockpit.");
-        Tip(_txtFolder, "Ordner für die Aufzeichnungen.\nDie Dateinamen legen FileNameTraining, FileNameRoute und FileNameProgram in der settings.json fest.");
-        Tip(btnBrowse, "Ablageordner auswählen.");
-        Tip(btnOpen, "Ablageordner im Explorer öffnen.");
-        Tip(_cmbMonitor, "Monitor, auf den der Button \"Fahransicht\" das Fenster legt.\n\"Automatisch\" nimmt den ersten Monitor, der nicht der Hauptmonitor ist.");
-        Tip(btnIdentify, "Zeigt auf jedem Monitor 3 Sekunden lang groß seine Nummer.");
-        Tip(_numRider, "Dein Körpergewicht. Bestimmt im Streckenmodus, wie viel Leistung ein Anstieg kostet.");
-        Tip(_numBike, "Gewicht des Rads, mit dem du die Strecke virtuell fährst. Zählt wie das Fahrergewicht.");
-        Tip(_numGradeFactor, "Wie steil die GPX-Strecke wirkt: 100 % = wie in echt, 50 % = alle Steigungen und Gefälle halb so steil.\nMacht bergige Strecken fahrbar, ohne an die Wattgrenze zu stoßen.");
-        Tip(_cmbGearing, "Übersetzung der 28 virtuellen Gänge im Streckenmodus.\nMTB: kleinere Gänge (2,0–7,4 m pro Kurbelumdrehung), am Berg langsam kurbeln möglich.\nRennrad: Daum-Tabelle (3,7–9,3 m pro Kurbelumdrehung).");
-        Tip(_numStartGear, "Gang, in dem eine Strecke beginnt (1 = leichtester, 28 = schwerster).");
-        Tip(_numMaxWatt, "Höchste Leistung, die die App einstellt – auch im Streckenmodus.\nDas Gerät selbst begrenzt zusätzlich (Daum 8008/8080: 800 W, andere Cockpits: 400 W); es gilt der kleinere Wert.");
+        Tip(_cmbDevice, L.T("Settings_DeviceTip"));
+        Tip(_cmbPorts, L.T("Settings_PortTip"));
+        Tip(btnRefresh, L.T("Settings_RefreshTip"));
+        Tip(btnTest, L.T("Settings_TestTip"));
+        Tip(_txtFolder, L.T("Settings_FolderTip"));
+        Tip(btnBrowse, L.T("Settings_BrowseTip"));
+        Tip(btnOpen, L.T("Settings_OpenTip"));
+        Tip(_cmbMonitor, L.T("Settings_MonitorTip"));
+        Tip(btnIdentify, L.T("Settings_IdentifyTip"));
+        Tip(_numRider, L.T("Settings_RiderTip"));
+        Tip(_numBike, L.T("Settings_BikeTip"));
+        Tip(_numGradeFactor, L.T("Settings_GradeTip"));
+        Tip(_cmbGearing, L.T("Settings_GearingTip"));
+        Tip(_numStartGear, L.T("Settings_StartGearTip"));
+        Tip(_numMaxWatt, L.T("Settings_PowerLimitTip"));
         RefreshPorts(settings.PortName);
-        _lblTest.Text = controller.IsConnected ? $"Aktuell verbunden: {controller.Device?.DisplayName}" : "Aktuell nicht verbunden";
+        _lblTest.Text = controller.IsConnected ? L.F("Settings_Connected", controller.Device?.DisplayName) : L.T("Settings_NotConnected");
 
         btnRefresh.Click += (_, _) => RefreshPorts(PortName);
         var testRunning = false;
@@ -259,19 +284,19 @@ public sealed class SettingsForm : Form
                 return;
             if (PortName is not { } port)
             {
-                _lblTest.Text = "Bitte einen Port auswählen.";
+                _lblTest.Text = L.T("Settings_ChoosePort");
                 return;
             }
             // Not disabling the button: that would hand focus to the folder box, which then selects its whole text.
             testRunning = true;
-            _lblTest.Text = $"Teste {port} …";
+            _lblTest.Text = L.F("Settings_Testing", port);
             if (DeviceType.TestConnection is { } test)
                 _lblTest.Text = await Task.Run(() => test(port, _controller.Device));
             testRunning = false;
         };
         btnBrowse.Click += (_, _) =>
         {
-            using var dialog = new FolderBrowserDialog { InitialDirectory = RecordingDirectory, UseDescriptionForTitle = true, Description = "Ablageordner für Aufzeichnungen" };
+            using var dialog = new FolderBrowserDialog { InitialDirectory = RecordingDirectory, UseDescriptionForTitle = true, Description = L.T("Settings_FolderDialog") };
             if (dialog.ShowDialog(this) == DialogResult.OK)
                 _txtFolder.Text = dialog.SelectedPath;
         };
@@ -284,7 +309,7 @@ public sealed class SettingsForm : Form
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, "Ordner", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(this, ex.Message, L.T("Caption_Folder"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         };
         FormClosing += (_, e) =>
@@ -297,7 +322,7 @@ public sealed class SettingsForm : Form
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, $"Ablageordner ungültig:\n{ex.Message}", "Einstellungen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(this, L.F("Settings_FolderInvalid", ex.Message), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
             }
         };

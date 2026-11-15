@@ -25,7 +25,7 @@ public sealed class WorkoutRecording
     private WorkoutRecording(string name, List<(double Seconds, int Watt, int Pulse)> rows)
     {
         if (rows.Count < 2 || rows[^1].Seconds < 10)
-            throw new InvalidDataException("Die Aufzeichnung ist kürzer als 10 Sekunden.");
+            throw new InvalidDataException(L.T("File_TooShort"));
         Name = name;
         _seconds = rows.Select(r => r.Seconds).ToArray();
         _watts = rows.Select(r => r.Watt).ToArray();
@@ -67,7 +67,7 @@ public sealed class WorkoutRecording
         int Column(string column)
         {
             var index = file.ColumnIndex(column);
-            return index >= 0 ? index : throw new InvalidDataException($"Spalte \"{column}\" fehlt – ist das eine Aufzeichnung dieser App?");
+            return index >= 0 ? index : throw new InvalidDataException(L.F("File_ColumnMissing", column));
         }
         var (seconds, watt, pulse) = (Column(RecordingFile.Col.Seconds), Column(RecordingFile.Col.TargetWatt), Column(RecordingFile.Col.Pulse));
         var rows = file.Values.Where(r => r.Length > Math.Max(seconds, Math.Max(watt, pulse)))
@@ -80,13 +80,13 @@ public sealed class WorkoutRecording
     {
         var lines = File.ReadAllLines(path);
         if (lines.Length < 3)
-            throw new InvalidDataException("Die Datei enthält keine Messwerte.");
+            throw new InvalidDataException(L.T("File_NoDataRows"));
         // German titles (the app's CSV export) or the ids; both map to the ids.
         var header = lines[0].TrimStart('\uFEFF').Split(';').Select(RecordingFile.ColumnId).ToArray();
         int Column(string name)
         {
             var index = Array.IndexOf(header, name);
-            return index >= 0 ? index : throw new InvalidDataException($"Spalte \"{name}\" fehlt – ist das eine Aufzeichnung dieser App?");
+            return index >= 0 ? index : throw new InvalidDataException(L.F("File_ColumnMissing", name));
         }
         var secondsColumn = Column(RecordingFile.Col.Seconds);
         var wattColumn = Column(RecordingFile.Col.TargetWatt);

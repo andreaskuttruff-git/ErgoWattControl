@@ -46,6 +46,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 | `Recording/` | Aufzeichnung (`JsonRecorder`, Dateiformat `RecordingFile`), Umbenennen/Verwerfen |
 | `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
+| `Localization/` | Mehrsprachigkeit: `Strings.resx` (Englisch, auch für Sprachen ohne Übersetzung) und `Strings.de.resx` (Deutsch), Zugriff über `L.T`/`L.F`; `Language` setzt die Sprache aus der Einstellung beim Start; `LocalizedText` für Texte je Sprache in Programmdateien |
 | `Settings/` | `settings.json` (`AppSettings`) mit den Fahrwerten als eigener Gruppe (`RideValues`: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze – auch pro Fahrt im Startdialog änderbar), Einstellungsdialog |
 | `Tests/` | Unittests (xUnit): Vertragstests für jedes Gerät, `ErgoController`, Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, Trainingsmodi, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken |
 
@@ -71,6 +72,8 @@ Tests (laufen auch vor jedem Release auf GitHub; ein Fehler stoppt das Release):
 ```
 dotnet test Tests\ErgoWattControl.Tests.csproj
 ```
+
+**Pseudolokalisierung:** Die Tests bauen jedes Fenster mit künstlich verfremdeten Texten (Akzente, etwa 40 % länger, in `⟦ ⟧`) und prüfen, dass kein Text an den Ressourcen vorbei gesetzt ist, keiner in einem festen Feld abgeschnitten wird und kein Dialog größer als der Monitor am Ergometer (1280 × 1024) wird. Zum Ansehen: `"Language": "pseudo"` in die `settings.json` schreiben.
 
 Sie brauchen kein Ergometer: `SimulatedCockpit` spielt das Daum-Cockpit nach – mit ausbleibenden oder verrutschten Antworten und Resets. Einstellungen und Dateien landen in einem eigenen Temp-Ordner, nie in den echten.
 

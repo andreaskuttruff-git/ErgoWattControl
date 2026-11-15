@@ -108,7 +108,7 @@ public sealed class DaumCockpit : IDisposable
         40 => "8008",
         50 => "8080",
         60 => "Therapie",
-        _ => $"unbekannt ({type})",
+        _ => L.F("Daum_TypeUnknown", type),
     };
 
     /// <summary>Highest power the cockpit type accepts: 800 W for the 8008/8080 series, otherwise 400 W.</summary>
