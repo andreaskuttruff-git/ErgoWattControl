@@ -41,7 +41,8 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 | `Devices/` | Geräteschicht: `IErgometer` (Schnittstelle jedes Ergometers: Zielleistung setzen, Messwerte `ErgometerData`, Status, Fähigkeiten), `ErgoController` (geräteunabhängig: Zielleistung, Wattgrenze, Gerätewechsel), `ErgometerTypes` (Liste der Gerätearten) |
 | `Devices/Daum/` | Daum ergo_bike über RS232: Protokoll (`DaumCockpit`), Verbindung/Neuverbinden/Reset (`DaumErgometer`), Drehzahlbereich der Wirbelstrombremse |
 | `Devices/Demo/` | Simulierter Fahrer (`DemoErgometer`) |
-| `RideView/` | Fahransicht (`RideForm`), Verlaufsgraph, Mausrad, Zusammenfassung, Monitorauswahl |
+| `Training/` | `TrainingController`: das laufende Training ohne Fenster – Modus, Aufnahme, Einstellungen für diese Fahrt. Die drei Modi `FreeTraining`, `RouteTraining` und `ReplayTraining` (Aufzeichnung oder Programm) bestimmen Leistung, Wirkung der Tasten, Aufnahmezeilen, Dateiname und Ergebnis |
+| `RideView/` | Fahransicht (`RideForm`, zeigt nur an und führt die Dialoge), Verlaufsgraph, Mausrad, Zusammenfassung, Monitorauswahl |
 | `Recording/` | Aufzeichnung (`JsonRecorder`, Dateiformat `RecordingFile`), Umbenennen/Verwerfen |
 | `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
