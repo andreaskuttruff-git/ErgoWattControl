@@ -203,7 +203,8 @@ public sealed class ReplayPickerForm : Form
             else if (Workout is { } workout)
                 _profile.SetWorkout(workout, null, _showPulse.Checked);
         };
-        _list.SelectedIndexChanged += (_, _) => ShowSelected();
+        ListBoxCapture.OnSelectionSettled(_list, ShowSelected);
+        ListBoxCapture.ReleaseStuckCapture(_list);
         _list.DoubleClick += (_, _) => { if (_start.Enabled) _start.PerformClick(); };
     }
 

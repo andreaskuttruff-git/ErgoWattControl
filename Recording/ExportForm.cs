@@ -40,11 +40,9 @@ public sealed class ExportForm : Form
         _files.AddRange(settings.RecordingFiles("*" + JsonRecorder.Extension));
         _list.Items.AddRange([.. _files.Select(f => settings.InFallbackFolder(f)
             ? L.F("Export_FallbackMark", Path.GetFileNameWithoutExtension(f)) : Path.GetFileNameWithoutExtension(f)).Cast<object>()]);
-        _list.SelectedIndexChanged += (_, _) =>
-        {
-            UpdateButton();
-            ShowPreview();
-        };
+        _list.SelectedIndexChanged += (_, _) => UpdateButton();
+        ListBoxCapture.OnSelectionSettled(_list, ShowPreview);
+        ListBoxCapture.ReleaseStuckCapture(_list);
         // Del removes the selected recordings (to the recycle bin, after asking).
         _list.KeyDown += (_, e) =>
         {
