@@ -117,18 +117,18 @@ public sealed class RoutePickerForm : Form
         {
             var route = GpxRoute.Load(file);
             Route = route;
-            var peak = RouteSession.PeakPower(route, _settings, PeakRpm);
+            var peak = RouteSession.PeakPower(route, _settings.Ride, PeakRpm);
             var peakText = $"{peak.Watt:0} W  am steilsten Anstieg ({peak.GradePercent:0.0} %), " +
                 $"im 1. Gang bei {PeakRpm} RPM ({peak.SpeedKmh:0} km/h) – schneller kostet mehr";
             var overLimit = peak.Watt > _maxWatt;
             Fact("Strecke:", $"{route.TotalDistance / 1000:0.0} km");
             Fact("Höhenmeter bergauf:", $"{route.Ascent:0} m   (Höhe {route.MinElevation:0} – {route.MaxElevation:0} m)");
             Fact("Max. Steigung:", $"{route.MaxGrade * 100:0.0} %" +
-                (_settings.GradeFactorPercent < 100 ? $"   (gefahren mit {_settings.GradeFactorPercent} %: {peak.GradePercent:0.0} %)" : ""));
+                (_settings.Ride.GradeFactorPercent < 100 ? $"   (gefahren mit {_settings.Ride.GradeFactorPercent} %: {peak.GradePercent:0.0} %)" : ""));
             Fact("Max. Leistung:", overLimit ? $"{peakText}\nÜber deiner Wattgrenze von {_maxWatt} W – dort wird auf {_maxWatt} W begrenzt." : peakText,
                 overLimit ? DialogColors.Warning : null);
-            Fact("Gewicht:", $"{_settings.RiderWeightKg:0} kg Fahrer + {_settings.BikeWeightKg:0} kg Rad");
-            Fact("Einstellungen:", $"Steigungsfaktor {_settings.GradeFactorPercent} %,  {_settings.Gearing}-Übersetzung,  Startgang {_settings.StartGear}");
+            Fact("Gewicht:", $"{_settings.Ride.RiderWeightKg:0} kg Fahrer + {_settings.Ride.BikeWeightKg:0} kg Rad");
+            Fact("Einstellungen:", $"Steigungsfaktor {_settings.Ride.GradeFactorPercent} %,  {_settings.Ride.Gearing}-Übersetzung,  Startgang {_settings.Ride.StartGear}");
             _profile.SetRoute(route, _settings.ReplayShowOriginalPulse);
             _profile.SetHighlight(route.MaxGradeDistance,
                 $"▲ {peak.GradePercent:0.0} %  ·  {peak.Watt:0} W  ·  km {route.MaxGradeDistance / 1000:0.0}",

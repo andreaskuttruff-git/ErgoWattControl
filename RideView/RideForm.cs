@@ -77,7 +77,7 @@ public sealed class RideForm : Form
         BuildLayout();
         EnableMouseDrag(this);
         WattWheel.Attach(this, StepWatt);
-        _controller.SetUserLimit(_settings.MaxWattLimit);
+        _controller.SetUserLimit(_settings.Ride.MaxWattLimit);
 
         _btnRecord.Click += (_, _) => RecordOrEnd();
         _controller.DataReceived += d => PostToUi(() => ShowData(d));
@@ -529,9 +529,9 @@ public sealed class RideForm : Form
             try { _settings.Save(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
         if (picker.Route is { } route)
-            BeginRoute(route, picker.RecordingFileName, picker.RideSettings);
+            BeginRoute(route, picker.RecordingFileName, picker.RideValues);
         else
-            BeginReplay(workout, picker.RecordingFileName, programFile: null, picker.RideSettings);
+            BeginReplay(workout, picker.RecordingFileName, programFile: null, picker.RideValues);
     }
 
     private static bool IsRouteOnly(string fit)
@@ -564,7 +564,7 @@ public sealed class RideForm : Form
             return;
         using var picker = ReplayPickerForm.ForPrograms(ProgramFiles.Folder, ProgramFiles.CustomFolder, _settings, _training.SaveRideDefaults);
         if (picker.ShowDialog(this) == DialogResult.OK && picker.Workout is { } workout)
-            BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideSettings);
+            BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideValues);
     }
 
     /// <summary>The pulse of the original ride at the same point (route: same kilometre, recording: same time), just the number.</summary>
@@ -624,10 +624,10 @@ public sealed class RideForm : Form
         _runNameTip.SetToolTip(_runName, file is null ? _runName.Text : $"{_runName.Text}\n{file}");
     }
 
-    private void BeginReplay(WorkoutRecording workout, string? customName, string? programFile, AppSettings? runSettings = null)
+    private void BeginReplay(WorkoutRecording workout, string? customName, string? programFile, RideValues? runValues = null)
     {
         StopRecording();
-        var replay = _training.BeginReplay(workout, customName, programFile, runSettings);
+        var replay = _training.BeginReplay(workout, customName, programFile, runValues);
         ShowRunName();
         _workoutProfile.SetWorkout(workout, replay.Session.WattAt, _settings.ReplayShowOriginalPulse);
         _workoutProfile.Visible = true;
@@ -683,10 +683,10 @@ public sealed class RideForm : Form
         BeginRoute(route, customName: null);
     }
 
-    private void BeginRoute(GpxRoute route, string? customName, AppSettings? runSettings = null)
+    private void BeginRoute(GpxRoute route, string? customName, RideValues? runValues = null)
     {
         StopRecording();
-        _training.BeginRoute(route, customName, runSettings);
+        _training.BeginRoute(route, customName, runValues);
         ShowRunName();
         _profile.SetRoute(route, _settings.ReplayShowOriginalPulse);
         _profile.Visible = true;
@@ -760,12 +760,7 @@ public sealed class RideForm : Form
         _settings.PortName = dialog.PortName;
         _settings.RecordingDirectory = dialog.RecordingDirectory;
         _settings.RideMonitor = dialog.RideMonitor;
-        _settings.RiderWeightKg = dialog.RiderWeightKg;
-        _settings.BikeWeightKg = dialog.BikeWeightKg;
-        _settings.GradeFactorPercent = dialog.GradeFactorPercent;
-        _settings.StartGear = dialog.StartGear;
-        _settings.Gearing = dialog.Gearing;
-        _settings.MaxWattLimit = dialog.MaxWattLimit;
+        _settings.Ride = dialog.Ride;
         _settings.GarminLoginUrl = dialog.GarminLoginUrl;
         _settings.GarminImportUrl = dialog.GarminImportUrl;
         _settings.StravaLoginUrl = dialog.StravaLoginUrl;
@@ -775,7 +770,8 @@ public sealed class RideForm : Form
         if (dialog.StravaEnabled && !_settings.StravaEnabled) _settings.ExportOpenStrava = true;
         _settings.GarminEnabled = dialog.GarminEnabled;
         _settings.StravaEnabled = dialog.StravaEnabled;
-        _controller.SetUserLimit(_settings.MaxWattLimit);
+        // The new limit applies at once – unless the running route or replay was started with its own values.
+        _controller.SetUserLimit(_training.Ride.MaxWattLimit);
         if (_training.Mode is not RouteTraining)
             ShowTarget(_controller.TargetWatt);
         try

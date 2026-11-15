@@ -13,7 +13,7 @@ public sealed class ReplayPickerForm : Form
 
     /// <param name="Settings">Settings stored with a recording; null = none stored (programs, older CSV recordings).</param>
     /// <param name="Route">The route of a route recording, to ride it again.</param>
-    private sealed record Selection(WorkoutRecording Workout, string Description, AppSettings? Settings = null, GpxRoute? Route = null);
+    private sealed record Selection(WorkoutRecording Workout, string Description, RideValues? Ride = null, GpxRoute? Route = null);
 
     private static readonly Color DarkBack = Color.FromArgb(24, 24, 24);
 
@@ -38,7 +38,7 @@ public sealed class ReplayPickerForm : Form
     private string _failed = "";
     private readonly Func<string, string> _defaultFileName;
     private readonly AppSettings _current;
-    private readonly Action<AppSettings> _saveAsDefault;
+    private readonly Action<RideValues> _saveAsDefault;
     private readonly bool _programs;
 
     /// <summary>The selected training as a replayable profile; set when the dialog ends with OK.</summary>
@@ -47,8 +47,8 @@ public sealed class ReplayPickerForm : Form
     /// <summary>The route of the selected route recording: ride it as a route instead of replaying the power.</summary>
     public GpxRoute? Route { get; private set; }
 
-    /// <summary>Settings for this run: the current settings with the values from the dialog.</summary>
-    public AppSettings RideSettings => _rideSettings.Apply(_current);
+    /// <summary>Ride values for this run: the saved ones with the changes made in the dialog.</summary>
+    public RideValues RideValues => _rideSettings.Apply(_current.Ride);
 
     /// <summary>File name (without .json) of the selected program, for the recording's name; null for a recording.</summary>
     public string? ProgramFile { get; private set; }
@@ -61,14 +61,14 @@ public sealed class ReplayPickerForm : Form
     /// <summary>The training programs (*.json) of <paramref name="directory"/>.</summary>
     /// <param name="current">The current settings: file name pattern and the power limit shown.</param>
     /// <param name="saveAsDefault">Stores the values shown as the new defaults in settings.json.</param>
-    public static ReplayPickerForm ForPrograms(string directory, AppSettings current, Action<AppSettings> saveAsDefault) =>
+    public static ReplayPickerForm ForPrograms(string directory, AppSettings current, Action<RideValues> saveAsDefault) =>
         ForPrograms(directory, null, current, saveAsDefault);
 
     /// <summary>
     /// The shipped programs of <paramref name="directory"/> and, listed first and marked with ★, the rider's own ones of
     /// <paramref name="customDirectory"/>. A faulty own program is named with the reason, so it can be fixed.
     /// </summary>
-    public static ReplayPickerForm ForPrograms(string directory, string? customDirectory, AppSettings current, Action<AppSettings> saveAsDefault)
+    public static ReplayPickerForm ForPrograms(string directory, string? customDirectory, AppSettings current, Action<RideValues> saveAsDefault)
     {
         var form = new ReplayPickerForm("Trainingsprogramm starten", programFile => AppSettings.BuildFileName(current.FileNameProgram, DateTime.Now, programFile),
             current, programs: true, showPulse: false, saveAsDefault);
@@ -115,7 +115,7 @@ public sealed class ReplayPickerForm : Form
     /// <summary>The recordings (*.json, older ones *.csv) of the recording folder, newest first.</summary>
     /// <param name="current">The current settings: file name patterns, and the ride values where a recording stored none.</param>
     /// <param name="saveAsDefault">Stores the ride values shown as the new defaults in settings.json.</param>
-    public static ReplayPickerForm ForRecordings(AppSettings current, Action<AppSettings> saveAsDefault)
+    public static ReplayPickerForm ForRecordings(AppSettings current, Action<RideValues> saveAsDefault)
     {
         var form = new ReplayPickerForm("Aufzeichnung nachfahren", name => AppSettings.BuildFileName(current.FileNameTraining, DateTime.Now, name),
             current, programs: false, current.ReplayShowOriginalPulse, saveAsDefault);
@@ -150,7 +150,7 @@ public sealed class ReplayPickerForm : Form
                 ? $"Wird wieder als Strecke gefahren: {route.Name}, {route.TotalDistance / 1000:0.0} km, {route.Ascent:0} Hm bergauf"
                 : "Folgt dem aufgezeichneten Leistungsverlauf") + "\r\n"
             + $"Ordner: {Path.GetDirectoryName(file)}";
-        return new Selection(workout, description, recording?.Einstellungen, route);
+        return new Selection(workout, description, recording?.Einstellungen?.Ride, route);
     });
 
     /// <summary>
@@ -179,7 +179,7 @@ public sealed class ReplayPickerForm : Form
     });
 
     private ReplayPickerForm(string title, Func<string, string> defaultFileName, AppSettings current, bool programs, bool showPulse,
-        Action<AppSettings> saveAsDefault)
+        Action<RideValues> saveAsDefault)
     {
         _defaultFileName = defaultFileName;
         _current = current;
@@ -227,7 +227,7 @@ public sealed class ReplayPickerForm : Form
             var saveAsDefault = new Button { Text = "Als Standard speichern", AutoSize = true, Margin = new Padding(0, 4, 0, 0) };
             saveAsDefault.Click += (_, _) =>
             {
-                _saveAsDefault(_rideSettings.Apply(_current));
+                _saveAsDefault(_rideSettings.Apply(_current.Ride));
                 saved.Text = "✓ in den Einstellungen gespeichert";
             };
             _list.SelectedIndexChanged += (_, _) => saved.Text = "";
@@ -281,7 +281,7 @@ public sealed class ReplayPickerForm : Form
 
         _list.Items.AddRange([.. _entries.Select(e => e.Title)]);
         // Until something is selected (or if nothing can be): the current settings.
-        _rideSettings.Show(_current, route: false);
+        _rideSettings.Show(_current.Ride, route: false);
         _rideSettingsCaption.Text = "Einstellungen – für diesen Lauf änderbar";
         if (_entries.Count == 0)
             _description.Text = $"Im Ordner {directory} liegen keine {what}.";
@@ -326,8 +326,8 @@ public sealed class ReplayPickerForm : Form
             _profile.SetWorkout(Workout, null, _showPulse.Checked);
             _routeProfile.SetRoute(Route, _showPulse.Checked);
             _note.Text = (Route is null ? ProfileNote : RouteNote) + _failed;
-            _rideSettings.Show(selection.Settings ?? _current, route: Route is not null);
-            _rideSettingsCaption.Text = _programs || selection.Settings is null
+            _rideSettings.Show(selection.Ride ?? _current.Ride, route: Route is not null);
+            _rideSettingsCaption.Text = _programs || selection.Ride is null
                 ? "Einstellungen – für diesen Lauf änderbar"
                 : "Einstellungen der Aufzeichnung – für diesen Lauf änderbar";
             _facts.Text = (Workout.MaxWatt == 0 && Route is { } r ? $"Dauer {WorkoutProfile.Format(Workout.Duration)}     {r.TotalDistance / 1000:0.0} km     {r.Ascent:0} Hm" : $"Dauer {WorkoutProfile.Format(Workout.Duration)}     Ø {Workout.AverageWatt:0} W     max. {Workout.MaxWatt} W")

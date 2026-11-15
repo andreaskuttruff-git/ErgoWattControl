@@ -46,17 +46,17 @@ public sealed class RouteSession
     public double AverageWatt => _wattSamples == 0 ? 0 : _wattSum / _wattSamples;
     public double AveragePulse => _pulseSamples == 0 ? 0 : _pulseSum / _pulseSamples;
 
-    public RouteSession(GpxRoute route, AppSettings settings, int minWatt, int maxWatt)
+    public RouteSession(GpxRoute route, RideValues ride, int minWatt, int maxWatt)
     {
         Route = route;
-        _mass = settings.RiderWeightKg + settings.BikeWeightKg;
-        _crr = settings.RollingResistance;
-        _cda = settings.DragAreaM2;
-        _gradeFactor = Math.Clamp(settings.GradeFactorPercent, 0, 100) / 100.0;
-        _gearing = settings.Gearing;
+        _mass = ride.TotalMassKg;
+        _crr = ride.RollingResistance;
+        _cda = ride.DragAreaM2;
+        _gradeFactor = Math.Clamp(ride.GradeFactorPercent, 0, 100) / 100.0;
+        _gearing = ride.Gearing;
         _minWatt = minWatt;
         _maxWatt = maxWatt;
-        Gear = Math.Clamp(settings.StartGear, MinGear, MaxGear);
+        Gear = Math.Clamp(ride.StartGear, MinGear, MaxGear);
         GradePercent = route.GradeBetween(0, 20) * _gradeFactor * 100;
         TargetWatt = RoundToStep(PowerFor(GradePercent / 100, StandingReferenceSpeed()));
     }
@@ -138,11 +138,11 @@ public sealed class RouteSession
     /// Least power the steepest climb demands: lowest gear at <paramref name="rpm"/>. Riding faster or in a higher gear
     /// costs more, so this is the peak the rider cannot avoid.
     /// </summary>
-    public static (double Watt, double SpeedKmh, double GradePercent) PeakPower(GpxRoute route, AppSettings settings, int rpm)
+    public static (double Watt, double SpeedKmh, double GradePercent) PeakPower(GpxRoute route, RideValues ride, int rpm)
     {
-        var grade = route.MaxGrade * Math.Clamp(settings.GradeFactorPercent, 0, 100) / 100.0;
-        var v = rpm / 60.0 * MetersPerRevolution(settings.Gearing, MinGear);
-        var watt = PowerFor(grade, v, settings.RiderWeightKg + settings.BikeWeightKg, settings.RollingResistance, settings.DragAreaM2);
+        var grade = route.MaxGrade * Math.Clamp(ride.GradeFactorPercent, 0, 100) / 100.0;
+        var v = rpm / 60.0 * MetersPerRevolution(ride.Gearing, MinGear);
+        var watt = PowerFor(grade, v, ride.TotalMassKg, ride.RollingResistance, ride.DragAreaM2);
         return (watt, v * 3.6, grade * 100);
     }
 

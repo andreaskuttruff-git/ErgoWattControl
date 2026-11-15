@@ -9,8 +9,8 @@ public sealed class TrainingController
 {
     private readonly AppSettings _settings;
     private readonly ErgoController _ergo;
-    /// <summary>Settings for the running route or replay when the start dialog changed them for this run; null = the saved ones.</summary>
-    private AppSettings? _runSettings;
+    /// <summary>Ride values for the running route or replay when the start dialog changed them for this run; null = the saved ones.</summary>
+    private RideValues? _runValues;
     /// <summary>Recording name typed in a start dialog, waiting for the first pedal stroke.</summary>
     private string? _customFileName;
 
@@ -28,34 +28,34 @@ public sealed class TrainingController
     /// <summary>A route or a replayed training sets the power; free training is controlled by the rider.</summary>
     public bool Guided => Mode.Guided;
 
-    /// <summary>The settings this run uses: the start dialog's for this run, otherwise the saved ones.</summary>
-    public AppSettings RideSettings => _runSettings ?? _settings;
+    /// <summary>The ride values this run uses: the start dialog's for this run, otherwise the saved ones.</summary>
+    public RideValues Ride => _runValues ?? _settings.Ride;
 
     /// <summary>Starts a route (from free training; a free recording still running is closed first).</summary>
-    public RouteTraining BeginRoute(GpxRoute route, string? customName, AppSettings? runSettings = null)
+    public RouteTraining BeginRoute(GpxRoute route, string? customName, RideValues? runValues = null)
     {
-        Prepare(customName, runSettings);
-        var mode = new RouteTraining(new RouteSession(route, RideSettings, ErgoController.MinWatt, _ergo.MaxWatt));
+        Prepare(customName, runValues);
+        var mode = new RouteTraining(new RouteSession(route, Ride, ErgoController.MinWatt, _ergo.MaxWatt));
         Mode = mode;
         _ergo.SetTargetWatt(mode.Session.TargetWatt);
         return mode;
     }
 
     /// <summary>Starts a replay of a recording or, with <paramref name="programFile"/>, a training program.</summary>
-    public ReplayTraining BeginReplay(WorkoutRecording workout, string? customName, string? programFile, AppSettings? runSettings = null)
+    public ReplayTraining BeginReplay(WorkoutRecording workout, string? customName, string? programFile, RideValues? runValues = null)
     {
-        Prepare(customName, runSettings);
+        Prepare(customName, runValues);
         var mode = new ReplayTraining(new ReplaySession(workout, ErgoController.MinWatt, _ergo.MaxWatt), programFile);
         Mode = mode;
         _ergo.SetTargetWatt(mode.Session.TargetWatt);
         return mode;
     }
 
-    private void Prepare(string? customName, AppSettings? runSettings)
+    private void Prepare(string? customName, RideValues? runValues)
     {
         StopRecording();
         _customFileName = customName;
-        UseRunSettings(runSettings);
+        UseRunValues(runValues);
     }
 
     /// <summary>Back to free training: recording closed, the saved settings (and power limit) apply again.</summary>
@@ -64,13 +64,13 @@ public sealed class TrainingController
         StopRecording();
         Mode = new FreeTraining();
         _customFileName = null;
-        UseRunSettings(null);
+        UseRunValues(null);
     }
 
-    private void UseRunSettings(AppSettings? runSettings)
+    private void UseRunValues(RideValues? runValues)
     {
-        _runSettings = runSettings;
-        _ergo.SetUserLimit(RideSettings.MaxWattLimit);
+        _runValues = runValues;
+        _ergo.SetUserLimit(Ride.MaxWattLimit);
     }
 
     /// <summary>A power key: target power, gear or profile offset, depending on the mode.</summary>
@@ -107,7 +107,10 @@ public sealed class TrainingController
     /// <summary>Creates the recording file; throws if it can't be written (the typed name is kept for another try).</summary>
     public JsonRecorder StartRecording()
     {
-        var recorder = new JsonRecorder(_settings.RecordingDirectory, NextRecordingName, Mode.RecordingKind, RideSettings, Mode.RecordingTarget);
+        // The recording keeps the settings it was ridden with, including the ride values changed for this run.
+        var settings = _settings.Snapshot();
+        settings.Ride = Ride.Copy();
+        var recorder = new JsonRecorder(_settings.RecordingDirectory, NextRecordingName, Mode.RecordingKind, settings, Mode.RecordingTarget);
         // A name typed in the start dialog is used for this one recording only.
         _customFileName = null;
         Recorder = recorder;
@@ -135,11 +138,11 @@ public sealed class TrainingController
     }
 
     /// <summary>"Als Standard speichern" in a start dialog: the ride values become the saved settings.</summary>
-    public void SaveRideDefaults(AppSettings values)
+    public void SaveRideDefaults(RideValues values)
     {
-        _settings.CopyRideValuesFrom(values);
+        _settings.Ride = values.Copy();
         try { _settings.Save(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
         if (!Guided)
-            _ergo.SetUserLimit(_settings.MaxWattLimit);
+            _ergo.SetUserLimit(_settings.Ride.MaxWattLimit);
     }
 }

@@ -9,7 +9,7 @@ public class TrainingControllerTests
 
     public TrainingControllerTests()
     {
-        _ergo.SetUserLimit(_settings.MaxWattLimit);
+        _ergo.SetUserLimit(_settings.Ride.MaxWattLimit);
         _training = new TrainingController(_settings, _ergo);
     }
 
@@ -159,20 +159,19 @@ public class TrainingControllerTests
     [Fact]
     public void RunSettings_ApplyDuringTheRun_AndAreDroppedAfterwards()
     {
-        var run = new AppSettings();
-        run.CopyRideValuesFrom(_settings);
+        var run = _settings.Ride.Copy();
         run.MaxWattLimit = 150;
 
         _training.BeginReplay(RecordingWithPulse(), customName: null, programFile: null, run);
 
-        Assert.Same(run, _training.RideSettings);
+        Assert.Same(run, _training.Ride);
         Assert.Equal(150, _ergo.MaxWatt);
         Assert.Equal(150, _ergo.TargetWatt); // the profile's 150 W fits; more would be cut
 
         _training.EndMode();
 
-        Assert.Same(_settings, _training.RideSettings);
-        Assert.Equal(Math.Min(400, _settings.MaxWattLimit), _ergo.MaxWatt);
+        Assert.Same(_settings.Ride, _training.Ride);
+        Assert.Equal(Math.Min(400, _settings.Ride.MaxWattLimit), _ergo.MaxWatt);
     }
 
     [Fact]
@@ -208,13 +207,13 @@ public class TrainingControllerTests
     [Fact]
     public void SaveRideDefaults_InFreeTraining_AppliesTheNewPowerLimitAtOnce()
     {
-        var values = new AppSettings();
-        values.CopyRideValuesFrom(_settings);
+        var values = _settings.Ride.Copy();
         values.MaxWattLimit = 200;
 
         _training.SaveRideDefaults(values);
 
-        Assert.Equal(200, _settings.MaxWattLimit);
+        Assert.Equal(200, _settings.Ride.MaxWattLimit);
+        Assert.NotSame(values, _settings.Ride); // a copy: later changes to the dialog's values don't leak in
         Assert.Equal(200, _ergo.MaxWatt);
     }
 }

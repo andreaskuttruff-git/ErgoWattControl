@@ -24,16 +24,24 @@ public sealed class SettingsForm : Form
     private readonly NumericUpDown _numGradeFactor = new() { Minimum = 10, Maximum = 100, Increment = 10, Width = 80 };
     private readonly NumericUpDown _numStartGear = new() { Minimum = RouteSession.MinGear, Maximum = RouteSession.MaxGear, Width = 80 };
 
-    public double RiderWeightKg => (double)_numRider.Value;
-    public double BikeWeightKg => (double)_numBike.Value;
-    public int GradeFactorPercent => (int)_numGradeFactor.Value;
-    public int StartGear => (int)_numStartGear.Value;
-
     private readonly NumericUpDown _numMaxWatt = new() { Minimum = ErgoController.MinWatt, Maximum = ErgoController.AbsoluteMaxWatt, Increment = 25, Width = 80 };
-    public int MaxWattLimit => (int)_numMaxWatt.Value / 5 * 5;
-
     private readonly ComboBox _cmbGearing = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 110 };
-    public string Gearing => (string)_cmbGearing.SelectedItem!;
+
+    /// <summary>The ride values as edited here; the resistances, only editable in settings.json, stay as they were.</summary>
+    public RideValues Ride
+    {
+        get
+        {
+            var ride = _appSettings.Ride.Copy();
+            ride.RiderWeightKg = (double)_numRider.Value;
+            ride.BikeWeightKg = (double)_numBike.Value;
+            ride.GradeFactorPercent = (int)_numGradeFactor.Value;
+            ride.StartGear = (int)_numStartGear.Value;
+            ride.Gearing = (string)_cmbGearing.SelectedItem!;
+            ride.MaxWattLimit = (int)_numMaxWatt.Value / 5 * 5;
+            return ride;
+        }
+    }
 
     private readonly TextBox _txtGarminLogin = new() { Width = 560 };
     private readonly TextBox _txtGarminImport = new() { Width = 560 };
@@ -208,13 +216,14 @@ public sealed class SettingsForm : Form
         Controls.Add(grid);
 
         _txtFolder.Text = settings.RecordingDirectory;
-        _numRider.Value = (decimal)Math.Clamp(settings.RiderWeightKg, 30, 250);
-        _numBike.Value = (decimal)Math.Clamp(settings.BikeWeightKg, 5, 40);
-        _numGradeFactor.Value = Math.Clamp(settings.GradeFactorPercent, 10, 100);
-        _numStartGear.Value = Math.Clamp(settings.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
-        _numMaxWatt.Value = Math.Clamp(settings.MaxWattLimit, ErgoController.MinWatt, ErgoController.AbsoluteMaxWatt);
+        var ride = settings.Ride;
+        _numRider.Value = (decimal)Math.Clamp(ride.RiderWeightKg, 30, 250);
+        _numBike.Value = (decimal)Math.Clamp(ride.BikeWeightKg, 5, 40);
+        _numGradeFactor.Value = Math.Clamp(ride.GradeFactorPercent, 10, 100);
+        _numStartGear.Value = Math.Clamp(ride.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
+        _numMaxWatt.Value = Math.Clamp(ride.MaxWattLimit, ErgoController.MinWatt, ErgoController.AbsoluteMaxWatt);
         _cmbGearing.Items.AddRange([RouteSession.GearingMtb, RouteSession.GearingRoad]);
-        _cmbGearing.SelectedItem = settings.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
+        _cmbGearing.SelectedItem = ride.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
         _cmbMonitor.Items.Add(new MonitorItem(null, "Automatisch (erster Nebenmonitor)"));
         foreach (var screen in Screen.AllScreens.OrderBy(Monitors.Number))
             _cmbMonitor.Items.Add(new MonitorItem(screen.DeviceName, Monitors.Describe(screen)));

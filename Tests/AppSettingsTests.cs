@@ -16,13 +16,14 @@ public class AppSettingsTests : IDisposable
     [Fact]
     public void Save_ThenLoad_KeepsTheValues_AndLeavesNoTempFile()
     {
-        var settings = new AppSettings { PortName = "COM5", MaxWattLimit = 333 };
+        var settings = new AppSettings { PortName = "COM5", Ride = { MaxWattLimit = 333, RiderWeightKg = 98.5 } };
         settings.Save();
 
         Assert.False(File.Exists(File_ + ".tmp"));
         var loaded = AppSettings.Load();
         Assert.Equal("COM5", loaded.PortName);
-        Assert.Equal(333, loaded.MaxWattLimit);
+        Assert.Equal(333, loaded.Ride.MaxWattLimit);
+        Assert.Equal(98.5, loaded.Ride.RiderWeightKg);
     }
 
     [Fact]

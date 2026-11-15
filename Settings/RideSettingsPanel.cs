@@ -34,39 +34,39 @@ public sealed class RideSettingsPanel : TableLayoutPanel
     }
 
     /// <summary>
-    /// Shows the values of <paramref name="settings"/>. The route values (weights, gearing, resistances) only matter when
-    /// a route is simulated; when following a power profile only the power limit is shown.
+    /// Shows <paramref name="ride"/>. The route values (weights, gearing, resistances) only matter when a route is
+    /// simulated; when following a power profile only the power limit is shown.
     /// </summary>
-    public void Show(AppSettings settings, bool route)
+    public void Show(RideValues ride, bool route)
     {
-        _rider.Value = (decimal)Math.Clamp(settings.RiderWeightKg, 30, 250);
-        _bike.Value = (decimal)Math.Clamp(settings.BikeWeightKg, 5, 40);
-        _gradeFactor.Value = Math.Clamp(settings.GradeFactorPercent, 10, 100);
-        _gearing.SelectedItem = settings.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
-        _startGear.Value = Math.Clamp(settings.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
-        _rolling.Value = Math.Clamp((decimal)settings.RollingResistance, _rolling.Minimum, _rolling.Maximum);
-        _drag.Value = Math.Clamp((decimal)settings.DragAreaM2, _drag.Minimum, _drag.Maximum);
-        _maxWatt.Value = Math.Clamp(settings.MaxWattLimit, ErgoController.MinWatt, ErgoController.AbsoluteMaxWatt);
+        _rider.Value = (decimal)Math.Clamp(ride.RiderWeightKg, 30, 250);
+        _bike.Value = (decimal)Math.Clamp(ride.BikeWeightKg, 5, 40);
+        _gradeFactor.Value = Math.Clamp(ride.GradeFactorPercent, 10, 100);
+        _gearing.SelectedItem = ride.Gearing == RouteSession.GearingRoad ? RouteSession.GearingRoad : RouteSession.GearingMtb;
+        _startGear.Value = Math.Clamp(ride.StartGear, RouteSession.MinGear, RouteSession.MaxGear);
+        _rolling.Value = Math.Clamp((decimal)ride.RollingResistance, _rolling.Minimum, _rolling.Maximum);
+        _drag.Value = Math.Clamp((decimal)ride.DragAreaM2, _drag.Minimum, _drag.Maximum);
+        _maxWatt.Value = Math.Clamp(ride.MaxWattLimit, ErgoController.MinWatt, ErgoController.AbsoluteMaxWatt);
         _route = route;
         foreach (var control in _routeOnly)
             control.Visible = route;
     }
 
-    /// <summary>A copy of <paramref name="baseSettings"/> with the values of this panel; hidden route values are not taken over.</summary>
-    public AppSettings Apply(AppSettings baseSettings)
+    /// <summary>A copy of <paramref name="baseValues"/> with the values of this panel; hidden route values are not taken over.</summary>
+    public RideValues Apply(RideValues baseValues)
     {
-        var settings = baseSettings.Snapshot();
-        settings.MaxWattLimit = (int)_maxWatt.Value;
+        var ride = baseValues.Copy();
+        ride.MaxWattLimit = (int)_maxWatt.Value;
         if (!_route)
-            return settings;
-        settings.RiderWeightKg = (double)_rider.Value;
-        settings.BikeWeightKg = (double)_bike.Value;
-        settings.GradeFactorPercent = (int)_gradeFactor.Value;
-        settings.Gearing = (string)_gearing.SelectedItem!;
-        settings.StartGear = (int)_startGear.Value;
-        settings.RollingResistance = (double)_rolling.Value;
-        settings.DragAreaM2 = (double)_drag.Value;
-        return settings;
+            return ride;
+        ride.RiderWeightKg = (double)_rider.Value;
+        ride.BikeWeightKg = (double)_bike.Value;
+        ride.GradeFactorPercent = (int)_gradeFactor.Value;
+        ride.Gearing = (string)_gearing.SelectedItem!;
+        ride.StartGear = (int)_startGear.Value;
+        ride.RollingResistance = (double)_rolling.Value;
+        ride.DragAreaM2 = (double)_drag.Value;
+        return ride;
     }
 
     private static Label Unit(string text) => new() { Text = text, AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(0, 3, 4, 3) };

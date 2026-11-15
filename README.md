@@ -46,7 +46,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 | `Recording/` | Aufzeichnung (`JsonRecorder`, Dateiformat `RecordingFile`), Umbenennen/Verwerfen |
 | `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
-| `Settings/` | `settings.json` und Einstellungsdialog |
+| `Settings/` | `settings.json` (`AppSettings`) mit den Fahrwerten als eigener Gruppe (`RideValues`: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze – auch pro Fahrt im Startdialog änderbar), Einstellungsdialog |
 | `Tests/` | Unittests (xUnit): Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken |
 
 ## Weitere Geräte anbinden

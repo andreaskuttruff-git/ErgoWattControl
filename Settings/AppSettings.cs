@@ -1,5 +1,6 @@
 ﻿using System.IO.Ports;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ErgoWattControl;
 
@@ -17,8 +18,10 @@ public sealed class AppSettings
     /// <summary>Windows device name (e.g. \\.\DISPLAY1) of the monitor for the ride view; null = first non-primary monitor.</summary>
     public string? RideMonitor { get; set; }
 
-    /// <summary>Upper power limit in W; the cockpit type may allow less (8008/8080: 800 W, others 400 W).</summary>
-    public int MaxWattLimit { get; set; } = ErgoController.AbsoluteMaxWatt;
+    /// <summary>Weights, gearing, gradient, resistances and power limit: the values a ride is simulated with.</summary>
+    // A hand-edited "Ride": null falls back to the defaults instead of breaking the start.
+    public RideValues Ride { get => _ride; set => _ride = value ?? new(); }
+    private RideValues _ride = new();
 
     /// <summary>
     /// File name patterns per recording type (without extension). Placeholders:
@@ -52,16 +55,25 @@ public sealed class AppSettings
     public bool ReplayShowOriginalPulse { get; set; } = true;
 
     public string GpxDirectory { get; set; } = Path.Combine(AppPaths.DataFolder, "GPX");
-    public double RiderWeightKg { get; set; } = 135;
-    public double BikeWeightKg { get; set; } = 11;
-    /// <summary>Percentage of the real gradient that is ridden (100 = original, 50 = half as steep).</summary>
-    public int GradeFactorPercent { get; set; } = 100;
-    public int StartGear { get; set; } = 8;
-    /// <summary>Gear table for route riding: "Rennrad" (daum table, 42:24 – 53:12) or "MTB" (moderately lower gears).</summary>
-    public string Gearing { get; set; } = "MTB";
-    /// <summary>Physics constants, only editable in this file: MTB tyres on mixed surface, upright rider.</summary>
-    public double RollingResistance { get; set; } = 0.010;
-    public double DragAreaM2 { get; set; } = 0.55;
+
+    // settings.json and recordings up to v1.5.1 kept the ride values at the top level: they are still read (into
+    // Ride) but never written again – the next save moves them under "Ride".
+    [JsonInclude, JsonPropertyName("RiderWeightKg"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private double? OldRiderWeightKg { get => null; set { if (value is { } v) Ride.RiderWeightKg = v; } }
+    [JsonInclude, JsonPropertyName("BikeWeightKg"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private double? OldBikeWeightKg { get => null; set { if (value is { } v) Ride.BikeWeightKg = v; } }
+    [JsonInclude, JsonPropertyName("GradeFactorPercent"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private int? OldGradeFactorPercent { get => null; set { if (value is { } v) Ride.GradeFactorPercent = v; } }
+    [JsonInclude, JsonPropertyName("StartGear"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private int? OldStartGear { get => null; set { if (value is { } v) Ride.StartGear = v; } }
+    [JsonInclude, JsonPropertyName("Gearing"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private string? OldGearing { get => null; set { if (value is { } v) Ride.Gearing = v; } }
+    [JsonInclude, JsonPropertyName("RollingResistance"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private double? OldRollingResistance { get => null; set { if (value is { } v) Ride.RollingResistance = v; } }
+    [JsonInclude, JsonPropertyName("DragAreaM2"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private double? OldDragAreaM2 { get => null; set { if (value is { } v) Ride.DragAreaM2 = v; } }
+    [JsonInclude, JsonPropertyName("MaxWattLimit"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private int? OldMaxWattLimit { get => null; set { if (value is { } v) Ride.MaxWattLimit = v; } }
 
     public static AppSettings Load()
     {
@@ -116,19 +128,6 @@ public sealed class AppSettings
         var temp = AppPaths.SettingsFile + ".tmp";
         File.WriteAllText(temp, JsonSerializer.Serialize(this, JsonOptions));
         File.Move(temp, AppPaths.SettingsFile, overwrite: true);
-    }
-
-    /// <summary>Takes over the ride values (weights, gearing, grade factor, resistances, power limit) of <paramref name="other"/>.</summary>
-    public void CopyRideValuesFrom(AppSettings other)
-    {
-        RiderWeightKg = other.RiderWeightKg;
-        BikeWeightKg = other.BikeWeightKg;
-        GradeFactorPercent = other.GradeFactorPercent;
-        Gearing = other.Gearing;
-        StartGear = other.StartGear;
-        RollingResistance = other.RollingResistance;
-        DragAreaM2 = other.DragAreaM2;
-        MaxWattLimit = other.MaxWattLimit;
     }
 
     /// <summary>A copy of the current values, e.g. to store with a recording.</summary>
