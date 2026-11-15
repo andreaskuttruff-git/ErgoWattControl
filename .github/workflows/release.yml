@@ -22,7 +22,7 @@ jobs:
 
       # A failing test stops the release before anything is built or published.
       - name: Unit tests
-        run: dotnet test Tests/ErgoWattControl.Tests.csproj -c Release
+        run: dotnet test Tests/ErgoWattControl.Tests.csproj -c Release --logger GitHubActions
 
       - name: Setup (app, .NET runtime, WiX bundle)
         shell: pwsh

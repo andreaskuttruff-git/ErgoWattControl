@@ -1,0 +1,21 @@
+# Runs the unit tests on every push to main (and by hand), so a failure shows up before a release tag is set.
+# Failing tests appear as annotations of the run (GitHubActionsTestLogger).
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Unit tests
+        run: dotnet test Tests/ErgoWattControl.Tests.csproj -c Release --logger GitHubActions
