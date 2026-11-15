@@ -4,7 +4,8 @@
     "en": "P28 Endurance III (hard)"
   },
   "Description": {
-    "de": "Lange Ausdauereinheit mit eingestreuten Spitzen, 80 min, bis 550 W.\n\nHandbuch: schwere Ausdauerbelastung."
+    "de": "Lange Ausdauereinheit mit eingestreuten Spitzen, 80 min, bis 550 W.\n\nHandbuch: schwere Ausdauerbelastung.",
+    "en": "Long endurance session with peaks in between, 80 min, up to 550 W.\n\nManual: hard endurance load."
   },
   "Profile": [
     [0, 60],

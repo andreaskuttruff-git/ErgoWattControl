@@ -4,7 +4,8 @@
     "en": "S04 Rønnestad 30/15 – FTP 250 W"
   },
   "Description": {
-    "de": "3 Serien mit je 13 × (30 s bei 125 % FTP / 15 s bei 50 %), 3 min Pause zwischen den Serien, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: VO₂max und Leistung über 20 min. Die kurzen Pausen halten die Sauerstoffaufnahme lange auf hohem Niveau.\n\nQuelle: Rønnestad et al. 2015 und 2020 – bei trainierten Radfahrern bessere Ergebnisse als 4 × 5 min."
+    "de": "3 Serien mit je 13 × (30 s bei 125 % FTP / 15 s bei 50 %), 3 min Pause zwischen den Serien, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: VO₂max und Leistung über 20 min. Die kurzen Pausen halten die Sauerstoffaufnahme lange auf hohem Niveau.\n\nQuelle: Rønnestad et al. 2015 und 2020 – bei trainierten Radfahrern bessere Ergebnisse als 4 × 5 min.",
+    "en": "3 sets of 13 × (30 s at 125 % FTP / 15 s at 50 %) each, 3 min recovery between the sets, plus 13 min warm-up and 10 min cool-down.\n\nGoal: VO₂max and 20-min power. The short recoveries keep the oxygen uptake high for a long time.\n\nSource: Rønnestad et al. 2015 and 2020 – better results than 4 × 5 min in trained cyclists."
   },
   "Profile": [
     [0, 110],

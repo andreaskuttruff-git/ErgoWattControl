@@ -1,6 +1,6 @@
 Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle (RS232).
 
-📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – in der App mit F1.
+📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
 ### Neu in v1.5.1
 - **Stabiler bei Störungen:** Kommt eine Antwort des Cockpits verrutscht an (Reste einer verspäteten Antwort), wird sie verworfen und neu angefragt, statt falsche Werte anzuzeigen. Auch das Nachstellen der Leistung und das Neu-Einstellen nach einem Cockpit-Reset werden bei einem Aussetzer sofort wiederholt.

@@ -115,6 +115,31 @@ public partial class LocalizationTests
 
     [Theory]
     [InlineData("de", "de")]
+    [InlineData("DE", "de")]
+    [InlineData("en", "en")]
+    [InlineData("pseudo", "pseudo")]
+    [InlineData("auto", "auto")]
+    [InlineData("fr", "auto")]
+    [InlineData(null, "auto")]
+    public void LanguageSetting_IsNormalized(string? stored, string expected)
+    {
+        // An unknown or differently written value must not look like a change in the settings dialog.
+        Assert.Equal(expected, new AppSettings { Language = stored! }.Language);
+    }
+
+    [Fact]
+    public void HelpPage_ExistsInTheExe_ForEveryLanguage()
+    {
+        var assembly = typeof(L).Assembly;
+        foreach (var (code, _) in Language.Available)
+        {
+            var page = L.T("Help_PageUrl", CultureInfo.GetCultureInfo(code));
+            Assert.NotNull(assembly.GetManifestResourceStream("Help/" + page));
+        }
+    }
+
+    [Theory]
+    [InlineData("de", "de")]
     [InlineData("en", "en")]
     public void LanguageSetting_IsApplied(string setting, string expected)
     {

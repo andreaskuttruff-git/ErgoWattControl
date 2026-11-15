@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ErgoWattControl – Help</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #161616; --panel: #202020; --line: #333; --text: #e6e6e6; --muted: #a0a0a0;
+    --gold: #ffd200; --blue: #4cc3ff; --red: #ff7a6e; --green: #78dc78;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 "Segoe UI", system-ui, sans-serif; }
+  header { padding: 28px 32px 18px; border-bottom: 1px solid var(--line); }
+  header h1 { margin: 0; color: var(--gold); font-size: 28px; }
+  header p { margin: 6px 0 0; color: var(--muted); }
+  header .lang { float: right; margin: 4px 0 0 16px; font-size: 15px; }
+  .wrap { display: grid; grid-template-columns: 250px 1fr; max-width: 1200px; }
+  nav { position: sticky; top: 0; align-self: start; padding: 20px 16px 20px 32px; max-height: 100vh; overflow-y: auto; }
+  nav a { display: block; padding: 4px 0 4px 10px; border-left: 3px solid transparent; color: var(--muted); text-decoration: none; font-size: 15px; }
+  nav a:hover { color: var(--gold); }
+  nav a.active { color: var(--gold); border-left-color: var(--gold); font-weight: 600; }
+  main { padding: 8px 32px 60px; min-width: 0; }
+  h2 { color: var(--gold); margin: 36px 0 10px; padding-top: 6px; border-top: 1px solid var(--line); font-size: 22px; }
+  h3 { color: var(--blue); margin: 22px 0 6px; font-size: 17px; }
+  a { color: var(--blue); }
+  code, kbd { font-family: Consolas, monospace; font-size: 14px; }
+  code { background: var(--panel); padding: 1px 5px; border-radius: 3px; }
+  kbd { background: #2b2b2b; border: 1px solid #555; border-bottom-width: 2px; padding: 0 6px; border-radius: 4px; }
+  pre { background: var(--panel); padding: 12px 14px; border-radius: 6px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; }
+  figure { margin: 14px 0 18px; }
+  figure img { display: block; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
+  figure img { cursor: zoom-in; }
+  #zoom { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; cursor: zoom-out; z-index: 10; }
+  #zoom.open { display: flex; }
+  #zoom img { max-width: 96vw; max-height: 96vh; border: 1px solid var(--line); border-radius: 6px; }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .note { border-left: 3px solid var(--gold); background: var(--panel); padding: 10px 14px; margin: 12px 0; }
+  .warn { border-left-color: var(--red); }
+  @media (max-width: 800px) { .wrap { grid-template-columns: 1fr; } nav { position: static; max-height: none; padding: 16px; } main { padding: 0 16px 40px; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="lang" href="Help.de.html" hreflang="de" lang="de">Deutsch</a>
+  <h1>ErgoWattControl – Help</h1>
+  <p>Control for the Daum ergo_bike 8008 TRS via the serial port</p>
+</header>
+<div class="wrap">
+<nav>
+  <a href="#start">Getting started</a>
+  <a href="#ansicht">The ride view</a>
+  <a href="#tasten">Keys and mouse</a>
+  <a href="#frei">Free training</a>
+  <a href="#strecke">Riding a route</a>
+  <a href="#training">Replaying a recording</a>
+  <a href="#programm">Starting a training program</a>
+  <a href="#eigene-programme">Custom programs</a>
+  <a href="#ftp">FTP and ramp test</a>
+  <a href="#laufeinstellungen">Settings for one run</a>
+  <a href="#beenden">Ending, renaming, discarding a recording</a>
+  <a href="#export">Exporting recordings</a>
+  <a href="#einstellungen">Settings</a>
+  <a href="#dateien">Files and folders</a>
+  <a href="#parameter">Start parameters</a>
+  <a href="#probleme">When something doesn’t work</a>
+</nav>
+<main>
+
+<div class="note">The screenshots show the app in German; in English the texts are in the same places.</div>
+
+<h2 id="start">Getting started</h2>
+<ol>
+  <li>Switch the ergometer on and connect the cockpit to the PC with an RS232 cable (or a USB-RS232 adapter).</li>
+  <li>Start <code>ErgoWattControl.exe</code>. The app connects to the configured device; the connection status is shown at the bottom right.</li>
+  <li>On the first start, choose “Daum ergo_bike (RS232)” as device and the COM port under <b>☰ → Settings</b> and check it with <b>Test connection</b>; enter your weight and power limit there as well. To try the app without an ergometer: device “Demo”. The language is set at the top of the settings as well (<b>Language / Sprache</b>).</li>
+  <li>Ride: in free training set the power with <kbd>↑</kbd> <kbd>↓</kbd> or the mouse wheel – or choose a route, a training or a program in the menu <b>☰</b>.</li>
+</ol>
+<div class="note">The window opens on the rider’s monitor (the first secondary monitor). The button at the bottom switches between the rider’s monitor and the main screen and is named after where it goes: <b>Main screen</b> on the rider’s monitor, <b>Ride view</b> otherwise. <kbd>0</kbd> (also on the numeric keypad) or <kbd>Ins</kbd> does the same.</div>
+
+<h2 id="ansicht">The ride view</h2>
+<figure style="max-width:900px"><img src="HelpPics/fahransicht.png" alt="Free training with a running recording: 160 W set, cadence 78 within the permitted range (blue-grey area)."><figcaption>Free training with a running recording: 160 W set, cadence 78 within the permitted range (blue-grey area).</figcaption></figure>
+<table>
+  <tr><th>Area</th><th>Meaning</th></tr>
+  <tr><td><b>POWER</b> (yellow)</td><td>Target power in watts, with <b>−</b> / <b>+</b> next to it. If the actual power differs by more than 5 W, <code>[actual … W]</code> is shown above it.</td></tr>
+  <tr><td>Top right, above the pulse</td><td>What is being ridden: “Route: name (km)”, “Program: name” or “Recording: name”; the tooltip shows the file. Empty in free training.</td></tr>
+  <tr><td><b>PULSE</b> (red)</td><td>Heart rate from the cockpit’s chest strap or ear clip. When replaying an earlier ride (a route recording, a FIT file or a recording with pulse), a smaller <b>green number</b> to the right shows your pulse back then at the same point – for routes at the same kilometre, otherwise at the same time. It appears as long as “Show the original pulse” is switched on; programs have none.</td></tr>
+  <tr><td><b>RPM</b>, <b>km/h</b>, <b>TIME</b></td><td>Cadence, speed and riding time. A <span style="color:var(--red)">▲</span> next to RPM means “pedal faster”, a ▼ “pedal slower”.</td></tr>
+  <tr><td>Upper graph</td><td>Power (yellow) and cadence (blue) of the last 10 minutes. The <b>blue-grey area</b> is the cadence range in which the eddy-current brake can hold the set power (e.g. 40–160 RPM up to 150 W, 50–160 RPM up to 250 W). It belongs to the blue line.</td></tr>
+  <tr><td>Lower graph</td><td>Pulse of the last 10 minutes. When riding a route the elevation profile is shown here, for recordings and programs the power profile: at the top the whole training with your pulse (red, scale on the right 60–180), below it the next 10 minutes enlarged (power only). When repeating a recording, the pulse recorded back then also appears in green in the overview if “Show the original pulse” is chosen.</td></tr>
+  <tr><td>Bottom line</td><td>Distance, energy and crank revolutions of the running recording, the record button, <b>Ride view</b>/<b>Main screen</b> (change monitor) and the connection status.</td></tr>
+</table>
+
+<h2 id="tasten">Keys and mouse</h2>
+<p>The keys always work, whichever element has the focus. The numeric keypad works with and without NumLock – handy with a wireless keypad on the handlebar.</p>
+<table>
+  <tr><th>Key</th><th>Free training</th><th>Route</th><th>Training / program</th></tr>
+  <tr><td><kbd>↑</kbd> <kbd>+</kbd> <kbd>8</kbd> · mouse wheel up</td><td>+5 W</td><td>1 gear up</td><td>whole profile +5 W</td></tr>
+  <tr><td><kbd>↓</kbd> <kbd>−</kbd> <kbd>2</kbd> · mouse wheel down</td><td>−5 W</td><td>1 gear down</td><td>whole profile −5 W</td></tr>
+  <tr><td><kbd>PgUp</kbd> <kbd>9</kbd></td><td>+25 W</td><td>5 gears up</td><td>profile +25 W</td></tr>
+  <tr><td><kbd>PgDn</kbd> <kbd>3</kbd></td><td>−25 W</td><td>5 gears down</td><td>profile −25 W</td></tr>
+  <tr><td><kbd>Enter</kbd></td><td>Start / stop recording</td><td colspan="2">End training (dialog; <kbd>Enter</kbd> again = OK, <kbd>Esc</kbd> = keep riding)</td></tr>
+  <tr><td><kbd>0</kbd> <kbd>Ins</kbd></td><td colspan="3">Move the window between the rider’s monitor and the main screen</td></tr>
+  <tr><td><kbd>F1</kbd></td><td colspan="3">This help, right at the matching section – in every dialog as well</td></tr>
+</table>
+
+<h2 id="frei">Free training</h2>
+<p>Without a route or program you set the power yourself (25 W up to the power limit, in steps of 5 W). The brake holds the power regardless of the cadence.</p>
+<p><b>● Record</b> (or <kbd>Enter</kbd>) starts the recording, <b>■ Stop</b> (or <kbd>Enter</kbd> again) ends it. A dialog asks for the file name first – see <a href="#beenden">Ending a recording</a>.</p>
+
+<h2 id="strecke">Riding a route</h2>
+<p><b>☰ → Ride a route …</b> shows the GPX and FIT files from the routes folder (<code>Documents\ErgoWattControl\GPX</code>, see <a href="#dateien">Files and folders</a>). For the selected route you see the elevation profile (coloured by gradient, the steepest climb marked), length, climbing, maximum gradient and the power it costs in 1st gear at 60 RPM. If that is above your power limit, it is shown in red. <b>GPX or FIT file from another folder …</b> fetches a route from elsewhere.</p>
+<p>While riding, the app calculates the brake power from gradient, weight (rider + bike), rolling and air resistance and the virtual speed – which results from cadence × gear. You shift as outdoors: a higher gear = faster and harder.</p>
+<p><b>Pulse in the elevation profile:</b> In the overview of the whole route your pulse runs along – today in <b>red</b>, and if the route comes from an earlier ride (a route recording of the app or a FIT file, e.g. an MTB tour from Garmin Connect), the pulse back then in <b>green</b>. Both follow the kilometre, not the time: on the same climb you see straight away how your pulse today compares to the real tour. The scale on the right goes from 60 to 180. You switch the green pulse on or off in the start dialog with “Show the original pulse while riding”.</p>
+<figure><img src="HelpPics/strecke_auswahl.png" alt="Start dialog “Ride a route”: elevation profile with the steepest climb, key figures and file name."><figcaption>Start dialog “Ride a route”: elevation profile with the steepest climb, key figures and file name.</figcaption></figure>
+<figure style="max-width:900px"><img src="HelpPics/fahransicht_strecke.png" alt="On the route: gear instead of watts, below it the elevation profile with the current position and the section of the next 2 km. ▼ next to RPM: pedal slower."><figcaption>On the route: gear instead of watts, below it the elevation profile with the current position and the section of the next 2 km. ▼ next to RPM: pedal slower.</figcaption></figure>
+<figure style="max-width:620px"><img src="HelpPics/zusammenfassung.png" alt="Summary at the end of a route."><figcaption>Summary at the end of a route.</figcaption></figure>
+<ul>
+  <li>28 gears, gearing <b>MTB</b> (lower gears, slow cranking uphill possible) or <b>Road bike</b>.</li>
+  <li>The <b>gradient factor</b> makes all climbs flatter (50 % = half as steep) – so hilly routes become rideable.</li>
+  <li>The recording starts with the first pedal stroke and pauses while you don’t pedal. At the finish the ride ends with a summary.</li>
+  <li><b>■ End training</b> (bottom) or <b>☰ → End training</b> stops early.</li>
+</ul>
+
+<h2 id="training">Replaying a recording</h2>
+<p><b>☰ → Replay a recording …</b> lists your recordings, newest first. For the selected one you see the profile (power and, if you like, the pulse back then), duration, average and maximum power.</p>
+<ul>
+  <li><b>Recording of a route:</b> is ridden as a route again – with the route stored in the recording and its settings (weight, gearing, …), which you can change for this run.</li>
+  <li><b>Free training or program:</b> follows the recorded power. Time only runs while you pedal; <kbd>↑</kbd> <kbd>↓</kbd> shift the whole profile.</li>
+  <li><b>Show the original pulse</b> shows the pulse back then for comparison while riding.</li>
+  <li>Older recordings in CSV format can still be replayed.</li>
+  <li><b>Recording from another folder …</b> opens a recording from elsewhere, e.g. from a USB stick.</li>
+  <li><b>FIT files</b> of other devices and apps (Garmin Connect, Strava, Zwift, bike computers) can be replayed too: if the file has <b>power data</b>, the ride follows the power back then (the pulse back then runs along in green). If it has <b>no power but GPS and elevation</b> – e.g. an MTB tour without a power meter – it is ridden as a route. Pauses in the file are skipped. In Garmin Connect you get the file via the gear icon of an activity → <i>Export Original</i>. Garmin names it with a number only (e.g. <code>24087410711_ACTIVITY.fit</code>); the app then shows it as <code>Garmin_2026-08-23_15-57</code> with date and time of the ride and names the new recording the same way.</li>
+  <li><b>■ End training</b> (bottom) or <b>☰ → End training</b> stops early.</li>
+</ul>
+<figure><img src="HelpPics/training_auswahl.png" alt="Start dialog “Replay a recording” with a route recording: it is ridden as a route again, with the stored settings, changeable for this run."><figcaption>Start dialog “Replay a recording” with a route recording: it is ridden as a route again, with the stored settings, changeable for this run.</figcaption></figure>
+<figure style="max-width:900px"><img src="HelpPics/fahransicht_aufzeichnung.png" alt="Ride view when replaying a recording: pulse back then in green, today in red."><figcaption>Replaying a recording: pulse back then (green) and today (red) above the power profile.</figcaption></figure>
+
+<h2 id="programm">Starting a training program</h2>
+<p><b>☰ → Start a training program …</b> lists the training programs with power profile, duration and description.</p>
+<figure><img src="HelpPics/programm_auswahl.png" alt="Start dialog “Start a training program”: power profile, description with source; for programs only the power limit can be set."><figcaption>Start dialog “Start a training program”: power profile, description with source; for programs only the power limit can be set.</figcaption></figure>
+<figure style="max-width:900px"><img src="HelpPics/fahransicht_programm.png" alt="Ride view during program S08: at the top the whole program with the pulse, below it the next 10 minutes."><figcaption>Ride view during a program: at the top the whole program with your pulse (red), below it the next 10 minutes with the next change.</figcaption></figure>
+<h3>P01–P44: programs from the manual</h3>
+<p>The power-controlled fixed programs of the 8008 TRS (power tests WHO/BAL, interval, pyramid, mountains, fartleks, team tempo training, endurance, cool-down) with fixed watt values. They are read from the charts of the manual. The pulse programs (29–38) and elevation profiles (39–41) are missing because the app only controls watts.</p>
+<h3>S00–S08: programs based on current training science</h3>
+<table>
+  <tr><th>Program</th><th>Main part</th><th>What for</th></tr>
+  <tr><td>S00 Ramp test</td><td>+20 W per minute to exhaustion</td><td>Find your FTP</td></tr>
+  <tr><td>S01 Endurance base 60 min</td><td>55 min at 65 % FTP</td><td>Base endurance – most of your training</td></tr>
+  <tr><td>S02 Norwegian 4×4</td><td>4 × 4 min at 108 %</td><td>VO₂max (Helgerud 2007)</td></tr>
+  <tr><td>S03 Seiler 4×8</td><td>4 × 8 min at 98 %</td><td>VO₂max and threshold (Seiler 2013)</td></tr>
+  <tr><td>S04 Rønnestad 30/15</td><td>3 × 13 × (30 s 125 % / 15 s easy)</td><td>VO₂max, 20-min power</td></tr>
+  <tr><td>S05 Sub-threshold 5×8</td><td>5 × 8 min at 90 %</td><td>Threshold training with little fatigue</td></tr>
+  <tr><td>S06 Gibala 10×1 min</td><td>10 × 1 min at 115 %</td><td>Time-saving interval training</td></tr>
+  <tr><td>S07 Sprint 3×20 s</td><td>3 × 20 s at 200 %</td><td>Minimal program, 10 min</td></tr>
+  <tr><td>S08 Threshold blocks 30 min</td><td>3 × 5 min at 92 %</td><td>Strength endurance in 30 min, easy on the knees at 85–95 RPM; progress by the length of the blocks</td></tr>
+</table>
+<p>Every S program exists for an FTP of 150, 200 and 250 W. A typical week: two hard sessions (S02–S06), the rest easy (S01). Sources and details are in <code>Programs\README.md</code> in the project.</p>
+<div class="note warn">Before starting high-intensity training, medical societies recommend a medical check-up – if necessary with an exercise ECG – for pre-existing conditions, overweight or after a long break.</div>
+
+<h3 id="eigene-programme">Custom programs</h3>
+<p>Put your own programs in the folder <code>CustomPrograms</code>: <code>Documents\ErgoWattControl\CustomPrograms</code>, next to the exe for the portable version. The button <b>Open the folder for custom programs</b> below the program list opens it. Custom programs are listed with <b>★</b> at the top; the app never overwrites anything there.</p>
+<p>A program is a JSON file with <code>Name</code>, <code>Description</code> and <code>Profile</code> (power profile). The profile is a list of points <code>[second, watts]</code>: the power of a point holds until the next one, the last point marks the end.</p>
+<pre>{
+  "$schema": "./TrainingProgram.schema.json",
+  "Name": "My intervals 3×2 min",
+  "Description": "5 min easy, 3 × 2 min brisk, 5 min easy.",
+  "Profile": [ [0, 80], [300, 140], [420, 80], [540, 140], [660, 80], [780, 140], [900, 80], [1200, 80] ]
+}</pre>
+<ul>
+  <li><b>Several languages:</b> <code>Name</code> and <code>Description</code> may hold one text per language instead of one text, e.g. <code>"Name": { "de": "Mein Intervall", "en": "My intervals" }</code>. The app then shows the language of its interface. It still reads older programs with <code>Beschreibung</code> and <code>Profil</code>.</li>
+  <li><b>Template:</b> on the first start the app puts <code>Example_Custom_Program.json</code> into the folder – copy, rename, adapt.</li>
+  <li><b>Description of the format:</b> <code>TrainingProgram.schema.json</code> in the same folder is a <b>JSON schema</b> – for JSON what an XSD is for XML. With the line <code>"$schema": "./TrainingProgram.schema.json"</code> an editor such as Visual Studio Code checks the file while you write and suggests the fields.</li>
+  <li><b>Creating one with an AI:</b> the folder also holds <code>CLAUDE.md</code> and <code>AGENTS.md</code> (same content) with format, rules and conventions. If you start an AI assistant there, such as Claude Code (reads <code>CLAUDE.md</code>) or OpenAI Codex (reads <code>AGENTS.md</code>), it knows at once what a program must look like – you just describe the training, e.g. “30 min with 4 × 4 min at 140 W”.</li>
+  <li><b>Rules:</b> the first point starts at second 0, the seconds increase, the power is between 0 and 800 W (the cockpit controls from 25 W, the power limit from the settings applies as well).</li>
+  <li><b>Errors:</b> a faulty file doesn’t appear in the list; under “Not readable” the reason is given, e.g. “Profile, point 3: second 200 must be greater than at the point before” or the line with the JSON error.</li>
+</ul>
+
+<h2 id="ftp">FTP and ramp test</h2>
+<p>The <b>FTP</b> (Functional Threshold Power) is the power you can hold for about an hour. This is how you find it:</p>
+<ol>
+  <li>Ride <b>S00 Ramp test</b>: 5 min at 100 W, then +20 W every minute.</li>
+  <li>Stop when you can no longer hold the cadence.</li>
+  <li>FTP ≈ <b>75 % of the last step you held for a full minute</b> (example: 260 W reached → FTP ≈ 195 W).</li>
+  <li>Choose the S programs with the nearest level and adjust them with <kbd>↑</kbd> <kbd>↓</kbd> if needed.</li>
+</ol>
+
+<h2 id="laufeinstellungen">Settings for one run</h2>
+<p>The start dialogs of <b>Replay a recording</b> and <b>Start a training program</b> show the settings that apply to the run and let you change them <b>for this run only</b>:</p>
+<ul>
+  <li>For power profiles (programs, free trainings) only the <b>power limit</b>.</li>
+  <li>For a route recording also weights, gradient factor, gearing, start gear, rolling and air resistance – preset with the values it was recorded with.</li>
+</ul>
+<p><b>Save as default</b> takes the values shown into <code>settings.json</code>; they then also apply to new routes and in the settings dialog.</p>
+
+<h2 id="beenden">Ending, renaming, discarding a recording</h2>
+<p><b>■ Stop</b> in free training, <b>■ End training</b> for a route, recording or program and <b>☰ → End training</b> open an <b>“End training”</b> dialog before anything ends. For routes, recordings and programs it shows the result right away (distance or time ridden, average power, average pulse, energy). The file name is suggested and can be changed.</p>
+<table>
+  <tr><th>Button</th><th>Effect</th></tr>
+  <tr><td><b>OK</b></td><td>Ends the training and saves under the name in the field (unchanged = the name so far).</td></tr>
+  <tr><td><b>Discard</b></td><td>Ends the training and deletes the recording, without asking again.</td></tr>
+  <tr><td><b>Keep riding</b></td><td>Back to the ride – nothing ends, the recording goes on.</td></tr>
+  <tr><td><b>Open folder</b></td><td>Shows the recording in Explorer.</td></tr>
+</table>
+<p>When a route or program has been ridden to its end (“Finish reached” / “Training completed”), the same dialog shows the result – then without Keep riding, but with <b>Discard</b> and <b>OK</b>.</p>
+<figure style="max-width:700px"><img src="HelpPics/training_beenden.png" alt="The dialog when closing the app during a recording."><figcaption>The dialog when closing the app during a recording.</figcaption></figure>
+<p>If you close the app during a recording or training (✕ or <b>☰ → Exit</b>), the dialog appears as “Exit ErgoWattControl”, also with Keep riding, Discard and OK; OK saves and exits the app. You can change the file name of a route, training or program already in the start dialog.</p>
+<h2 id="export">Exporting recordings</h2>
+<p><b>☰ → Export recordings …</b> converts recordings for other programs. Select one or more recordings on the left (several with <kbd>Ctrl</kbd> or <kbd>⇧</kbd> click), tick the formats on the right and choose the target folder, then <b>Export</b>. At the top right a small preview shows the recording clicked last: power profile and pulse (green), below it kind, date, duration, distance, average and maximum power and the average pulse.</p>
+<p><b>Delete</b> (or the <kbd>Del</kbd> key) moves the selected recordings to the recycle bin after asking – they can be restored from there if needed.</p>
+<h3>Uploading to Garmin Connect or Strava</h3>
+<p>Which platforms are offered is set in the <a href="#einstellungen">settings</a> (tick “Garmin Connect” or “Strava”). For each platform switched on, a tick box appears next to “Export” under <b>Then upload to</b> (FIT only); with none switched on, this part is missing. If a box is ticked, after the export the platform opens in a browser window above the export dialog (on the main monitor) – with both ticked one after the other, first Garmin Connect, then Strava. When you close the browser window you are back in the export dialog; it only closes with “Close”. The first time you sign in there yourself; the app ticks <b>“Remember me”</b> for you (preferably sign in by e-mail; Google often refuses sign-ins in embedded windows). The app never sees or stores your password, only the platform’s sign-in cookie stays in this window (per computer). After that the window opens the import or upload page directly and puts the exported FIT files into it: on Garmin you still click “Import data”, Strava uploads at once, and you save the activity with “Save &amp; View”. If inserting doesn’t work, drag the file from the strip at the top of the window onto the page.</p>
+<figure style="max-width:900px"><img src="HelpPics/export.png" alt="The dialog “Export recordings”."><figcaption>The dialog “Export recordings”.</figcaption></figure>
+<table>
+  <tr><th>Format</th><th>What for</th></tr>
+  <tr><td><b>FIT</b></td><td>For uploading to Strava, Garmin Connect, intervals.icu or TrainingPeaks. Contains power, cadence, pulse, speed and distance. A <b>route</b> is exported as a <b>virtual ride</b> – with the positions of the route ridden, so the platform shows it on the map but doesn’t count it as a real ride. All other recordings appear as an <b>indoor training</b>.</td></tr>
+  <tr><td><b>CSV</b></td><td>For Excel: semicolon and decimal comma, opens directly in a German Excel. One line per second with time of day and all measured values.</td></tr>
+</table>
+<p>The files are named like the recording, with the extension <code>.fit</code> or <code>.csv</code>. The default target folder is <code>Export\</code> in the recordings folder; the app remembers formats and folder. On Strava you upload the FIT file under <b>Upload → File</b>, on Garmin Connect under <b>Import → Data</b> – or more conveniently with <a href="#export">“Then upload to”</a>.</p>
+<p>Recordings in JSON format are exported; older CSV recordings open directly in Excel anyway.</p>
+
+<h2 id="einstellungen">Settings</h2>
+<p><b>☰ → Settings …</b></p>
+<figure style="max-width:670px"><img src="HelpPics/einstellungen.png" alt="The settings dialog."><figcaption>The settings dialog.</figcaption></figure>
+<table>
+  <tr><th>Field</th><th>Meaning</th></tr>
+  <tr><td>Language / Sprache</td><td>Language of the app: <b>Automatic</b> (as Windows; English unless Windows is German), <b>Deutsch</b> or <b>English</b>. The new language applies after a restart – the app offers it right away, except during a training. Numbers and dates keep following the Windows settings.</td></tr>
+  <tr><td>Device</td><td>Which ergometer the app controls: <b>Daum ergo_bike (RS232)</b> or <b>Demo</b> – a simulated rider to try the app without an ergometer. After saving, the app connects again at once.</td></tr>
+  <tr><td>COM port</td><td>Port of the cockpit. <b>Refresh</b> reads the ports again (e.g. after plugging in a USB adapter), <b>Test connection</b> checks whether a cockpit answers.</td></tr>
+  <tr><td>Recordings folder</td><td>Where the recordings are written. If it can’t be written (network drive or USB stick missing, no rights), the app still saves the ride – in the default folder <code>Documents\ErgoWattControl\Recordings</code> or, if that doesn’t work either, in <code>%LocalAppData%\ErgoWattControl\Recordings</code> – and says so once when the recording starts. Export and “Replay a recording” list such rides as well (export: “(fallback folder)”).</td></tr>
+  <tr><td>Ride view on</td><td>Monitor for the ride view; <b>Identify</b> shows each monitor’s number on it.</td></tr>
+  <tr><td>Riding a route</td><td>Rider and bike weight, gradient factor, gearing, start gear.</td></tr>
+  <tr><td>Power limit</td><td>Highest power the app sets. The cockpit 8008/8080 allows up to 800 W, others 400 W.</td></tr>
+  <tr><td>Garmin Connect, Strava</td><td>The tick switches uploading to the platform on – only then does the export dialog offer “Then upload to”. Plus the address of the sign-in page and of the import or upload page (for “Then upload to”) each. <b>Default</b> resets both, <b>Sign out</b> deletes the sign-in saved in the platform’s window on this computer, <b>Sign in</b> only opens the sign-in page in a browser window above the settings (only without a saved sign-in); after signing in the window closes by itself and you are back in the settings. When the settings open, the app checks invisibly whether a saved sign-in is still valid and shows “valid” or “expired – please sign in again”; then <b>Sign in</b> can be used again.</td></tr>
+</table>
+<p><b>☰ → About …</b> shows the version of the app (with the commit it was built from), links to the <a href="https://github.com/andreaskuttruff-git/ErgoWattControl">project page on GitHub</a>, to new versions and to the online help, and the folders for settings and data.</p>
+<p>More values are in <code>settings.json</code> (see <a href="#dateien">Files and folders</a>), among them the patterns of the file names:</p>
+<table>
+  <tr><th>Setting</th><th>For</th><th>Default</th></tr>
+  <tr><td><code>FileNameTraining</code></td><td>free training and replayed recording</td><td><code>Training_{Date}_{Time}</code></td></tr>
+  <tr><td><code>FileNameRoute</code></td><td>riding a route</td><td><code>Route_{Route}_{Date}_{Time}</code></td></tr>
+  <tr><td><code>FileNameProgram</code></td><td>starting a training program</td><td><code>Program_{Program}_{Date}_{Time}</code></td></tr>
+</table>
+<p>Placeholders: <code>{Date}</code>, <code>{Time}</code>, <code>{Route}</code>, <code>{Training}</code> (replayed recording), <code>{Program}</code> (program file). The German placeholders of older versions (<code>{Datum}</code> etc.) are converted at start. The ride values – weights, gradient factor, gearing, start gear and power limit – are grouped under <code>"Ride"</code>, which also holds <code>RollingResistance</code> (0.010) and <code>DragAreaM2</code> (drag area cd·A, 0.55 m²). Older <code>settings.json</code> files with these values on the top level are taken over and converted at start. <code>"Language"</code> is <code>"auto"</code>, <code>"de"</code> or <code>"en"</code>.</p>
+
+<h2 id="dateien">Files and folders</h2>
+<p>The app keeps its data in the usual Windows folders – wherever it is installed:</p>
+<table>
+  <tr><th>File / folder</th><th>Location</th><th>Content</th></tr>
+  <tr><td><code>settings.json</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Settings; created on the first start.</td></tr>
+  <tr><td><code>ErgoWattControl.log</code></td><td><code>%AppData%\ErgoWattControl</code></td><td>Log: details when a file could not be loaded or written, unexpected errors and dropouts of the cockpit. An unreadable <code>settings.json</code> is kept as <code>settings.json.defekt</code>, and the app starts with default values.</td></tr>
+  <tr><td><code>Recordings\</code></td><td><code>Documents\ErgoWattControl</code></td><td>Recordings (default recordings folder, changeable in the settings; older installations keep their folder <code>Aufzeichnungen\</code>).</td></tr>
+  <tr><td><code>GPX\</code></td><td><code>Documents\ErgoWattControl</code></td><td>Routes for “Ride a route”.</td></tr>
+  <tr><td><code>Programs\</code></td><td><code>Documents\ErgoWattControl</code></td><td>The programs shipped with the app. They are inside the exe; at start the app writes missing or changed files again – so changes to these files are overwritten.</td></tr>
+  <tr><td><code>CustomPrograms\</code></td><td><code>Documents\ErgoWattControl</code></td><td><a href="#eigene-programme">Custom programs</a> (with ★ in the list). The app puts the JSON schema, <code>CLAUDE.md</code>/<code>AGENTS.md</code> for AI assistants and once a template there; it never touches your files.</td></tr>
+  <tr><td><code>WebView2…\</code></td><td><code>%LocalAppData%\ErgoWattControl</code></td><td>Browser profiles of the help window and the upload windows (<code>WebView2-Garmin</code>, <code>WebView2-Strava</code> with the saved sign-in). “Sign out” in the settings deletes the respective profile.</td></tr>
+</table>
+<p><b>Portable:</b> if a <code>settings.json</code> lies next to the exe, everything stays in the program folder – settings, <code>ErgoWattControl.log</code>, <code>Recordings\</code>, <code>GPX\</code>, <code>Programs\</code> and <code>CustomPrograms\</code> are then next to the exe. Older installations and ZIP copies keep working unchanged; for a USB stick just put a (possibly empty) <code>settings.json</code> next to the exe.</p>
+<p><b>Setup:</b> it installs the app for the signed-in user to <code>%LocalAppData%\Programs\ErgoWattControl</code>, with a shortcut in the Start menu and – if ticked – on the desktop. If the .NET 10 Desktop Runtime is missing, it installs it as well. At the end you can start the app right away, in demo mode if you like. When uninstalling (Windows Settings → Apps), settings and recordings are kept.</p>
+<h3>Recordings (JSON)</h3>
+<p>A recording contains the kind (training, route, program), start and end, the settings at the start, the target (the route every 10 m with elevation and coordinates, or the power profile) and one line of measured values per second: target and actual power, RPM, pulse, speed, distance, energy, revolutions, for routes also gradient and gear. Keys and column names are English (<code>Kind</code>, <code>Columns</code>, <code>Values</code>, <code>Power_W</code>, …) in every language; recordings of version 1.x with German keys are still read. The file is written completely every 10 seconds – after a crash or power cut at most these seconds are missing.</p>
+<h3>Custom programs</h3>
+<p>Custom programs belong in <code>CustomPrograms\</code> – structure, rules and template are under <a href="#eigene-programme">Custom programs</a>.</p>
+
+<h2 id="parameter">Start parameters</h2>
+<table>
+  <tr><th>Call</th><th>Effect</th></tr>
+  <tr><td><code>ErgoWattControl.exe</code></td><td>Normal operation with the cockpit.</td></tr>
+  <tr><td><code>-demo [file]</code></td><td>Demo without an ergometer (like “Device: Demo” in the settings): a simulated rider pedals at about 75 RPM. With a GPX file this route starts at once, with a recording or program this one is replayed.</td></tr>
+  <tr><td><code>-main</code></td><td>Starts on the main screen instead of the rider’s monitor (can be combined with <code>-demo</code>).</td></tr>
+  <tr><td><code>-help</code></td><td>Shows the parameters.</td></tr>
+</table>
+
+<h2 id="probleme">When something doesn’t work</h2>
+<h3>“Connecting …” doesn’t go away</h3>
+<ul>
+  <li>Is the ergometer switched on and the cable on the right port? <b>Test connection</b> in the settings.</li>
+  <li>After a cockpit reset the app connects again by itself.</li>
+</ul>
+<h3>Graph and countdown stop now and then</h3>
+<p>If the cockpit sends no data for a few seconds, the graph draws nothing, the numbers stand still and the countdown to the next change stops (gaps over 5 s don’t count as program time ridden). At the bottom right “no answer – trying again …” is shown briefly, then the app connects again by itself. Single missing answers it asks for again at once – you don’t notice those.</p>
+<ul>
+  <li><b>Windows update waiting for a restart:</b> if an update is waiting for a restart – especially a driver for ports (e.g. “Intel Ports Driver Update”) –, old and new driver versions often run mixed, and Windows works in the background. That can cause exactly such dropouts on the serial port. Restart the PC before training.</li>
+  <li><b>Cable and adapter:</b> connectors firm? With a USB-RS232 adapter try another USB port, preferably directly on the PC rather than on a hub.</li>
+  <li><b>What happened</b> is in the log <code>ErgoWattControl.log</code>: “Cockpit connection … lost” with the cause, “reconnected after … s” and “answered after … retry/retries”, “Reply does not match request” (a telegram out of step, discarded and asked for again) and “Cockpit in program … instead of free training” (after a cockpit reset the app sets it up again; if that fails three times in a row it reconnects) – with the time of day, so dropouts can be compared with the ride.</li>
+  <li>If odd behaviour persists (e.g. an export that suddenly fails), restarting the app often helps.</li>
+</ul>
+<h3>The power doesn’t arrive / ▲ next to RPM</h3>
+<p>The eddy-current brake can only hold a power within a certain cadence range (blue-grey area in the graph). At high power you have to pedal faster – above 250 W at least 60 RPM, above 500 W at least 100 RPM.</p>
+<h3>A route is too hard</h3>
+<p>Lower the gradient factor (e.g. 50 %), choose a lower gear or switch to MTB gearing. The power is capped at the power limit in any case.</p>
+<h3>A file can’t be loaded</h3>
+<p>The message gives the reason; the full details are in the log <code>ErgoWattControl.log</code> (in <code>%AppData%\ErgoWattControl</code>, next to the exe when used portably).</p>
+
+</main>
+</div>
+<div id="zoom" title="Click or Esc closes"><img alt=""></div>
+<script>
+  // Click on a screenshot: show it full size over the page; a click or Esc closes it (works in the help window,
+  // which has no back button).
+  (function () {
+    const zoom = document.getElementById('zoom'), big = zoom.querySelector('img');
+    document.querySelectorAll('figure img').forEach(img => img.addEventListener('click', () => {
+      big.src = img.src; big.alt = img.alt; zoom.classList.add('open');
+    }));
+    zoom.addEventListener('click', () => zoom.classList.remove('open'));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') zoom.classList.remove('open'); });
+  })();
+
+  // Marks the section being read in the table of contents: the last heading that has scrolled past the top,
+  // or the last section once the page is scrolled to the end (short final sections never reach the top).
+  (function () {
+    const links = [...document.querySelectorAll('nav a')];
+    const sections = links.map(a => document.getElementById(a.getAttribute('href').slice(1)));
+    let current = null;
+    function update() {
+      let index = 0;
+      sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= 120) index = i; });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) index = sections.length - 1;
+      const link = links[index];
+      if (link === current) return;
+      current?.classList.remove('active');
+      link.classList.add('active');
+      current = link;
+      // Keep the marked entry visible in the side bar – scrolling only the side bar, never the page.
+      const nav = link.parentElement;
+      if (link.offsetTop < nav.scrollTop) nav.scrollTop = link.offsetTop;
+      else if (link.offsetTop + link.offsetHeight > nav.scrollTop + nav.clientHeight) nav.scrollTop = link.offsetTop + link.offsetHeight - nav.clientHeight;
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    window.addEventListener('hashchange', update);
+    update();
+  })();
+</script>
+</body>
+</html>

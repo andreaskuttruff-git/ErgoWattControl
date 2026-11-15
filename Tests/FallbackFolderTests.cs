@@ -82,6 +82,26 @@ public class FallbackFolderTests
     }
 
     [Fact]
+    public void RecordingFiles_AlsoFindRecordingsInTheFoldersOfVersion1()
+    {
+        // v1.x wrote to "Aufzeichnungen" (default and fallback); after the update those rides must still be listed.
+        var settings = new AppSettings { RecordingDirectory = TestFolder.New("gewaehlt") };
+        var old = AppPaths.OldRecordingFolders[1];
+        Directory.CreateDirectory(old);
+        var file = Path.Combine(old, "Alt_aus_Ersatzordner.json");
+        File.WriteAllText(file, "{}");
+        try
+        {
+            Assert.Contains(file, settings.RecordingFiles("*.json"));
+            Assert.DoesNotContain(old, settings.RecordingFolders()); // nothing new goes there
+        }
+        finally
+        {
+            File.Delete(file);
+        }
+    }
+
+    [Fact]
     public void RecordingFiles_FindRecordingsInAllFolders_AndSkipBlockedOnes()
     {
         var settings = new AppSettings { RecordingDirectory = Blocked() };

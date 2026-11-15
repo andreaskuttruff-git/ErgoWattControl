@@ -4,7 +4,8 @@
     "en": "S00 Ramp test (find your FTP)"
   },
   "Description": {
-    "de": "5 min Einfahren bei 100 W, danach jede Minute +20 W. Fahre bis zur Erschöpfung und brich ab, wenn du die Trittfrequenz nicht mehr halten kannst.\n\nAuswertung: FTP ≈ 75 % der letzten Stufe, die du eine volle Minute gehalten hast. Danach die S-Programme mit der nächstgelegenen FTP-Stufe wählen.\n\nDie FTP (Functional Threshold Power) ist die Leistung, die du etwa eine Stunde halten kannst."
+    "de": "5 min Einfahren bei 100 W, danach jede Minute +20 W. Fahre bis zur Erschöpfung und brich ab, wenn du die Trittfrequenz nicht mehr halten kannst.\n\nAuswertung: FTP ≈ 75 % der letzten Stufe, die du eine volle Minute gehalten hast. Danach die S-Programme mit der nächstgelegenen FTP-Stufe wählen.\n\nDie FTP (Functional Threshold Power) ist die Leistung, die du etwa eine Stunde halten kannst.",
+    "en": "5 min warm-up at 100 W, then +20 W every minute. Ride to exhaustion and stop when you can no longer hold the cadence.\n\nResult: FTP ≈ 75 % of the last step you held for a full minute. Then choose the S programs with the nearest FTP level.\n\nThe FTP (Functional Threshold Power) is the power you can hold for about an hour."
   },
   "Profile": [
     [0, 100],

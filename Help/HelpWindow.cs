@@ -4,7 +4,7 @@ using Microsoft.Web.WebView2.WinForms;
 namespace ErgoWattControl;
 
 /// <summary>
-/// The help (Hilfe.html with its images, embedded in the exe) in a window of its own, shown with WebView2. The window
+/// The help (Help.de.html / Help.en.html with its images, embedded in the exe) in the language of the app, in a window of its own, shown with WebView2. The window
 /// runs on its own UI thread so it stays usable while a modal dialog is open; F1 in a dialog jumps to that dialog's
 /// section. Without the WebView2 runtime the help opens in the default browser instead.
 /// </summary>
@@ -12,7 +12,10 @@ public static class HelpWindow
 {
     // Never resolved on the network: every request to this host is answered from the embedded resources.
     private const string Host = "https://hilfe.ergowattcontrol.example/";
-    private const string ResourcePrefix = "Hilfe/";
+    private const string ResourcePrefix = "Help/";
+
+    /// <summary>The help page in the language of the user interface (e.g. Help.en.html).</summary>
+    private static string Page => L.T("Help_PageUrl");
 
     private static readonly object Gate = new();
     private static Form? _form;          // set once the window has a handle
@@ -29,7 +32,7 @@ public static class HelpWindow
         };
 
     /// <param name="owner">The help opens on this window's monitor.</param>
-    /// <param name="section">Anchor in Hilfe.html, e.g. "strecke".</param>
+    /// <param name="section">Anchor in the help page (the same in every language), e.g. "strecke".</param>
     public static void Show(Control? owner, string section)
     {
         if (!RuntimeAvailable())
@@ -132,7 +135,7 @@ public static class HelpWindow
             return;
         string section;
         lock (Gate) { section = _section; }
-        var page = Host + "Hilfe.html";
+        var page = Host + Page;
         if (core.Source.StartsWith(page, StringComparison.OrdinalIgnoreCase))
             _ = core.ExecuteScriptAsync($"document.getElementById('{section}')?.scrollIntoView()");
         else
@@ -180,14 +183,14 @@ public static class HelpWindow
     {
         try
         {
-            var folder = Path.Combine(Path.GetTempPath(), "ErgoWattControl-Hilfe");
+            var folder = Path.Combine(Path.GetTempPath(), "ErgoWattControl-Help");
             foreach (var name in typeof(HelpWindow).Assembly.GetManifestResourceNames().Where(n => n.StartsWith(ResourcePrefix, StringComparison.Ordinal)))
             {
                 var file = Path.Combine(folder, name[ResourcePrefix.Length..].Replace('/', Path.DirectorySeparatorChar));
                 Directory.CreateDirectory(Path.GetDirectoryName(file)!);
                 File.WriteAllBytes(file, Resource(name)!);
             }
-            OpenUrl(Path.Combine(folder, "Hilfe.html"));
+            OpenUrl(Path.Combine(folder, Page));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

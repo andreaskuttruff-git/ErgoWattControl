@@ -4,7 +4,8 @@
     "en": "P27 Endurance II (medium)"
   },
   "Description": {
-    "de": "Lange Ausdauereinheit mit eingestreuten Spitzen, 80 min, bis 500 W.\n\nHandbuch: mittlere Ausdauerbelastung."
+    "de": "Lange Ausdauereinheit mit eingestreuten Spitzen, 80 min, bis 500 W.\n\nHandbuch: mittlere Ausdauerbelastung.",
+    "en": "Long endurance session with peaks in between, 80 min, up to 500 W.\n\nManual: medium endurance load."
   },
   "Profile": [
     [0, 65],

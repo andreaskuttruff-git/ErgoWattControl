@@ -1,20 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://andreaskuttruff-git.github.io/ErgoWattControl/Schema/TrainingProgram.schema.json",
-  "title": "ErgoWattControl – Trainingsprogramm",
-  "description": "Ein wattgesteuertes Trainingsprogramm für ErgoWattControl. Eigene Programme in den Ordner CustomPrograms legen; die App zeigt sie unter ☰ → Trainingsprogramm starten … an. Mit \"$schema\": \"./TrainingProgram.schema.json\" in der Datei prüfen Editoren wie VS Code das Programm beim Schreiben.",
+  "title": "ErgoWattControl – training program / Trainingsprogramm",
+  "description": "A power-controlled training program for ErgoWattControl. Put custom programs into the folder CustomPrograms; the app lists them under ☰ → Start a training program … With \"$schema\": \"./TrainingProgram.schema.json\" in the file, editors such as VS Code check the program while you write. — Ein wattgesteuertes Trainingsprogramm für ErgoWattControl. Eigene Programme in den Ordner CustomPrograms legen; die App zeigt sie unter ☰ → Trainingsprogramm starten … an. Mit \"$schema\": \"./TrainingProgram.schema.json\" in der Datei prüfen Editoren wie VS Code das Programm beim Schreiben.",
   "type": "object",
   "required": [
-    "Name",
-    "Profile"
+    "Name"
   ],
   "properties": {
     "$schema": {
-      "description": "Verweis auf dieses Schema, damit der Editor prüfen und Vorschläge machen kann. Die App ignoriert das Feld.",
+      "description": "Reference to this schema, so the editor can check and suggest. The app ignores the field. — Verweis auf dieses Schema, damit der Editor prüfen und Vorschläge machen kann. Die App ignoriert das Feld.",
       "type": "string"
     },
     "Name": {
-      "description": "Name in der Programmliste, z. B. \"Mein Intervall 6×2 min\". Ein Text für alle Sprachen oder ein Text je Sprache. Leer: der Dateiname.",
+      "description": "Name in the program list, e.g. \"My intervals 6×2 min\". One text for every language or one text per language. Empty: the file name. — Name in der Programmliste, z. B. \"Mein Intervall 6×2 min\". Ein Text für alle Sprachen oder ein Text je Sprache. Leer: der Dateiname.",
       "oneOf": [
         {
           "type": "string",
@@ -22,7 +21,7 @@
         },
         {
           "type": "object",
-          "description": "Ein Text je Sprache, Schlüssel ist der zweibuchstabige Sprachcode, z. B. { \"de\": \"…\", \"en\": \"…\" }. Die App zeigt die Sprache der Oberfläche, sonst Englisch, sonst Deutsch.",
+          "description": "One text per language, key = two-letter language code, e.g. { \"de\": \"…\", \"en\": \"…\" }. The app shows the language of its user interface, otherwise English, otherwise German. — Ein Text je Sprache, Schlüssel ist der zweibuchstabige Sprachcode. Die App zeigt die Sprache der Oberfläche, sonst Englisch, sonst Deutsch.",
           "patternProperties": {
             "^[a-z]{2}$": {
               "type": "string",
@@ -35,14 +34,14 @@
       ]
     },
     "Description": {
-      "description": "Text im Auswahldialog: Aufbau, Ziel, Hinweise. Absätze mit \\n\\n. Ein Text für alle Sprachen oder ein Text je Sprache.",
+      "description": "Text in the selection dialog: structure, goal, hints. Paragraphs with \n\n. One text for every language or one text per language. — Text im Auswahldialog: Aufbau, Ziel, Hinweise. Absätze mit \n\n. Ein Text für alle Sprachen oder ein Text je Sprache.",
       "oneOf": [
         {
           "type": "string"
         },
         {
           "type": "object",
-          "description": "Ein Text je Sprache, Schlüssel ist der zweibuchstabige Sprachcode, z. B. { \"de\": \"…\", \"en\": \"…\" }. Die App zeigt die Sprache der Oberfläche, sonst Englisch, sonst Deutsch.",
+          "description": "One text per language, key = two-letter language code, e.g. { \"de\": \"…\", \"en\": \"…\" }. The app shows the language of its user interface, otherwise English, otherwise German. — Ein Text je Sprache, Schlüssel ist der zweibuchstabige Sprachcode. Die App zeigt die Sprache der Oberfläche, sonst Englisch, sonst Deutsch.",
           "patternProperties": {
             "^[a-z]{2}$": {
               "type": "string"
@@ -54,20 +53,20 @@
       ]
     },
     "Profile": {
-      "description": "Leistungsverlauf als Liste von [Sekunde, Watt]. Die Leistung eines Punkts gilt bis zum nächsten; der letzte Punkt markiert das Ende. Beispiel: [[0, 80], [300, 150], [600, 80], [900, 80]] = 5 min 80 W, 5 min 150 W, 5 min 80 W.",
+      "description": "Power profile as a list of [second, watts]. The power of a point holds until the next one; the last point marks the end. Example: [[0, 80], [300, 150], [600, 80], [900, 80]] = 5 min 80 W, 5 min 150 W, 5 min 80 W. — Leistungsverlauf als Liste von [Sekunde, Watt]. Die Leistung eines Punkts gilt bis zum nächsten; der letzte Punkt markiert das Ende.",
       "type": "array",
       "minItems": 2,
       "items": {
-        "description": "[Sekunde ab Start, Watt]. Die Sekunden müssen von 0 an steigen.",
+        "description": "[second from the start, watts]. The seconds must rise from 0. — [Sekunde ab Start, Watt]. Die Sekunden müssen von 0 an steigen.",
         "type": "array",
         "prefixItems": [
           {
-            "description": "Sekunde ab Start (der erste Punkt hat 0).",
+            "description": "Second from the start (the first point has 0). — Sekunde ab Start (der erste Punkt hat 0).",
             "type": "integer",
             "minimum": 0
           },
           {
-            "description": "Leistung in Watt. Das Cockpit regelt ab 25 W; die Wattgrenze aus den Einstellungen begrenzt nach oben.",
+            "description": "Power in watts. The cockpit controls from 25 W; the power limit from the settings caps it. — Leistung in Watt. Das Cockpit regelt ab 25 W; die Wattgrenze aus den Einstellungen begrenzt nach oben.",
             "type": "integer",
             "minimum": 0,
             "maximum": 800
@@ -76,7 +75,49 @@
         "minItems": 2,
         "maxItems": 2
       }
+    },
+    "Beschreibung": {
+      "description": "Deprecated (ErgoWattControl 1.x): use \"Description\". Still read by the app. — Veraltet (ErgoWattControl 1.x): bitte \"Description\" verwenden. Die App liest es weiterhin.",
+      "deprecated": true,
+      "type": "string"
+    },
+    "Profil": {
+      "description": "Deprecated (ErgoWattControl 1.x): use \"Profile\". Still read by the app. — Veraltet (ErgoWattControl 1.x): bitte \"Profile\" verwenden. Die App liest es weiterhin.",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "description": "[second from the start, watts]. The seconds must rise from 0. — [Sekunde ab Start, Watt]. Die Sekunden müssen von 0 an steigen.",
+        "type": "array",
+        "prefixItems": [
+          {
+            "description": "Second from the start (the first point has 0). — Sekunde ab Start (der erste Punkt hat 0).",
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "description": "Power in watts. The cockpit controls from 25 W; the power limit from the settings caps it. — Leistung in Watt. Das Cockpit regelt ab 25 W; die Wattgrenze aus den Einstellungen begrenzt nach oben.",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 800
+          }
+        ],
+        "minItems": 2,
+        "maxItems": 2
+      },
+      "deprecated": true
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "required": [
+        "Profile"
+      ]
+    },
+    {
+      "required": [
+        "Profil"
+      ]
+    }
+  ]
 }

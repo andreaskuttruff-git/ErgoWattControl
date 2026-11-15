@@ -7,6 +7,9 @@
     <!-- Runtime installer; Setup\build-setup.ps1 downloads it from Microsoft. -->
     <DotNetRuntime Condition="'$(DotNetRuntime)' == ''">$(MSBuildThisFileDirectory)..\redist\windowsdesktop-runtime-win-x64.exe</DotNetRuntime>
     <DefineConstants>Version=$(Version);DotNetRuntime=$(DotNetRuntime)</DefineConstants>
+    <!-- Theme.en.wxl / Theme.de.wxl are the texts of the setup window, loaded at run time by the bootstrapper
+         (Bundle.wxs); they are not localizations of the build itself (with two of them their ids would clash). -->
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.2" />

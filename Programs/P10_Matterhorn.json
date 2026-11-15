@@ -4,7 +4,8 @@
     "en": "P10 Matterhorn"
   },
   "Description": {
-    "de": "Bergprofil mit langem, steiler werdendem Anstieg, 30 min, maximal 270 W.\n\nHandbuch: für trainierte Personen."
+    "de": "Bergprofil mit langem, steiler werdendem Anstieg, 30 min, maximal 270 W.\n\nHandbuch: für trainierte Personen.",
+    "en": "Mountain profile with a long climb that gets steeper, 30 min, max. 270 W.\n\nManual: for trained persons."
   },
   "Profile": [
     [0, 105],

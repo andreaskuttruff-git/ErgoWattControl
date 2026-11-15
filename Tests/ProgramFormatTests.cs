@@ -104,7 +104,7 @@ public class ProgramFormatTests
     }
 
     [Fact]
-    public void ShippedPrograms_HaveGermanAndEnglishNames_AndEnglishFileNames()
+    public void ShippedPrograms_HaveGermanAndEnglishTexts_AndEnglishFileNames()
     {
         ProgramFiles.Install();
         var programs = ProgramFiles.ProgramsIn(ProgramFiles.Folder).ToList();
@@ -116,7 +116,8 @@ public class ProgramFormatTests
             Assert.Contains("de", program.Name.Languages);
             Assert.Contains("en", program.Name.Languages);
             Assert.NotEqual(program.Name.In("de"), "");
-            Assert.False(program.Description.IsEmpty, file);
+            Assert.Contains("de", program.Description.Languages);
+            Assert.Contains("en", program.Description.Languages);
             // Language-neutral file names: plain ASCII, no German words with umlauts.
             Assert.Matches(@"^[PS]\d\d(_FTP\d{3})?_[A-Za-z0-9_\-]+\.json$", file);
             // Code and FTP level are the same in every language.

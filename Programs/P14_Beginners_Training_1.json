@@ -4,7 +4,8 @@
     "en": "P14 Beginners Training 1"
   },
   "Description": {
-    "de": "Einsteigerprogramm, 18 min, maximal 125 W.\n\nHandbuch: für Jugendliche bis 14 Jahre.\n\nHinweis: Die Grafik im Handbuch liegt etwas über der angegebenen Maximalleistung; das Profil ist bei 125 W begrenzt."
+    "de": "Einsteigerprogramm, 18 min, maximal 125 W.\n\nHandbuch: für Jugendliche bis 14 Jahre.\n\nHinweis: Die Grafik im Handbuch liegt etwas über der angegebenen Maximalleistung; das Profil ist bei 125 W begrenzt.",
+    "en": "Beginners’ program, 18 min, max. 125 W.\n\nManual: for young people up to 14 years.\n\nNote: the chart in the manual lies slightly above the stated maximum power; the profile is capped at 125 W."
   },
   "Profile": [
     [0, 60],

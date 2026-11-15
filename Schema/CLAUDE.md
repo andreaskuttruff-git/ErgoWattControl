@@ -1,73 +1,75 @@
-# Eigene Trainingsprogramme für ErgoWattControl
+# Custom training programs for ErgoWattControl
 
-Dieser Ordner (`CustomPrograms`) enthält eigene Trainingsprogramme für **ErgoWattControl**, eine App, die ein
-Daum-Ergometer (ergo_bike 8008 TRS) über die Leistung (Watt) steuert. Jede `*.json`-Datei hier – außer
-`*.schema.json` – erscheint in der App unter **☰ → Trainingsprogramm starten …** mit ★ oben in der Liste.
-Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist nicht nötig.
+This folder (`CustomPrograms`) holds custom training programs for **ErgoWattControl**, an app that controls a Daum
+ergometer (ergo_bike 8008 TRS) by power (watts). Every `*.json` file here – except `*.schema.json` – appears in the
+app under **☰ → Start a training program …** (German: *Trainingsprogramm starten*) with ★ at the top of the list.
+The app reads the folder again each time the dialog opens; no restart is needed.
 
-## Aufgabe: ein Programm erstellen
+**Language:** answer the rider in the language they write in. Write `Name` and `Description` in that language; if
+they ask for it (or the app is used in both languages), write both German and English – see below.
 
-1. Neue Datei `<Name>.json` in **diesem** Ordner anlegen (nicht im Ordner `Programs` – den stellt die App beim Start
-   wieder her). Dateiname ohne Leerzeichen und Umlaute, z. B. `Intervall_6x2min.json`; er erscheint im Dateinamen
-   der späteren Aufzeichnung.
-2. Inhalt nach `TrainingProgram.schema.json` (JSON-Schema, maßgeblich) – Vorlage: `Example_Custom_Program.json`.
-3. Datei als UTF-8 speichern.
+## Task: create a program
+
+1. Create a new file `<name>.json` in **this** folder (not in the folder `Programs` – the app restores that one at
+   start). File name without spaces and umlauts, e.g. `Intervals_6x2min.json`; it becomes part of the file name of
+   the recordings later.
+2. Content according to `TrainingProgram.schema.json` (JSON schema, authoritative) – template:
+   `Example_Custom_Program.json`.
+3. Save the file as UTF-8.
 
 ```json
 {
   "$schema": "./TrainingProgram.schema.json",
-  "Name": "Intervall 6×2 min – FTP 150 W",
-  "Description": "Aufbau in einem Satz.\n\nZiel: …\n\nHinweis: …",
+  "Name": "Intervals 6×2 min – FTP 150 W",
+  "Description": "Structure in one sentence.\n\nGoal: …\n\nNote: …",
   "Profile": [ [0, 70], [300, 140], [420, 80], [540, 140], [660, 70], [900, 70] ]
 }
 ```
 
-`Name` und `Description` sind entweder **ein Text** (gilt für alle Sprachen) oder **ein Text je Sprache** – dann
-zeigt die App den Text in der Sprache ihrer Oberfläche, sonst Englisch, sonst Deutsch:
+`Name` and `Description` are either **one text** (used in every language) or **one text per language** (two-letter
+codes) – the app then shows the language of its user interface, otherwise English, otherwise German:
 
 ```json
   "Name": { "de": "Intervall 6×2 min", "en": "Intervals 6×2 min" },
   "Description": { "de": "Aufbau …", "en": "Structure …" },
 ```
 
-Wünscht der Fahrer nichts anderes, genügt ein Text in seiner Sprache; auf Wunsch beide Sprachen schreiben.
+## Rules for `Profile`
 
-## Regeln für `Profile`
+- A list of points `[second, watts]`, both integers. The power of a point holds **until the next point**; the **last
+  point marks the end** (its second = total duration, watts = as the point before).
+- First point at second **0**, seconds **strictly increasing**, watts **0–800**. The cockpit controls from 25 W; the
+  power limit from the settings caps it as well.
+- Round watts to **5 W** – the app changes power in steps of 5 W.
+- Ramps as steps (e.g. one point every 15–60 s); no points every second are needed.
+- Check the total duration: last second / 60 = minutes.
 
-- Liste von Punkten `[Sekunde, Watt]`, beides ganze Zahlen. Die Leistung eines Punkts gilt **bis zum nächsten
-  Punkt**; der **letzte Punkt markiert das Ende** (seine Sekunde = Gesamtdauer, Watt = wie der Punkt davor).
-- Erster Punkt bei Sekunde **0**, Sekunden **streng steigend**, Watt **0–800**. Das Cockpit regelt ab 25 W; die
-  Wattgrenze aus den Einstellungen begrenzt zusätzlich nach oben.
-- Watt auf **5 W** runden – die App verstellt in 5-W-Schritten.
-- Rampen als Stufen (z. B. alle 15–60 s ein Punkt), keine sekündlichen Punkte nötig.
-- Gesamtdauer prüfen: letzte Sekunde / 60 = Minuten.
+## Conventions for the content
 
-## Inhaltliche Konventionen
+- **Name** (max. 80 characters): short and unique; for FTP-based programs state the FTP, e.g. `– FTP 150 W`.
+- **Description**: structure (blocks, duration, power in watts and % FTP), goal, hints (e.g. cadence); paragraphs
+  with `\n\n`. Give the source if the program follows a training method or study.
+- Structure: warm-up (5–13 min rising, about 45–75 % FTP), main part, cool-down (3–10 min, about 40–50 % FTP).
+- **FTP** = the power one can hold for about an hour (ramp test S00 in the app). Usual ranges: endurance 55–75 %,
+  sweet spot 88–94 %, threshold 95–105 %, VO₂max 106–120 %.
+- The app cannot target a heart rate and cannot do true all-out sprints (the brake holds a fixed power).
+- While riding, the rider shifts the whole profile with + / − in steps of 5 W – so a program doesn’t have to exist
+  for every FTP; create variants anyway if wanted (one file per FTP).
 
-- **Name** (max. 80 Zeichen): kurz und eindeutig; bei FTP-bezogenen Programmen die FTP nennen, z. B. `– FTP 150 W`.
-- **Description**: Aufbau (Blöcke, Dauer, Leistung in Watt und % FTP), Ziel, Hinweise (z. B. Trittfrequenz);
-  Absätze mit `\n\n`. Quelle angeben, wenn das Programm einer Trainingsmethode oder Studie folgt.
-- Aufbau: Einfahren (5–13 min ansteigend, ca. 45–75 % FTP), Hauptteil, Ausfahren (3–10 min, ca. 40–50 % FTP).
-- **FTP** = Leistung, die man etwa eine Stunde halten kann (Rampentest S00 in der App). Übliche Bereiche:
-  Grundlage 55–75 %, Sweet Spot 88–94 %, Schwelle 95–105 %, VO₂max 106–120 %.
-- Die App kann keinen Puls vorgeben und keine echten Maximalsprints (die Bremse hält eine feste Leistung).
-- Beim Fahren verschiebt der Fahrer das ganze Profil mit + / − in 5-W-Schritten – ein Programm muss also nicht
-  für jede FTP einzeln existieren; bei Bedarf trotzdem Varianten anlegen (eine Datei je FTP).
+## Checking
 
-## Prüfen
+- Validate against the schema (e.g. VS Code with the `$schema` line, or `python -m jsonschema`).
+- In the app: a faulty file appears in the dialog under “Not readable” (German: *Nicht lesbar*) with the reason (e.g.
+  “Profile, point 3: second 200 must be greater than at the point before” or the line of the JSON error).
+- For the selected program the dialog shows the profile as a chart, duration, average and maximum power.
 
-- Gegen das Schema validieren (z. B. VS Code mit der `$schema`-Zeile, oder `python -m jsonschema`).
-- In der App: eine fehlerhafte Datei erscheint im Dialog unter „Nicht lesbar“ mit Grund (z. B. „Profile, Punkt 3:
-  Sekunde 200 muss größer sein als beim Punkt davor“ oder die Zeile des JSON-Fehlers).
-- Der Dialog zeigt zum ausgewählten Programm den Verlauf als Grafik, Dauer, Ø- und Maximalleistung.
+## Older files
 
-## Ältere Dateien
+The app still reads programs with the fields `Beschreibung` and `Profil` (up to ErgoWattControl 1.5); write new
+programs with `Description` and `Profile`.
 
-Programme mit den Feldern `Beschreibung` und `Profil` (bis ErgoWattControl 1.5) liest die App weiterhin; neue
-Programme bitte mit `Description` und `Profile` schreiben.
+## Don’t change
 
-## Nicht ändern
-
-`TrainingProgram.schema.json`, `CLAUDE.md` und `AGENTS.md` (gleicher Inhalt, für Claude Code bzw. Codex und
-andere Assistenten) schreibt die App beim Start neu, falls sie abweichen – Änderungen daran gehen verloren. Alles
-andere in diesem Ordner fasst die App nicht an.
+The app rewrites `TrainingProgram.schema.json`, `CLAUDE.md` and `AGENTS.md` (same content, for Claude Code and for
+Codex and other assistants) at start if they differ – changes to them are lost. It never touches anything else in
+this folder.

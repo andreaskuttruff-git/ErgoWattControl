@@ -1,7 +1,7 @@
 namespace ErgoWattControl;
 
 /// <summary>
-/// The training programs ship inside the exe. At start they are written to the Programme folder wherever
+/// The training programs ship inside the exe. At start they are written to the Programs folder wherever
 /// a file is missing or differs from the shipped one (a changed file is overwritten). Other files there are left alone.
 /// The rider's own programs belong in <see cref="CustomFolder"/>: the app never overwrites anything there except the
 /// schema file and the CLAUDE.md / AGENTS.md, and puts an example in once, when it creates the folder.
@@ -14,7 +14,7 @@ public static class ProgramFiles
     /// <summary>The JSON schema (like an XSD for XML) that describes a program file; editors validate against it.</summary>
     public const string SchemaFileName = "TrainingProgram.schema.json";
 
-    /// <summary>Documents\ErgoWattControl\Programme, or next to the exe in portable mode.</summary>
+    /// <summary>Documents\ErgoWattControl\Programs, or next to the exe in portable mode (v1.x used "Programme").</summary>
     public static string Folder => Path.Combine(AppPaths.DataFolder, "Programs");
 
     /// <summary>The rider's own programs: Documents\ErgoWattControl\CustomPrograms, or next to the exe in portable mode.</summary>

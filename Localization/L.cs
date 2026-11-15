@@ -94,6 +94,12 @@ public static class Language
     public const string Auto = "auto";
     public const string PseudoCode = "pseudo";
 
+    /// <summary>
+    /// The display language of Windows (the user's, which a language pack may set apart from the language Windows was
+    /// installed in), taken before <see cref="Apply"/> first changes the app's: the class is set up on that first call.
+    /// </summary>
+    private static readonly CultureInfo Windows = CultureInfo.CurrentUICulture;
+
     /// <summary>The languages the app has texts for; a new one is a Strings.&lt;code&gt;.resx plus an entry here.</summary>
     public static readonly IReadOnlyList<(string Code, string Name)> Available =
     [
@@ -104,8 +110,15 @@ public static class Language
     /// <summary>The language a setting stands for: an available one, or for "auto"/unknown the Windows display language if available, else English.</summary>
     public static CultureInfo Resolve(string? setting)
     {
-        var code = Available.Any(l => l.Code == setting) ? setting! : CultureInfo.InstalledUICulture.TwoLetterISOLanguageName;
+        var code = Available.Any(l => l.Code == setting) ? setting! : Windows.TwoLetterISOLanguageName;
         return CultureInfo.GetCultureInfo(Available.Any(l => l.Code == code) ? code : "en");
+    }
+
+    /// <summary>A setting as stored: "auto", an available language or "pseudo"; anything else (e.g. "fr", "DE", null) means "auto".</summary>
+    public static string Normalize(string? setting)
+    {
+        var code = setting?.Trim().ToLowerInvariant();
+        return code == PseudoCode || Available.Any(l => l.Code == code) ? code! : Auto;
     }
 
     /// <summary>Sets the language of the user interface for the whole app (all threads).</summary>

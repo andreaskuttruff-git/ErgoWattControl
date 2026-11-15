@@ -4,7 +4,8 @@
     "en": "P44 Cool-down hard"
   },
   "Description": {
-    "de": "Ausfahren, 20 min, maximal 150 W.\n\nHandbuch: für Sportler mit hohem Leistungstraining; ermöglicht beschleunigte Regeneration nach schwerster Belastung."
+    "de": "Ausfahren, 20 min, maximal 150 W.\n\nHandbuch: für Sportler mit hohem Leistungstraining; ermöglicht beschleunigte Regeneration nach schwerster Belastung.",
+    "en": "Cool-down, 20 min, max. 150 W.\n\nManual: for athletes in high-performance training; speeds up recovery after the hardest loads."
   },
   "Profile": [
     [0, 50],

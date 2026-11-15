@@ -1,13 +1,14 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package Name="ErgoWattControl" Manufacturer="Andreas Kuttruff" Version="$(var.Version)"
-           UpgradeCode="d12a4843-43f4-4d37-b615-85604e51e07f" Scope="perUser" Language="1031" Codepage="1252">
-    <MajorUpgrade DowngradeErrorMessage="Eine neuere Version von ErgoWattControl ist bereits installiert." />
+           UpgradeCode="d12a4843-43f4-4d37-b615-85604e51e07f" Scope="perUser" Language="1033" Codepage="1252">
+    <!-- One MSI for every language: its few texts (shortcut tooltip, downgrade message) are English. -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of ErgoWattControl is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
     <Icon Id="AppIcon" SourceFile="$(var.AppDir)\ErgoWattControl.exe" />
     <Property Id="ARPPRODUCTICON" Value="AppIcon" />
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/andreaskuttruff-git/ErgoWattControl" />
-    <Property Id="ARPHELPLINK" Value="https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html" />
+    <Property Id="ARPHELPLINK" Value="https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html" />
     <!-- Desktop shortcut: on by default; the setup's checkbox passes DESKTOPSHORTCUT=0 to leave it out. -->
     <Property Id="DESKTOPSHORTCUT" Value="1" />
 
@@ -32,7 +33,7 @@
 
     <StandardDirectory Id="ProgramMenuFolder">
       <Component Id="StartMenuShortcut">
-        <Shortcut Id="StartMenuShortcut" Name="ErgoWattControl" Description="Steuerung für das Daum ergo_bike 8008 TRS"
+        <Shortcut Id="StartMenuShortcut" Name="ErgoWattControl" Description="Control for the Daum ergo_bike 8008 TRS"
                   Target="[INSTALLFOLDER]ErgoWattControl.exe" WorkingDirectory="INSTALLFOLDER" />
         <RegistryValue Root="HKCU" Key="Software\ErgoWattControl" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
       </Component>
@@ -40,7 +41,7 @@
 
     <StandardDirectory Id="DesktopFolder">
       <Component Id="DesktopShortcut" Condition="DESKTOPSHORTCUT = 1">
-        <Shortcut Id="DesktopShortcut" Name="ErgoWattControl" Description="Steuerung für das Daum ergo_bike 8008 TRS"
+        <Shortcut Id="DesktopShortcut" Name="ErgoWattControl" Description="Control for the Daum ergo_bike 8008 TRS"
                   Target="[INSTALLFOLDER]ErgoWattControl.exe" WorkingDirectory="INSTALLFOLDER" />
         <RegistryValue Root="HKCU" Key="Software\ErgoWattControl" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
       </Component>

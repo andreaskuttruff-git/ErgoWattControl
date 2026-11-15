@@ -4,7 +4,8 @@
     "en": "P02 Step test BAL (50 W)"
   },
   "Description": {
-    "de": "Stufentest nach BAL-Standard: Start mit 50 W, alle 3 Minuten +50 W bis 400 W (24 min). Fahre, solange du die Trittfrequenz halten kannst – die zuletzt geschaffte Stufe ist dein Testergebnis.\n\nHandbuch: für trainierte Personen."
+    "de": "Stufentest nach BAL-Standard: Start mit 50 W, alle 3 Minuten +50 W bis 400 W (24 min). Fahre, solange du die Trittfrequenz halten kannst – die zuletzt geschaffte Stufe ist dein Testergebnis.\n\nHandbuch: für trainierte Personen.",
+    "en": "Step test to the BAL standard: start at 50 W, +50 W every 3 minutes up to 400 W (24 min). Ride as long as you can hold the cadence – the last step you completed is your test result.\n\nManual: for trained persons."
   },
   "Profile": [
     [0, 50],

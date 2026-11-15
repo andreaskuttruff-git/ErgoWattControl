@@ -4,7 +4,8 @@
     "en": "P06 Pyramid low"
   },
   "Description": {
-    "de": "Die Leistung steigt stufenweise bis zur Spitze und fällt danach wieder ab, 19 min, maximal 115 W.\n\nHandbuch: für untrainierte Damen und Herren bis 35 Jahre.\n\nHinweis: Die Grafik im Handbuch liegt etwas über der angegebenen Maximalleistung; das Profil ist bei 115 W begrenzt."
+    "de": "Die Leistung steigt stufenweise bis zur Spitze und fällt danach wieder ab, 19 min, maximal 115 W.\n\nHandbuch: für untrainierte Damen und Herren bis 35 Jahre.\n\nHinweis: Die Grafik im Handbuch liegt etwas über der angegebenen Maximalleistung; das Profil ist bei 115 W begrenzt.",
+    "en": "The power rises step by step to the peak and then falls again, 19 min, max. 115 W.\n\nManual: for untrained women and men up to 35 years.\n\nNote: the chart in the manual lies slightly above the stated maximum power; the profile is capped at 115 W."
   },
   "Profile": [
     [0, 40],

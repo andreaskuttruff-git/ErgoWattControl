@@ -77,6 +77,22 @@ public class AppSettingsTests : IDisposable
     public void BuildFileName_FillsThePattern(string pattern, string? route, string expected) =>
         Assert.Equal(expected, AppSettings.BuildFileName(pattern, new DateTime(2026, 11, 14, 18, 5, 9), route));
 
+    [Fact]
+    public void BuildFileName_UsesTheGregorianDate_WhateverTheRegion()
+    {
+        var before = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture = System.Globalization.CultureInfo.GetCultureInfo("th-TH"); // Buddhist calendar
+            Assert.Equal("Training_2026-11-15_10-00-00",
+                AppSettings.BuildFileName("Training_{Date}_{Time}", new DateTime(2026, 11, 15, 10, 0, 0), null));
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentCulture = before;
+        }
+    }
+
     [Theory]
     [InlineData("  Lauf.json ", "Lauf")]
     [InlineData("Lauf.CSV", "Lauf")]

@@ -4,11 +4,14 @@
   <Bundle Name="ErgoWattControl" Manufacturer="Andreas Kuttruff" Version="$(var.Version)" IconSourceFile="..\..\ErgoWattControl.ico"
           UpgradeCode="97c66cd3-140f-4415-b845-6dabe92981f2"
           AboutUrl="https://github.com/andreaskuttruff-git/ErgoWattControl"
-          HelpUrl="https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html">
-    <!-- Own theme (Theme.xml/.wxl): German, with a screenshot, the desktop-shortcut option and the demo choice. -->
+          HelpUrl="https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html">
+    <!-- Own theme (Theme.xml) with a screenshot, the desktop-shortcut option and the demo choice. Texts in the Windows
+         language: English by default (Theme.en.wxl), German on a German Windows – the setup looks for <LCID>\thm.wxl
+         first (also for de-AT/de-CH, through their primary language 1031). -->
     <BootstrapperApplication>
-      <bal:WixStandardBootstrapperApplication Theme="hyperlinkLicense" ThemeFile="Theme.xml" LocalizationFile="Theme.wxl"
+      <bal:WixStandardBootstrapperApplication Theme="hyperlinkLicense" ThemeFile="Theme.xml" LocalizationFile="Theme.en.wxl"
                                               LicenseUrl="" SuppressOptionsUI="yes" />
+      <Payload SourceFile="Theme.de.wxl" Name="1031\thm.wxl" />
       <Payload SourceFile="startwindow.png" />
       <Payload SourceFile="..\..\ErgoWattControl.ico" Name="ErgoWattControl.ico" />
     </BootstrapperApplication>

@@ -4,7 +4,8 @@
     "en": "P01 Step test WHO (25 W)"
   },
   "Description": {
-    "de": "Stufentest nach WHO-Standard: Start mit 25 W, alle 2 Minuten +25 W bis 400 W (32 min). Fahre, solange du die Trittfrequenz halten kannst – die zuletzt geschaffte Stufe ist dein Testergebnis.\n\nHandbuch: Leistungstest 25 Watt / WHO-Standard."
+    "de": "Stufentest nach WHO-Standard: Start mit 25 W, alle 2 Minuten +25 W bis 400 W (32 min). Fahre, solange du die Trittfrequenz halten kannst – die zuletzt geschaffte Stufe ist dein Testergebnis.\n\nHandbuch: Leistungstest 25 Watt / WHO-Standard.",
+    "en": "Step test to the WHO standard: start at 25 W, +25 W every 2 minutes up to 400 W (32 min). Ride as long as you can hold the cadence – the last step you completed is your test result.\n\nManual: power test 25 watts / WHO standard."
   },
   "Profile": [
     [0, 25],

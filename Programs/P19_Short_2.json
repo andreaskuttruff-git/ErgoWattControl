@@ -4,7 +4,8 @@
     "en": "P19 Short 2"
   },
   "Description": {
-    "de": "Kurzprogramm mit Belastungsspitzen, 30 min, maximal 180 W.\n\nHandbuch: für trainierte Personen, die ihre Leistung zwischendurch testen wollen."
+    "de": "Kurzprogramm mit Belastungsspitzen, 30 min, maximal 180 W.\n\nHandbuch: für trainierte Personen, die ihre Leistung zwischendurch testen wollen.",
+    "en": "Short program with load peaks, 30 min, max. 180 W.\n\nManual: for trained persons who want to test their performance in between."
   },
   "Profile": [
     [0, 60],

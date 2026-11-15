@@ -4,7 +4,8 @@
     "en": "P11 Mount Everest"
   },
   "Description": {
-    "de": "Bergprofil mit dem längsten und höchsten Anstieg der Bergprogramme, 40 min, maximal 300 W.\n\nHandbuch: für trainierte Personen."
+    "de": "Bergprofil mit dem längsten und höchsten Anstieg der Bergprogramme, 40 min, maximal 300 W.\n\nHandbuch: für trainierte Personen.",
+    "en": "Mountain profile with the longest and highest climb of the mountain programs, 40 min, max. 300 W.\n\nManual: for trained persons."
   },
   "Profile": [
     [0, 90],

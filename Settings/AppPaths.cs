@@ -17,7 +17,7 @@ public static class AppPaths
         ? AppContext.BaseDirectory
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name);
 
-    /// <summary>Default parent of Aufzeichnungen\, GPX\ and Programme\.</summary>
+    /// <summary>Default parent of Recordings\, GPX\, Programs\ and CustomPrograms\.</summary>
     public static string DataFolder { get; private set; } = Portable
         ? AppContext.BaseDirectory
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Name);
@@ -47,6 +47,16 @@ public static class AppPaths
 
     /// <summary>Default folder for recordings below <see cref="DataFolder"/>.</summary>
     public static string DefaultRecordingFolder => Path.Combine(DataFolder, "Recordings");
+
+    /// <summary>
+    /// Default and fallback folder of v1.x ("Aufzeichnungen"): recordings may still lie there (e.g. ones a v1.5 had to
+    /// put into a fallback folder), so the lists look into them too; nothing new is written there.
+    /// </summary>
+    public static IReadOnlyList<string> OldRecordingFolders =>
+    [
+        Path.Combine(DataFolder, "Aufzeichnungen"),
+        Path.Combine(Path.GetDirectoryName(FallbackRecordingFolder)!, "Aufzeichnungen"),
+    ];
 
     /// <summary>Appends an error with its details to the log; never throws.</summary>
     public static void Log(string what, Exception ex)

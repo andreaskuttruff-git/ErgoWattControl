@@ -227,8 +227,11 @@ public partial class PseudoLocalizationTests
         return found;
     }
 
+    /// <summary>The dialogs; the ride view itself is sized to the monitor by the app, so it can't grow beyond it.</summary>
+    public static TheoryData<string> Dialogs => new(WindowFactories.Keys.Where(w => w != "Fahransicht"));
+
     [Theory]
-    [MemberData(nameof(Windows))]
+    [MemberData(nameof(Dialogs))]
     public void Window_FitsTheRideMonitor(string window)
     {
         var size = InPseudoWindow(window, form => form.Size);

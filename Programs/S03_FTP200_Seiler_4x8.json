@@ -4,7 +4,8 @@
     "en": "S03 Seiler 4×8 – FTP 200 W"
   },
   "Description": {
-    "de": "4 × 8 min bei 98 % FTP mit je 2 min Pause, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: VO₂max und Schwellenleistung. So hart, dass das letzte Intervall gerade noch gelingt.\n\nQuelle: Seiler et al. 2013 – im Vergleich von 4×4, 4×8 und 4×16 min brachten die 8-min-Intervalle die größten Zuwächse."
+    "de": "4 × 8 min bei 98 % FTP mit je 2 min Pause, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: VO₂max und Schwellenleistung. So hart, dass das letzte Intervall gerade noch gelingt.\n\nQuelle: Seiler et al. 2013 – im Vergleich von 4×4, 4×8 und 4×16 min brachten die 8-min-Intervalle die größten Zuwächse.",
+    "en": "4 × 8 min at 98 % FTP with 2 min recovery each, plus 13 min warm-up and 10 min cool-down.\n\nGoal: VO₂max and threshold power. So hard that you just manage the last interval.\n\nSource: Seiler et al. 2013 – comparing 4×4, 4×8 and 4×16 min, the 8-min intervals brought the largest gains."
   },
   "Profile": [
     [0, 90],

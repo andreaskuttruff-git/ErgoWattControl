@@ -134,6 +134,7 @@ Beim ersten Mal selbst anmelden – mit „Eingeloggt bleiben“ geht es danach 
   <data name="Help_Caption" xml:space="preserve"><value>Hilfe</value></data>
   <data name="Help_OpenFailed" xml:space="preserve"><value>Die Hilfe konnte nicht geöffnet werden:
 {0}</value></data>
+  <data name="Help_PageUrl" xml:space="preserve"><value>Help.de.html</value></data>
   <data name="Help_TargetFailed" xml:space="preserve"><value>Konnte nicht geöffnet werden:
 {0}
 {1}</value></data>
@@ -141,7 +142,7 @@ Beim ersten Mal selbst anmelden – mit „Eingeloggt bleiben“ geht es danach 
   <data name="Info_Folders" xml:space="preserve"><value>Einstellungen: {0}
 Daten: {1}</value></data>
   <data name="Info_HelpOnline" xml:space="preserve"><value>Hilfe online</value></data>
-  <data name="Info_HelpUrl" xml:space="preserve"><value>https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html</value></data>
+  <data name="Info_HelpUrl" xml:space="preserve"><value>https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html</value></data>
   <data name="Info_Portable" xml:space="preserve"><value>
 (portabel – alles neben der exe)</value></data>
   <data name="Info_Project" xml:space="preserve"><value>Projektseite auf GitHub</value></data>

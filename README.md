@@ -1,8 +1,10 @@
 # ErgoWattControl
 
-Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle (RS232, 9600 8N1) – als Ersatz für das Cockpit-Bedienteil und die Originalsoftware ergo_win 2003.
+🇩🇪 Deutsch · 🇬🇧 [English](README.en.md)
 
-📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Hilfe.html)** – mit Screenshots; in der App mit F1.
+Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle (RS232, 9600 8N1) – als Ersatz für das Cockpit-Bedienteil und die Originalsoftware ergo_win 2003. Die App spricht **Deutsch und Englisch** (☰ → Einstellungen → Sprache).
+
+📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – mit Screenshots; in der App mit F1.
 
 ⬇️ **[Download der aktuellen Version](https://github.com/andreaskuttruff-git/ErgoWattControl/releases/latest)** – **Setup** (installiert bei Bedarf die .NET 10 Desktop Runtime mit, dann die App für den angemeldeten Benutzer) oder **ZIP** zum Entpacken (braucht die [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)).
 
@@ -30,7 +32,8 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
   - `P01`–`P44`: die wattgesteuerten Festprogramme des 8008 TRS aus dem Handbuch (1–28, Cool-down 42–44)
   - `S00`–`S08`: Programme nach aktueller Trainingswissenschaft – Rampentest zur FTP-Bestimmung, Grundlage, 4×4, 4×8, 30/15, Unterschwelle, 10×1 min, 3×20 s, Schwellenblöcke 30 min, jeweils für FTP 150/200/250 W
   - Eigene Programme: JSON-Dateien im Ordner `CustomPrograms` (Dokumente\ErgoWattControl bzw. neben der exe), stehen mit ★ oben in der Liste; das Format beschreibt das JSON-Schema [`Schema/TrainingProgram.schema.json`](Schema/TrainingProgram.schema.json), Vorlage [`Example_Custom_Program.json`](Schema/Example_Custom_Program.json)
-- **Hilfe** für Fahrer in einem eigenen Fenster (WebView2): F1 öffnet sie beim Abschnitt zur aktuellen Ansicht bzw. zum offenen Dialog, ☰ → Hilfe am Anfang. `Hilfe.html` und `HelpPics\` sind in die exe eingebettet; ohne WebView2-Laufzeit öffnet sich die Hilfe im Browser
+- **Hilfe** für Fahrer in einem eigenen Fenster (WebView2): F1 öffnet sie beim Abschnitt zur aktuellen Ansicht bzw. zum offenen Dialog, ☰ → Hilfe am Anfang. `Help.de.html`, `Help.en.html` und `HelpPics\` sind in die exe eingebettet (die Seite in der Sprache der App); ohne WebView2-Laufzeit öffnet sich die Hilfe im Browser
+- **Sprachen:** Deutsch und Englisch; „Automatisch“ richtet sich nach Windows (ohne deutsches Windows Englisch). Zahlen und Datum folgen den Windows-Einstellungen.
 - **Demo-Modus** ohne Ergometer: in den Einstellungen „Gerät: Demo“ oder `ErgoWattControl.exe --demo [strecke.gpx]`
 - **Start auf dem Hauptbildschirm** statt auf dem Fahrer-Monitor: `ErgoWattControl.exe -main` (kombinierbar mit `-demo`)
 
@@ -48,14 +51,14 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 | `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
 | `Localization/` | Mehrsprachigkeit: `Strings.resx` (Englisch, auch für Sprachen ohne Übersetzung) und `Strings.de.resx` (Deutsch), Zugriff über `L.T`/`L.F`; `Language` setzt die Sprache aus der Einstellung beim Start; `LocalizedText` für Texte je Sprache in Programmdateien |
 | `Settings/` | `settings.json` (`AppSettings`) mit den Fahrwerten als eigener Gruppe (`RideValues`: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze – auch pro Fahrt im Startdialog änderbar), Einstellungsdialog |
-| `Tests/` | Unittests (xUnit): Vertragstests für jedes Gerät, `ErgoController`, Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, Trainingsmodi, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken |
+| `Tests/` | Unittests (xUnit): Vertragstests für jedes Gerät, `ErgoController`, Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, Trainingsmodi, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken, Texte in beiden Sprachen und Pseudolokalisierung |
 
 ## Weitere Geräte anbinden
 
 Die Oberfläche spricht nur mit `ErgoController`, der nur mit `IErgometer`. Für ein neues Gerät (z. B. Bluetooth-Trainer mit FTMS, ANT+ FE-C):
 
 1. Klasse in einem eigenen Ordner unter `Devices/` anlegen, die `IErgometer` implementiert: Verbindung im Hintergrund halten, `SetTargetPower` umsetzen, `DataReceived`/`StatusChanged` auslösen und in `Capabilities` angeben, was das Gerät kann (Maximalleistung, Wattraster, ggf. Drehzahlbereich der Bremse). Werte, die das Gerät nicht misst (Strecke, Energie …), bleiben `null` – die App rechnet sie dann selbst. Den Vertrag, den jedes Gerät einhalten muss (erst `Start` verbindet, Zielleistung auch vor dem Verbinden, nach `Dispose` keine Ereignisse mehr …), beschreibt `IErgometer`.
-2. Einen Eintrag `ErgometerType` in `ErgometerTypes.All`: Id für die `settings.json` (danach nie mehr ändern), Anzeigename, Erzeugung, ob es über einen COM-Port verbunden wird und wie „Verbindung testen“ geht. Der Einstellungsdialog richtet sich danach.
+2. Einen Eintrag `ErgometerType` in `ErgometerTypes.All`: Id für die `settings.json` (danach nie mehr ändern), Schlüssel des Namens in `Localization\Strings*.resx`, Erzeugung, ob es über einen COM-Port verbunden wird und wie „Verbindung testen“ geht. Der Einstellungsdialog richtet sich danach.
 3. In `Tests/ErgometerContractTests.cs` eine Unterklasse anlegen – am besten gegen eine Simulation des Protokolls wie `SimulatedCockpit` für Daum. Dann laufen dieselben Vertragstests wie für Daum und Demo.
 4. Nur wenn das Gerät andere Verbindungsdaten als einen COM-Port braucht (z. B. eine Bluetooth-Adresse): Feld in `AppSettings` und eine Zeile im Einstellungsdialog ergänzen.
 
@@ -80,7 +83,7 @@ Sie brauchen kein Ergometer: `SimulatedCockpit` spielt das Daum-Cockpit nach –
 Setup (WiX 5, wird beim Bauen per NuGet geholt): `Setup\build-setup.ps1 [-Version 1.0.0]` veröffentlicht die App, lädt die aktuelle .NET 10 Desktop Runtime von Microsoft (Prüfsumme wird kontrolliert) und baut `Setup\out\ErgoWattControl-Setup.exe`:
 
 - `Setup\Installer`: MSI, pro Benutzer nach `%LocalAppData%\Programs\ErgoWattControl`, Verknüpfung im Startmenü und (abwählbar, `DESKTOPSHORTCUT`) auf dem Desktop
-- `Setup\Bundle`: Setup.exe (Burn), installiert die Runtime nur, wenn sie fehlt, dann das MSI. Eigene Oberfläche (`Theme.xml`/`.wxl`, auf Deutsch): Bild der App, Häkchen „Verknüpfung auf dem Desktop“, am Ende „Starten“ mit Wahl Demo-Modus (startet `ErgoWattControl.exe -demo:1` bzw. `-demo:0`). Still: `ErgoWattControl-Setup.exe /passive DesktopShortcut=0`
+- `Setup\Bundle`: Setup.exe (Burn), installiert die Runtime nur, wenn sie fehlt, dann das MSI. Eigene Oberfläche (`Theme.xml`, Texte in `Theme.en.wxl` und `Theme.de.wxl` – auf deutschem Windows Deutsch, sonst Englisch): Bild der App, Häkchen „Verknüpfung auf dem Desktop“, am Ende „Starten“ mit Wahl Demo-Modus (startet `ErgoWattControl.exe -demo:1` bzw. `-demo:0`). Still: `ErgoWattControl-Setup.exe /passive DesktopShortcut=0`
 
 Ein Versions-Tag (`v1.2.3`) baut beides auf GitHub und legt ein Release mit Setup und ZIP an (`.github/workflows/release.yml`).
 
@@ -88,7 +91,7 @@ Ein Versions-Tag (`v1.2.3`) baut beides auf GitHub und legt ein Release mit Setu
 
 Datenordner: `settings.json` und das Protokoll `ErgoWattControl.log` in `%AppData%\ErgoWattControl`, Aufzeichnungen, GPX-Strecken und Programme in `Dokumente\ErgoWattControl`. **Portabel:** Liegt eine `settings.json` neben der exe, bleibt alles im Programmordner (so laufen ältere Installationen und ZIP-Kopien unverändert weiter).
 
-`settings.json` (wird beim ersten Start angelegt): Gerät (`Device`: `DaumRs232` oder `Demo`), COM-Port, Ablageordner, Monitor der Fahransicht, Gewichte, Übersetzung, Steigungsfaktor sowie die Dateinamen-Muster der Aufzeichnungen:
+`settings.json` (wird beim ersten Start angelegt): Sprache (`Language`: `auto`, `de` oder `en`), Gerät (`Device`: `DaumRs232` oder `Demo`), COM-Port, Ablageordner, Monitor der Fahransicht, die Fahrwerte (`Ride`: Gewichte, Übersetzung, Steigungsfaktor, …) sowie die Dateinamen-Muster der Aufzeichnungen:
 
 | Einstellung | Für | Vorgabe |
 |---|---|---|

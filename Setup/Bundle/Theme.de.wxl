@@ -1,4 +1,5 @@
-<!-- German texts for Theme.xml (strings of the WiX 5 HyperlinkTheme, translated, plus the app-specific ones). -->
+<!-- German texts for Theme.xml (strings of the WiX 5 HyperlinkTheme, translated, plus the app-specific ones), loaded on a
+     German Windows (payload 1031\thm.wxl); Theme.en.wxl is the default for every other language. -->
 <WixLocalization Culture="de-de" Language="1031" xmlns="http://wixtoolset.org/schemas/v4/wxl">
   <String Id="Caption" Value="[WixBundleName] Setup" />
   <String Id="Title" Value="[WixBundleName] [WixBundleVersion]" />

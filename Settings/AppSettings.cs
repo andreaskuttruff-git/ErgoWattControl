@@ -10,7 +10,8 @@ public sealed class AppSettings
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
     /// <summary>Language of the user interface: "auto" (as Windows), "de" or "en" (<see cref="ErgoWattControl.Language"/>).</summary>
-    public string Language { get; set; } = ErgoWattControl.Language.Auto;
+    public string Language { get => _language; set => _language = ErgoWattControl.Language.Normalize(value); }
+    private string _language = ErgoWattControl.Language.Auto;
 
     /// <summary>Kind of ergometer (<see cref="ErgometerTypes"/>); settings from before the device choice have none and mean the Daum cockpit.</summary>
     public string Device { get; set; } = ErgometerTypes.DaumRs232;
@@ -152,12 +153,12 @@ public sealed class AppSettings
     public static string BuildFileName(string pattern, DateTime time, string? route)
     {
         var name = EnglishPlaceholders(pattern)
-            .Replace("{Date}", time.ToString("yyyy-MM-dd"))
-            .Replace("{Time}", time.ToString("HH-mm-ss"))
+            .Replace("{Date}", time.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture))
+            .Replace("{Time}", time.ToString("HH-mm-ss", System.Globalization.CultureInfo.InvariantCulture))
             .Replace("{Route}", route ?? "")
             .Replace("{Training}", route ?? "")
             .Replace("{Program}", route ?? "");
-        return SanitizeFileName(name) ?? $"Recording_{time:yyyy-MM-dd_HH-mm-ss}";
+        return SanitizeFileName(name) ?? "Recording_" + time.ToString("yyyy-MM-dd_HH-mm-ss", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -179,7 +180,9 @@ public sealed class AppSettings
     public IReadOnlyList<string> RecordingFiles(params string[] patterns)
     {
         var files = new List<string>();
-        foreach (var folder in RecordingFolders())
+        var folders = RecordingFolders().ToList();
+        folders.AddRange(AppPaths.OldRecordingFolders.Where(old => !folders.Any(f => SameFolder(f, old))));
+        foreach (var folder in folders)
         {
             try
             {

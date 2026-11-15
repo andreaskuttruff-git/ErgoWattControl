@@ -4,7 +4,8 @@
     "en": "P08 Pyramid high"
   },
   "Description": {
-    "de": "Die Leistung steigt stufenweise bis zur Spitze und fällt danach wieder ab, 45 min, maximal 225 W.\n\nHandbuch: für trainierte Personen."
+    "de": "Die Leistung steigt stufenweise bis zur Spitze und fällt danach wieder ab, 45 min, maximal 225 W.\n\nHandbuch: für trainierte Personen.",
+    "en": "The power rises step by step to the peak and then falls again, 45 min, max. 225 W.\n\nManual: for trained persons."
   },
   "Profile": [
     [0, 45],

@@ -4,7 +4,8 @@
     "en": "P26 Endurance I (easy)"
   },
   "Description": {
-    "de": "Lange Ausdauereinheit mit eingestreuten Spitzen, 80 min, bis 450 W.\n\nHandbuch: leichte Ausdauerbelastung."
+    "de": "Lange Ausdauereinheit mit eingestreuten Spitzen, 80 min, bis 450 W.\n\nHandbuch: leichte Ausdauerbelastung.",
+    "en": "Long endurance session with peaks in between, 80 min, up to 450 W.\n\nManual: light endurance load."
   },
   "Profile": [
     [0, 60],

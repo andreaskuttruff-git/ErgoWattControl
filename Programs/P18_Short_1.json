@@ -4,7 +4,8 @@
     "en": "P18 Short 1"
   },
   "Description": {
-    "de": "Kurzprogramm, 20 min, maximal 100 W.\n\nHandbuch: geeignet für das Training zwischendurch."
+    "de": "Kurzprogramm, 20 min, maximal 100 W.\n\nHandbuch: geeignet für das Training zwischendurch.",
+    "en": "Short program, 20 min, max. 100 W.\n\nManual: suitable for a quick training in between."
   },
   "Profile": [
     [0, 35],

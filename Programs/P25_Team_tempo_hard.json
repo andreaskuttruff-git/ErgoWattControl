@@ -4,7 +4,8 @@
     "en": "P25 Team tempo (4 riders) hard"
   },
   "Description": {
-    "de": "Simuliert das Fahren in einer Vierer-Mannschaft: 30 s Führung, 90 s Windschatten im Wechsel, 134 min, bis 500 W.\n\nDer Wechselrhythmus ist nachgebildet, weil die einzelnen Wechsel in der Handbuch-Grafik nicht lesbar sind."
+    "de": "Simuliert das Fahren in einer Vierer-Mannschaft: 30 s Führung, 90 s Windschatten im Wechsel, 134 min, bis 500 W.\n\nDer Wechselrhythmus ist nachgebildet, weil die einzelnen Wechsel in der Handbuch-Grafik nicht lesbar sind.",
+    "en": "Simulates riding in a team of four: 30 s in front and 90 s in the slipstream in turn, 134 min, up to 500 W.\n\nThe rhythm of the turns is modelled, as the single turns can’t be read from the manual’s chart."
   },
   "Profile": [
     [0, 165],
