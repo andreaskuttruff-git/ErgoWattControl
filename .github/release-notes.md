@@ -2,6 +2,19 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.0.0
+- **Deutsch und Englisch:** Die ganze App gibt es jetzt auf Deutsch und Englisch – Oberfläche, Meldungen, Hilfe (F1), Programmbeschreibungen und Setup. Umschalten unter **☰ → Einstellungen → Sprache / Language** (Automatisch wie Windows, Deutsch, English); die App bietet den Neustart gleich an. Zahlen und Datum folgen weiter den Windows-Einstellungen.
+- **Größe der Fahransicht** in den Einstellungen wählbar: wie bisher (Standard), ganzer Monitor oder eine feste Größe wie 1280 × 1024 oder 1920 × 1080.
+- **Lauf wird immer gespeichert:** Ist der Ablageordner nicht beschreibbar (Netzlaufwerk oder USB-Stick fehlt), landet die Aufnahme im Standardordner bzw. unter `%LocalAppData%\ErgoWattControl\Recordings`; Export und „Aufzeichnung nachfahren“ finden sie dort. Geht gar nichts, kommt nur eine Meldung statt einer pro Sekunde.
+- **Hilfe:** jetzt `Help.de.html` und `Help.en.html`; die alte Adresse `Hilfe.html` leitet weiter.
+- **Intern:** Trainingslogik, Fahrwerte und Geräteschicht neu aufgeteilt (Vorbereitung für weitere Ergometer), über 190 Unittests einschließlich Pseudolokalisierung.
+
+**Wichtig – geänderte Dateiformate (deshalb v2):**
+- Aufzeichnungen, Programme und `settings.json` verwenden jetzt englische, sprachneutrale Namen (z. B. `Values` statt `Werte`, `Profile` statt `Profil`, Platzhalter `{Date}` statt `{Datum}`). **Alles Vorhandene liest v2 weiter** und stellt die `settings.json` beim ersten Start um – eine **ältere Version** liest die neuen Dateien und die umgestellte `settings.json` aber nicht mehr vollständig.
+- Die mitgelieferten Programme liegen jetzt in `Dokumente\ErgoWattControl\Programs` mit englischen Dateinamen (z. B. `S08_FTP200_Threshold_blocks_30min.json`). Der alte Ordner `Programme` wird nicht mehr benutzt und kann gelöscht werden.
+- Neue Installationen speichern Aufnahmen in `Recordings` statt `Aufzeichnungen`; bestehende behalten ihren Ordner. Das Protokoll heißt jetzt `ErgoWattControl.log` (auf Englisch).
+- Die deutschen Texte stecken im Unterordner `de\` – bei einem Update immer das ganze Setup oder ZIP verwenden, nicht nur die exe kopieren.
+
 ### Neu in v1.5.1
 - **Stabiler bei Störungen:** Kommt eine Antwort des Cockpits verrutscht an (Reste einer verspäteten Antwort), wird sie verworfen und neu angefragt, statt falsche Werte anzuzeigen. Auch das Nachstellen der Leistung und das Neu-Einstellen nach einem Cockpit-Reset werden bei einem Aussetzer sofort wiederholt.
 - **Cockpit-Reset im Protokoll:** Fällt das Cockpit aus dem freien Training, steht das in `Fehler.log`; klappt das Neu-Einstellen dreimal hintereinander nicht, verbindet sich die App neu.

@@ -22,6 +22,12 @@ public sealed class AppSettings
     /// <summary>Windows device name (e.g. \\.\DISPLAY1) of the monitor for the ride view; null = first non-primary monitor.</summary>
     public string? RideMonitor { get; set; }
 
+    /// <summary>
+    /// Size of the ride view: "auto" (as before: the rider monitor, at most the smallest connected screen), "screen" (the
+    /// whole monitor) or real screen pixels such as "1280x1024" (<see cref="Monitors"/>).
+    /// </summary>
+    public string RideViewSize { get; set; } = Monitors.SizeAuto;
+
     /// <summary>Weights, gearing, gradient, resistances and power limit: the values a ride is simulated with.</summary>
     // A hand-edited "Ride": null falls back to the defaults instead of breaking the start.
     public RideValues Ride { get => _ride; set => _ride = value ?? new(); }

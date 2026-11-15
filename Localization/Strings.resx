@@ -332,9 +332,17 @@ The device limits as well (Daum 8008/8080: 800 W, other cockpits: 400 W); the lo
 Restart now?</value></data>
   <data name="Settings_Rider" xml:space="preserve"><value>Rider</value></data>
   <data name="Settings_RiderTip" xml:space="preserve"><value>Your body weight. Sets how much power a climb costs when riding a route.</value></data>
+  <data name="Settings_RideViewSize" xml:space="preserve"><value>Size of the ride view:</value></data>
   <data name="Settings_Route" xml:space="preserve"><value>Riding a route:</value></data>
   <data name="Settings_SaveFailed" xml:space="preserve"><value>The settings could not be saved:
 {0}</value></data>
+  <data name="Settings_SizeAuto" xml:space="preserve"><value>As before (default)</value></data>
+  <data name="Settings_SizeFixed" xml:space="preserve"><value>{0} × {1}</value></data>
+  <data name="Settings_SizeScreen" xml:space="preserve"><value>Whole monitor ({0} × {1})</value></data>
+  <data name="Settings_SizeTip" xml:space="preserve"><value>How large the ride view is on its monitor.
+“As before”: as large as the monitor, at most as large as the smallest connected screen (demo: 1280 × 1024).
+“Whole monitor”: fills the monitor. A fixed size (in screen pixels) is centred.
+Applies at once after OK.</value></data>
   <data name="Settings_StartGear" xml:space="preserve"><value>   Start gear</value></data>
   <data name="Settings_StartGearTip" xml:space="preserve"><value>Gear a route starts in (1 = easiest, 28 = hardest).</value></data>
   <data name="Settings_Testing" xml:space="preserve"><value>Testing {0} …</value></data>

@@ -332,9 +332,17 @@ Das Gerät selbst begrenzt zusätzlich (Daum 8008/8080: 800 W, andere Cockpits: 
 Jetzt neu starten?</value></data>
   <data name="Settings_Rider" xml:space="preserve"><value>Fahrer</value></data>
   <data name="Settings_RiderTip" xml:space="preserve"><value>Dein Körpergewicht. Bestimmt im Streckenmodus, wie viel Leistung ein Anstieg kostet.</value></data>
+  <data name="Settings_RideViewSize" xml:space="preserve"><value>Größe der Fahransicht:</value></data>
   <data name="Settings_Route" xml:space="preserve"><value>Strecke fahren:</value></data>
   <data name="Settings_SaveFailed" xml:space="preserve"><value>Einstellungen konnten nicht gespeichert werden:
 {0}</value></data>
+  <data name="Settings_SizeAuto" xml:space="preserve"><value>Wie bisher (Standard)</value></data>
+  <data name="Settings_SizeFixed" xml:space="preserve"><value>{0} × {1}</value></data>
+  <data name="Settings_SizeScreen" xml:space="preserve"><value>Ganzer Monitor ({0} × {1})</value></data>
+  <data name="Settings_SizeTip" xml:space="preserve"><value>Wie groß die Fahransicht auf ihrem Monitor ist.
+„Wie bisher“: so groß wie der Monitor, höchstens so groß wie der kleinste angeschlossene Bildschirm (Demo: 1280 × 1024).
+„Ganzer Monitor“: füllt den Monitor. Eine feste Größe (in Bildschirmpunkten) wird mittig angezeigt.
+Gilt sofort nach OK.</value></data>
   <data name="Settings_StartGear" xml:space="preserve"><value>   Startgang</value></data>
   <data name="Settings_StartGearTip" xml:space="preserve"><value>Gang, in dem eine Strecke beginnt (1 = leichtester, 28 = schwerster).</value></data>
   <data name="Settings_Testing" xml:space="preserve"><value>Teste {0} …</value></data>

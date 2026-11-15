@@ -20,6 +20,35 @@ public sealed class SettingsForm : Form
     public string RecordingDirectory => _txtFolder.Text.Trim();
     public string? RideMonitor => (_cmbMonitor.SelectedItem as MonitorItem)?.DeviceName;
 
+    /// <summary>Size of the ride view: "auto", "screen" or e.g. "1280x1024" (<see cref="Monitors"/>).</summary>
+    private readonly ComboBox _cmbSize = new() { DropDownStyle = ComboBoxStyle.DropDownList, Width = 330 };
+    public string RideViewSize => (_cmbSize.SelectedItem as SizeItem)?.Setting ?? Monitors.SizeAuto;
+
+    /// <summary>A size choice: the setting it stands for, shown under its name.</summary>
+    private sealed record SizeItem(string Setting, string Text)
+    {
+        public override string ToString() => Text;
+    }
+
+    /// <summary>
+    /// The sizes for the chosen monitor: as before, the whole monitor, and the fixed sizes that fit it. A saved size
+    /// larger than this monitor stays in the list (the window is then simply as large as the monitor).
+    /// </summary>
+    private void FillSizes(string selected)
+    {
+        var screen = Monitors.RideScreen(RideMonitor);
+        var physical = Monitors.PhysicalSize(screen);
+        _cmbSize.Items.Clear();
+        _cmbSize.Items.Add(new SizeItem(Monitors.SizeAuto, L.T("Settings_SizeAuto")));
+        _cmbSize.Items.Add(new SizeItem(Monitors.SizeScreen, L.F("Settings_SizeScreen", physical.Width, physical.Height)));
+        var sizes = Monitors.FixedRideViewSizes.Where(s => s.Width <= physical.Width && s.Height <= physical.Height).ToList();
+        if (Monitors.ParseSize(selected) is { } saved && !sizes.Contains(saved))
+            sizes.Add(saved);
+        foreach (var size in sizes.OrderBy(s => s.Width).ThenBy(s => s.Height))
+            _cmbSize.Items.Add(new SizeItem(Monitors.FormatSize(size), L.F("Settings_SizeFixed", size.Width, size.Height)));
+        _cmbSize.SelectedItem = _cmbSize.Items.Cast<SizeItem>().FirstOrDefault(i => i.Setting == selected) ?? _cmbSize.Items[0];
+    }
+
     private readonly NumericUpDown _numRider = new() { Minimum = 30, Maximum = 250, Width = 80 };
     private readonly NumericUpDown _numBike = new() { Minimum = 5, Maximum = 40, Width = 80 };
     private readonly NumericUpDown _numGradeFactor = new() { Minimum = 10, Maximum = 100, Increment = 10, Width = 80 };
@@ -202,22 +231,24 @@ public sealed class SettingsForm : Form
         grid.Controls.Add(Row(_txtFolder, btnBrowse, btnOpen), 1, 4);
         grid.Controls.Add(RowLabel(L.T("Settings_Monitor")), 0, 5);
         grid.Controls.Add(Row(_cmbMonitor, btnIdentify), 1, 5);
-        grid.Controls.Add(RowLabel(L.T("Settings_Route")), 0, 6);
+        grid.Controls.Add(RowLabel(L.T("Settings_RideViewSize")), 0, 6);
+        grid.Controls.Add(Row(_cmbSize), 1, 6);
+        grid.Controls.Add(RowLabel(L.T("Settings_Route")), 0, 7);
         grid.Controls.Add(Row(
-            Unit(L.T("Settings_Rider")), _numRider, Unit(L.T("Settings_KgBike")), _numBike, Unit(L.T("Settings_KgGrade")), _numGradeFactor, Unit("%")), 1, 6);
-        grid.Controls.Add(Row(Unit(L.T("Settings_Gearing")), _cmbGearing, Unit(L.T("Settings_StartGear")), _numStartGear), 1, 7);
-        grid.Controls.Add(RowLabel(L.T("Settings_PowerLimit")), 0, 8);
-        grid.Controls.Add(Row(_numMaxWatt, Unit(L.F("Settings_PowerLimitUnit", controller.Capabilities.Info))), 1, 8);
-        AddUploadRows(grid, 9, UploadService.Garmin, _chkGarmin, settings.GarminEnabled, _txtGarminLogin, _txtGarminImport, L.T("Upload_ImportLabel"),
+            Unit(L.T("Settings_Rider")), _numRider, Unit(L.T("Settings_KgBike")), _numBike, Unit(L.T("Settings_KgGrade")), _numGradeFactor, Unit("%")), 1, 7);
+        grid.Controls.Add(Row(Unit(L.T("Settings_Gearing")), _cmbGearing, Unit(L.T("Settings_StartGear")), _numStartGear), 1, 8);
+        grid.Controls.Add(RowLabel(L.T("Settings_PowerLimit")), 0, 9);
+        grid.Controls.Add(Row(_numMaxWatt, Unit(L.F("Settings_PowerLimitUnit", controller.Capabilities.Info))), 1, 9);
+        AddUploadRows(grid, 10, UploadService.Garmin, _chkGarmin, settings.GarminEnabled, _txtGarminLogin, _txtGarminImport, L.T("Upload_ImportLabel"),
             settings.GarminLoginUrl, settings.GarminImportUrl, UploadService.GarminDefaultLoginUrl, UploadService.GarminDefaultImportUrl,
             L.T("Upload_GarminPage"));
-        AddUploadRows(grid, 10, UploadService.Strava, _chkStrava, settings.StravaEnabled, _txtStravaLogin, _txtStravaUpload, L.T("Upload_UploadLabel"),
+        AddUploadRows(grid, 11, UploadService.Strava, _chkStrava, settings.StravaEnabled, _txtStravaLogin, _txtStravaUpload, L.T("Upload_UploadLabel"),
             settings.StravaLoginUrl, settings.StravaUploadUrl, UploadService.StravaDefaultLoginUrl, UploadService.StravaDefaultUploadUrl,
             L.T("Upload_StravaPage"));
         var buttons = Row(btnOk, btnCancel);
         buttons.Anchor = AnchorStyles.Right;
         buttons.Margin = new Padding(3, 18, 3, 3);
-        grid.Controls.Add(buttons, 1, 11);
+        grid.Controls.Add(buttons, 1, 12);
 
         // Languages: "automatic" names the one Windows gives; each language under its own name.
         _cmbLanguage.Items.Add(new LanguageItem(ErgoWattControl.Language.Auto,
@@ -257,6 +288,9 @@ public sealed class SettingsForm : Form
         _cmbMonitor.SelectedItem = _cmbMonitor.Items.Cast<MonitorItem>().FirstOrDefault(m => m.DeviceName == settings.RideMonitor)
             ?? _cmbMonitor.Items[0]; // saved monitor no longer connected
         btnIdentify.Click += (_, _) => Monitors.Identify(TimeSpan.FromSeconds(3));
+        FillSizes(settings.RideViewSize);
+        // Another monitor: offer the sizes that fit it, keeping the choice where possible.
+        _cmbMonitor.SelectedIndexChanged += (_, _) => FillSizes(RideViewSize);
 
         Tip(_cmbDevice, L.T("Settings_DeviceTip"));
         Tip(_cmbPorts, L.T("Settings_PortTip"));
@@ -266,6 +300,7 @@ public sealed class SettingsForm : Form
         Tip(btnBrowse, L.T("Settings_BrowseTip"));
         Tip(btnOpen, L.T("Settings_OpenTip"));
         Tip(_cmbMonitor, L.T("Settings_MonitorTip"));
+        Tip(_cmbSize, L.T("Settings_SizeTip"));
         Tip(btnIdentify, L.T("Settings_IdentifyTip"));
         Tip(_numRider, L.T("Settings_RiderTip"));
         Tip(_numBike, L.T("Settings_BikeTip"));
