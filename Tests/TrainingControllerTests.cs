@@ -59,10 +59,10 @@ public class TrainingControllerTests
         Assert.Same(recorder, _training.StopRecording());
 
         var file = RecordingFile.Load(recorder.FilePath);
-        Assert.Equal("Training", file.Art);
-        Assert.Null(file.Vorgabe);
+        Assert.Equal("Training", file.Kind);
+        Assert.Null(file.Target);
         Assert.StartsWith("Training_", Path.GetFileName(recorder.FilePath));
-        Assert.Single(file.Werte);
+        Assert.Single(file.Values);
         Assert.Null(_training.StopRecording()); // nothing left to stop
     }
 
@@ -100,11 +100,11 @@ public class TrainingControllerTests
 
         Assert.Equal("Mein Hügel.json", Path.GetFileName(recorder.FilePath));
         var file = RecordingFile.Load(recorder.FilePath);
-        Assert.Equal("Strecke", file.Art);
-        Assert.NotNull(file.Vorgabe?.Strecke);
-        Assert.Contains("Steigung_Prozent", file.Spalten);
+        Assert.Equal(RecordingFile.Kinds.Route, file.Kind);
+        Assert.NotNull(file.Target?.Route);
+        Assert.Contains(RecordingFile.Col.Grade, file.Columns);
         // The typed name is for one recording only.
-        Assert.StartsWith("Strecke_Hügel_", _training.NextRecordingName);
+        Assert.StartsWith("Route_Hügel_", _training.NextRecordingName);
     }
 
     [Fact]
@@ -118,8 +118,8 @@ public class TrainingControllerTests
         Assert.Equal(10, replay.Session.Offset);
         Assert.Equal(130, _ergo.TargetWatt);
         Assert.Equal("programm", replay.HelpSection);
-        Assert.Equal("Programm", replay.RecordingKind);
-        Assert.StartsWith("Prog_S99_Kurz_", _training.NextRecordingName);
+        Assert.Equal(RecordingFile.Kinds.Program, replay.RecordingKind);
+        Assert.StartsWith("Program_S99_Kurz_", _training.NextRecordingName);
         Assert.Null(replay.PulseThen(showOriginal: true)); // programs have no pulse of their own
     }
 
@@ -148,7 +148,7 @@ public class TrainingControllerTests
     {
         var replay = _training.BeginReplay(RecordingWithPulse(), customName: null, programFile: null);
 
-        Assert.Equal("Training", replay.RecordingKind);
+        Assert.Equal(RecordingFile.Kinds.Training, replay.RecordingKind);
         Assert.Equal("training", replay.HelpSection);
         Assert.Equal("Aufzeichnung", replay.RunName.Kind);
         Assert.Equal(130, replay.PulseThen(showOriginal: true));

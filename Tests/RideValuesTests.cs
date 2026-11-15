@@ -83,6 +83,37 @@ public class RideValuesTests : IDisposable
     }
 
     [Fact]
+    public void OldFileNamePatterns_GetTheEnglishPlaceholders()
+    {
+        File.WriteAllText(AppPaths.SettingsFile, """
+            { "FileNameTraining": "Training_{Datum}_{Uhrzeit}",
+              "FileNameRoute": "Strecke_{Strecke}_{Datum}_{Uhrzeit}",
+              "FileNameProgram": "Prog_{Programm}_{Datum}" }
+            """);
+
+        var settings = AppSettings.Load();
+
+        // The rider's own prefixes stay, only the placeholders change.
+        Assert.Equal("Training_{Date}_{Time}", settings.FileNameTraining);
+        Assert.Equal("Strecke_{Route}_{Date}_{Time}", settings.FileNameRoute);
+        Assert.Equal("Prog_{Program}_{Date}", settings.FileNameProgram);
+        Assert.Equal("Strecke_Tour_2026-11-15_10-00-00",
+            AppSettings.BuildFileName(settings.FileNameRoute, new DateTime(2026, 11, 15, 10, 0, 0), "Tour"));
+    }
+
+    [Fact]
+    public void NewSettings_UseEnglishFolderAndPatterns()
+    {
+        var settings = new AppSettings();
+        Assert.Equal(AppPaths.DefaultRecordingFolder, settings.RecordingDirectory);
+        Assert.EndsWith("Recordings", settings.RecordingDirectory);
+        Assert.Equal("Route_{Route}_{Date}_{Time}", settings.FileNameRoute);
+        Assert.Equal("Program_{Program}_{Date}_{Time}", settings.FileNameProgram);
+        Assert.EndsWith("ErgoWattControl.log", AppPaths.LogFile);
+        Assert.EndsWith("Programs", ProgramFiles.Folder);
+    }
+
+    [Fact]
     public void NewSettings_HaveTheDefaults()
     {
         var ride = new AppSettings().Ride;
@@ -112,7 +143,7 @@ public class RideValuesTests : IDisposable
 
         var file = RecordingFile.Load(path);
 
-        AssertOldValues(file.Einstellungen!.Ride);
+        AssertOldValues(file.Settings!.Ride);
     }
 
     [Fact]
@@ -139,7 +170,7 @@ public class RideValuesTests : IDisposable
         var recorder = training.StartRecording();
         training.StopRecording();
 
-        var stored = RecordingFile.Load(recorder.FilePath).Einstellungen!.Ride;
+        var stored = RecordingFile.Load(recorder.FilePath).Settings!.Ride;
         Assert.Equal(99, stored.RiderWeightKg);
         Assert.Equal(50, stored.GradeFactorPercent);
         Assert.Equal(135, settings.Ride.RiderWeightKg); // the saved settings are untouched

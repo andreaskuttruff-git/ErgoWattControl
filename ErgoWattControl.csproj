@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Training programs for "Programm wiederholen", shipped inside the exe and written to Documents\ErgoWattControl\Programme
-         at start (ProgramFiles); the generator tool below them is a project of its own -->
+    <!-- Training programs, shipped inside the exe and written to Documents\ErgoWattControl\Programs at start
+         (ProgramFiles); the generator tool below them is a project of its own -->
     <Compile Remove="Programs\**" />
     <None Remove="Programs\**" />
     <!-- The WiX setup projects and their output are built separately (Setup\build-setup.ps1) -->
@@ -30,8 +30,7 @@
     <Compile Remove="Tests\**" />
     <None Remove="Tests\**" />
     <InternalsVisibleTo Include="ErgoWattControl.Tests" />
-    <!-- The resource name keeps "Programme": that is the folder the programs are written to on the rider's PC -->
-    <EmbeddedResource Include="Programs\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Programs\*.json" LogicalName="Programs/%(Filename)%(Extension)" />
     <!-- JSON schema of a program (and an example) for the rider's own programs, written to CustomPrograms\ at start -->
     <None Remove="Schema\**" />
     <EmbeddedResource Include="Schema\*.json;Schema\CLAUDE.md" LogicalName="Schema/%(Filename)%(Extension)" />

@@ -1,7 +1,12 @@
 {
-  "Name": "P13 Active Sport Lady",
-  "Beschreibung": "Sanftes Wellenprofil, 22 min, maximal 90 W.\n\nHandbuch: für untrainierte Damen bis 60 Jahre.",
-  "Profil": [
+  "Name": {
+    "de": "P13 Active Sport Lady",
+    "en": "P13 Active Sport Lady"
+  },
+  "Description": {
+    "de": "Sanftes Wellenprofil, 22 min, maximal 90 W.\n\nHandbuch: für untrainierte Damen bis 60 Jahre."
+  },
+  "Profile": [
     [0, 30],
     [15, 30],
     [30, 30],
@@ -91,5 +96,6 @@
     [1290, 55],
     [1305, 55],
     [1320, 55]
-  ]
+  ],
+  "DisplayName": "P13 Active Sport Lady"
 }

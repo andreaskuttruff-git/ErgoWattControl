@@ -26,7 +26,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 - **Aufzeichnung nachfahren / Trainingsprogramm starten:** Die Startdialoge zeigen die Einstellungen, die für den Lauf wirken, änderbar nur für diesen Lauf („Als Standard speichern“ übernimmt sie in die `settings.json`). Eine Strecken-Aufzeichnung wird wieder als Strecke gefahren (gespeicherte Strecke, simuliert mit den Einstellungen der Aufzeichnung: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze). Programme und andere Aufzeichnungen folgen dem Leistungsverlauf – dort wirkt nur die Wattgrenze.
 - **Strecke fahren:** GPX-Strecke oder FIT-Datei mit GPS und Höhe (z. B. eigene Touren aus Garmin Connect) nachfahren, mit dem Puls von damals (grün) und heute (rot) nach Kilometer im Höhenprofil; aus Steigung, Gewicht und virtueller Geschwindigkeit (Trittfrequenz × Gang) wird die Bremsleistung berechnet. Übersetzung Rennrad oder MTB, Steigungsfaktor einstellbar
 - Automatisches Verbinden und Neuverbinden nach einem Cockpit-Reset
-- **Trainingsprogramme** (JSON mit Beschreibung und Leistungsprofil), fahrbar über „Trainingsprogramm starten“. Sie sind in die exe eingebettet; beim Start schreibt die App fehlende oder veränderte Dateien nach `Dokumente\ErgoWattControl\Programme` (Änderungen dort werden also überschrieben, eigene Programme mit anderem Namen bleiben erhalten). Der Auswahldialog zeichnet zum markierten Programm den Leistungsverlauf und zeigt die Beschreibung (Details und Quellen in `Programs\README.md`):
+- **Trainingsprogramme** (JSON mit Beschreibung und Leistungsprofil), fahrbar über „Trainingsprogramm starten“. Sie sind in die exe eingebettet; beim Start schreibt die App fehlende oder veränderte Dateien nach `Dokumente\ErgoWattControl\Programs` (Änderungen dort werden also überschrieben, eigene Programme mit anderem Namen bleiben erhalten). Der Auswahldialog zeichnet zum markierten Programm den Leistungsverlauf und zeigt die Beschreibung (Details und Quellen in `Programs\README.md`):
   - `P01`–`P44`: die wattgesteuerten Festprogramme des 8008 TRS aus dem Handbuch (1–28, Cool-down 42–44)
   - `S00`–`S08`: Programme nach aktueller Trainingswissenschaft – Rampentest zur FTP-Bestimmung, Grundlage, 4×4, 4×8, 30/15, Unterschwelle, 10×1 min, 3×20 s, Schwellenblöcke 30 min, jeweils für FTP 150/200/250 W
   - Eigene Programme: JSON-Dateien im Ordner `CustomPrograms` (Dokumente\ErgoWattControl bzw. neben der exe), stehen mit ★ oben in der Liste; das Format beschreibt das JSON-Schema [`Schema/TrainingProgram.schema.json`](Schema/TrainingProgram.schema.json), Vorlage [`Example_Custom_Program.json`](Schema/Example_Custom_Program.json)
@@ -83,14 +83,14 @@ Ein Versions-Tag (`v1.2.3`) baut beides auf GitHub und legt ein Release mit Setu
 
 ## Konfiguration
 
-Datenordner: `settings.json` und `Fehler.log` in `%AppData%\ErgoWattControl`, Aufzeichnungen, GPX-Strecken und Programme in `Dokumente\ErgoWattControl`. **Portabel:** Liegt eine `settings.json` neben der exe, bleibt alles im Programmordner (so laufen ältere Installationen und ZIP-Kopien unverändert weiter).
+Datenordner: `settings.json` und das Protokoll `ErgoWattControl.log` in `%AppData%\ErgoWattControl`, Aufzeichnungen, GPX-Strecken und Programme in `Dokumente\ErgoWattControl`. **Portabel:** Liegt eine `settings.json` neben der exe, bleibt alles im Programmordner (so laufen ältere Installationen und ZIP-Kopien unverändert weiter).
 
 `settings.json` (wird beim ersten Start angelegt): Gerät (`Device`: `DaumRs232` oder `Demo`), COM-Port, Ablageordner, Monitor der Fahransicht, Gewichte, Übersetzung, Steigungsfaktor sowie die Dateinamen-Muster der Aufzeichnungen:
 
 | Einstellung | Für | Vorgabe |
 |---|---|---|
-| `FileNameTraining` | freies Training und nachgefahrene Aufzeichnung | `Training_{Datum}_{Uhrzeit}` |
-| `FileNameRoute` | Strecke fahren | `Strecke_{Strecke}_{Datum}_{Uhrzeit}` |
-| `FileNameProgram` | Trainingsprogramm starten | `Prog_{Programm}_{Datum}_{Uhrzeit}` |
+| `FileNameTraining` | freies Training und nachgefahrene Aufzeichnung | `Training_{Date}_{Time}` |
+| `FileNameRoute` | Strecke fahren | `Route_{Route}_{Date}_{Time}` |
+| `FileNameProgram` | Trainingsprogramm starten | `Program_{Program}_{Date}_{Time}` |
 
-Platzhalter: `{Datum}`, `{Uhrzeit}`, `{Strecke}` (GPX-Dateiname), `{Training}` (nachgefahrene Aufzeichnung), `{Programm}` (Programmdatei, z. B. `S02_FTP200_Norwegisch_4x4`). Der Name lässt sich im Startdialog von Strecke, Aufzeichnung und Programm ändern, im freien Training nach „Stop“.
+Platzhalter: `{Date}`, `{Time}`, `{Route}` (GPX-Dateiname), `{Training}` (nachgefahrene Aufzeichnung), `{Program}` (Programmdatei, z. B. `S02_FTP200_Norwegian_4x4`); die deutschen Platzhalter älterer Versionen stellt die App beim Start um. Der Name lässt sich im Startdialog von Strecke, Aufzeichnung und Programm ändern, im freien Training nach „Stop“.

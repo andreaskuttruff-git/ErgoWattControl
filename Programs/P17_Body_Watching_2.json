@@ -1,7 +1,12 @@
 {
-  "Name": "P17 Body Watching 2",
-  "Beschreibung": "Langes Figurtraining, 53 min, maximal 100 W.\n\nHandbuch: für trainierte Damen bis 50 Jahre. Die Dauer des Trainings von nahezu einer Stunde erfordert Leistungswillen.",
-  "Profil": [
+  "Name": {
+    "de": "P17 Body Watching 2",
+    "en": "P17 Body Watching 2"
+  },
+  "Description": {
+    "de": "Langes Figurtraining, 53 min, maximal 100 W.\n\nHandbuch: für trainierte Damen bis 50 Jahre. Die Dauer des Trainings von nahezu einer Stunde erfordert Leistungswillen."
+  },
+  "Profile": [
     [0, 55],
     [15, 55],
     [30, 55],
@@ -215,5 +220,6 @@
     [3150, 55],
     [3165, 55],
     [3180, 55]
-  ]
+  ],
+  "DisplayName": "P17 Body Watching 2"
 }

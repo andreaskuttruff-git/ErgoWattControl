@@ -154,7 +154,7 @@ public sealed class TrainingController
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
             {
                 // A missing drive, no rights, a file where the folder should be …: try the next folder.
-                AppPaths.Log($"Aufzeichnung in {folder} nicht möglich", ex);
+                AppPaths.Log($"Recording in {folder} not possible", ex);
                 first ??= ex;
             }
         }
@@ -178,7 +178,7 @@ public sealed class TrainingController
         }
         catch (Exception ex)
         {
-            AppPaths.Log("Aufzeichnung schließen", ex);
+            AppPaths.Log("Closing the recording", ex);
         }
         return recorder;
     }

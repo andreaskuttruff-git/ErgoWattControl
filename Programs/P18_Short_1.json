@@ -1,7 +1,12 @@
 {
-  "Name": "P18 Short 1",
-  "Beschreibung": "Kurzprogramm, 20 min, maximal 100 W.\n\nHandbuch: geeignet für das Training zwischendurch.",
-  "Profil": [
+  "Name": {
+    "de": "P18 Short 1",
+    "en": "P18 Short 1"
+  },
+  "Description": {
+    "de": "Kurzprogramm, 20 min, maximal 100 W.\n\nHandbuch: geeignet für das Training zwischendurch."
+  },
+  "Profile": [
     [0, 35],
     [15, 35],
     [30, 40],
@@ -83,5 +88,6 @@
     [1170, 95],
     [1185, 95],
     [1200, 90]
-  ]
+  ],
+  "DisplayName": "P18 Short 1"
 }

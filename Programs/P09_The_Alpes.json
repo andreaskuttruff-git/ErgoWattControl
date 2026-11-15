@@ -1,7 +1,12 @@
 {
-  "Name": "P09 The Alpes",
-  "Beschreibung": "Bergprofil mit mehreren Anstiegen, 23 min, maximal 180 W.\n\nHandbuch: für trainierte Personen.",
-  "Profil": [
+  "Name": {
+    "de": "P09 The Alpes",
+    "en": "P09 The Alpes"
+  },
+  "Description": {
+    "de": "Bergprofil mit mehreren Anstiegen, 23 min, maximal 180 W.\n\nHandbuch: für trainierte Personen."
+  },
+  "Profile": [
     [0, 55],
     [15, 55],
     [30, 55],
@@ -95,5 +100,6 @@
     [1350, 100],
     [1365, 100],
     [1380, 100]
-  ]
+  ],
+  "DisplayName": "P09 The Alpes"
 }

@@ -1,7 +1,12 @@
 {
-  "Name": "P19 Short 2",
-  "Beschreibung": "Kurzprogramm mit Belastungsspitzen, 30 min, maximal 180 W.\n\nHandbuch: für trainierte Personen, die ihre Leistung zwischendurch testen wollen.",
-  "Profil": [
+  "Name": {
+    "de": "P19 Short 2",
+    "en": "P19 Short 2"
+  },
+  "Description": {
+    "de": "Kurzprogramm mit Belastungsspitzen, 30 min, maximal 180 W.\n\nHandbuch: für trainierte Personen, die ihre Leistung zwischendurch testen wollen."
+  },
+  "Profile": [
     [0, 60],
     [15, 65],
     [30, 75],
@@ -123,5 +128,6 @@
     [1770, 55],
     [1785, 55],
     [1800, 50]
-  ]
+  ],
+  "DisplayName": "P19 Short 2"
 }

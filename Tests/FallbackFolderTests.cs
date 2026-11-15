@@ -6,7 +6,7 @@ namespace ErgoWattControl.Tests;
 /// </summary>
 public class FallbackFolderTests
 {
-    private static string DocumentsFolder => Path.Combine(AppPaths.DataFolder, "Aufzeichnungen");
+    private static string DocumentsFolder => AppPaths.DefaultRecordingFolder;
 
     /// <summary>A path where a file blocks the folder, like a missing or read-only drive.</summary>
     private static string Blocked()
@@ -50,7 +50,7 @@ public class FallbackFolderTests
         Assert.True(AppSettings.SameFolder(Path.GetDirectoryName(recorder.FilePath)!, DocumentsFolder));
         Assert.Equal("Ausweich.json", Path.GetFileName(recorder.FilePath)); // the typed name still counts
         Assert.True(settings.InFallbackFolder(recorder.FilePath));
-        Assert.Contains("nicht möglich", TestFolder.LogSince(mark)); // the reason is logged
+        Assert.Contains("not possible", TestFolder.LogSince(mark)); // the reason is logged
         File.Delete(recorder.FilePath);
     }
 

@@ -81,7 +81,7 @@ public sealed class DaumCockpit : IDisposable
         {
             Thread.Sleep(MinGap); // let the rest of the stray telegram arrive, the next request discards it
             throw new CockpitReplyException(
-                $"Antwort passt nicht zur Anfrage 0x{request[0]:X2}: {Convert.ToHexString(buffer)}");
+                $"Reply does not match request 0x{request[0]:X2}: {Convert.ToHexString(buffer)}");
         }
         return buffer;
     }

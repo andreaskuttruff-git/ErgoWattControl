@@ -167,9 +167,9 @@ public sealed class ExportForm : Form
             var workout = WorkoutRecording.Load(file);
             var recording = RecordingFile.Load(file);
             _profile.SetWorkout(workout, null, showPulse: true);
-            var distanceColumn = Array.IndexOf(recording.Spalten, "Distanz_km");
-            var km = distanceColumn >= 0 && recording.Werte.Count > 0 ? recording.Werte[^1][distanceColumn] : 0;
-            _facts.Text = $"{recording.Art} vom {recording.Start:dd.MM.yyyy HH:mm} Uhr" + Environment.NewLine
+            var distanceColumn = recording.ColumnIndex(RecordingFile.Col.Distance);
+            var km = distanceColumn >= 0 && recording.Values.Count > 0 ? recording.Values[^1][distanceColumn] : 0;
+            _facts.Text = $"{KindName(recording.Kind)} vom {recording.Start:dd.MM.yyyy HH:mm} Uhr" + Environment.NewLine
                 + $"Dauer {WorkoutProfile.Format(workout.Duration)}     Strecke {km:0.0} km     Ø {workout.AverageWatt:0} W     max. {workout.MaxWatt} W"
                 + (workout.HasPulse ? $"     Puls Ø {workout.AveragePulse:0}" : "");
         }
@@ -182,6 +182,13 @@ public sealed class ExportForm : Form
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+
+    private static string KindName(string kind) => kind switch
+    {
+        RecordingFile.Kinds.Route => "Strecke",
+        RecordingFile.Kinds.Program => "Programm",
+        _ => "Training",
+    };
 
     private void UpdateButton()
     {

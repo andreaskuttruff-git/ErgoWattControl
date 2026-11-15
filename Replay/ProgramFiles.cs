@@ -8,14 +8,14 @@ namespace ErgoWattControl;
 /// </summary>
 public static class ProgramFiles
 {
-    private const string ResourcePrefix = "Programme/";
+    private const string ResourcePrefix = "Programs/";
     private const string SchemaPrefix = "Schema/";
 
     /// <summary>The JSON schema (like an XSD for XML) that describes a program file; editors validate against it.</summary>
     public const string SchemaFileName = "TrainingProgram.schema.json";
 
     /// <summary>Documents\ErgoWattControl\Programme, or next to the exe in portable mode.</summary>
-    public static string Folder => Path.Combine(AppPaths.DataFolder, "Programme");
+    public static string Folder => Path.Combine(AppPaths.DataFolder, "Programs");
 
     /// <summary>The rider's own programs: Documents\ErgoWattControl\CustomPrograms, or next to the exe in portable mode.</summary>
     public static string CustomFolder => Path.Combine(AppPaths.DataFolder, "CustomPrograms");
@@ -39,7 +39,7 @@ public static class ProgramFiles
         }
     }
 
-    /// <returns>Number of files written; failures are noted in Fehler.log and don't stop the start.</returns>
+    /// <returns>Number of files written; failures are noted in the log and don't stop the start.</returns>
     public static int Install()
     {
         var assembly = typeof(ProgramFiles).Assembly;
@@ -56,7 +56,7 @@ public static class ProgramFiles
     /// Creates the folder for own programs if it is missing – at start and again whenever the programs dialog opens,
     /// so deleting it while the app runs does no harm – with the schema and the AI notes (kept current) and, only
     /// when the folder is new, an example to copy from. Never throws: if the folder can't be created (no rights, a
-    /// file of that name, …) that is noted in Fehler.log and the dialog lists just the shipped programs.
+    /// file of that name, …) that is noted in the log and the dialog lists just the shipped programs.
     /// </summary>
     /// <returns>Number of files written.</returns>
     public static int EnsureCustomFolder(string folder)
@@ -90,7 +90,7 @@ public static class ProgramFiles
     private static bool IsFileError(Exception ex) =>
         ex is IOException or UnauthorizedAccessException or NotSupportedException or ArgumentException or System.Security.SecurityException;
 
-    /// <summary>Fehler.log; <see cref="AppPaths.Log"/> itself never throws.</summary>
+    /// <summary>The log; <see cref="AppPaths.Log"/> itself never throws.</summary>
     private static void Log(string path, Exception ex) => AppPaths.Log(path, ex);
 
     private static bool WriteIfChanged(string resource, string path)

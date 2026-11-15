@@ -83,9 +83,9 @@ public sealed class ReplayPickerForm : Form
                 try
                 {
                     var program = TrainingProgram.Load(file);
-                    var description = (string.IsNullOrWhiteSpace(program.Beschreibung) ? "" : program.Beschreibung + "\n\n")
-                        + $"Eigenes Programm: {file}";
-                    form._entries.Add(new Entry("★ " + program.Name, file, () => new Selection(program.ToWorkout(), description)));
+                    var text = program.Description.Text;
+                    var description = (string.IsNullOrWhiteSpace(text) ? "" : text + "\n\n") + $"Eigenes Programm: {file}";
+                    form._entries.Add(new Entry("★ " + program.DisplayName, file, () => new Selection(program.ToWorkout(), description)));
                 }
                 catch (Exception ex) when (IsReadError(ex))
                 {
@@ -98,7 +98,7 @@ public sealed class ReplayPickerForm : Form
             try
             {
                 var program = TrainingProgram.Load(file);
-                form._entries.Add(new Entry(program.Name, file, () => new Selection(program.ToWorkout(), program.Beschreibung)));
+                form._entries.Add(new Entry(program.DisplayName, file, () => new Selection(program.ToWorkout(), program.Description.Text)));
             }
             catch (Exception ex) when (IsReadError(ex))
             {
@@ -137,13 +137,13 @@ public sealed class ReplayPickerForm : Form
     {
         var workout = WorkoutRecording.Load(file);
         var recording = Path.GetExtension(file).Equals(JsonRecorder.Extension, StringComparison.OrdinalIgnoreCase) ? RecordingFile.Load(file) : null;
-        var route = recording?.Vorgabe is { Strecke: { } points } target ? GpxRoute.FromPoints(target.Name, target.Datei, points) : null;
+        var route = recording?.Target is { Route: { } points } target ? GpxRoute.FromPoints(target.Name, target.File, points) : null;
         if (route is not null && recording is not null)
         {
             // The pulse of the recorded ride by distance, for the green curve while riding the route again.
-            int distance = Array.IndexOf(recording.Spalten, "Distanz_km"), pulse = Array.IndexOf(recording.Spalten, "Puls");
+            int distance = recording.ColumnIndex(RecordingFile.Col.Distance), pulse = recording.ColumnIndex(RecordingFile.Col.Pulse);
             if (distance >= 0 && pulse >= 0)
-                route.WithOriginalPulse(recording.Werte.Where(v => v.Length > Math.Max(distance, pulse)).Select(v => (v[distance] * 1000, (int)v[pulse])));
+                route.WithOriginalPulse(recording.Values.Where(v => v.Length > Math.Max(distance, pulse)).Select(v => (v[distance] * 1000, (int)v[pulse])));
         }
         var description = $"Gespeichert am {File.GetLastWriteTime(file):dd.MM.yyyy} um {File.GetLastWriteTime(file):HH:mm} Uhr\r\n"
             + (workout.HasPulse ? $"Puls damals: Ø {workout.AveragePulse:0}" : "Keine Pulsdaten aufgezeichnet") + "\r\n"
@@ -151,7 +151,7 @@ public sealed class ReplayPickerForm : Form
                 ? $"Wird wieder als Strecke gefahren: {route.Name}, {route.TotalDistance / 1000:0.0} km, {route.Ascent:0} Hm bergauf"
                 : "Folgt dem aufgezeichneten Leistungsverlauf") + "\r\n"
             + $"Ordner: {Path.GetDirectoryName(file)}";
-        return new Selection(workout, description, recording?.Einstellungen?.Ride, route);
+        return new Selection(workout, description, recording?.Settings?.Ride, route);
     });
 
     /// <summary>

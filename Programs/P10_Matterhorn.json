@@ -1,7 +1,12 @@
 {
-  "Name": "P10 Matterhorn",
-  "Beschreibung": "Bergprofil mit langem, steiler werdendem Anstieg, 30 min, maximal 270 W.\n\nHandbuch: für trainierte Personen.",
-  "Profil": [
+  "Name": {
+    "de": "P10 Matterhorn",
+    "en": "P10 Matterhorn"
+  },
+  "Description": {
+    "de": "Bergprofil mit langem, steiler werdendem Anstieg, 30 min, maximal 270 W.\n\nHandbuch: für trainierte Personen."
+  },
+  "Profile": [
     [0, 105],
     [15, 105],
     [30, 105],
@@ -123,5 +128,6 @@
     [1770, 105],
     [1785, 105],
     [1800, 105]
-  ]
+  ],
+  "DisplayName": "P10 Matterhorn"
 }

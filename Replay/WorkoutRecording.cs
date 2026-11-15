@@ -59,17 +59,18 @@ public sealed class WorkoutRecording
         // Programs and recordings are both JSON: a recording has a table of measured values.
         using (var doc = JsonDocument.Parse(File.ReadAllText(path)))
         {
-            if (!doc.RootElement.TryGetProperty("Werte", out _))
+            // "Values" (or "Werte" in recordings up to v1.5)
+            if (!doc.RootElement.TryGetProperty("Values", out _) && !doc.RootElement.TryGetProperty("Werte", out _))
                 return TrainingProgram.Load(path).ToWorkout();
         }
         var file = RecordingFile.Load(path);
         int Column(string column)
         {
-            var index = Array.IndexOf(file.Spalten, column);
+            var index = file.ColumnIndex(column);
             return index >= 0 ? index : throw new InvalidDataException($"Spalte \"{column}\" fehlt – ist das eine Aufzeichnung dieser App?");
         }
-        var (seconds, watt, pulse) = (Column("Sekunden"), Column("Soll_W"), Column("Puls"));
-        var rows = file.Werte.Where(r => r.Length > Math.Max(seconds, Math.Max(watt, pulse)))
+        var (seconds, watt, pulse) = (Column(RecordingFile.Col.Seconds), Column(RecordingFile.Col.TargetWatt), Column(RecordingFile.Col.Pulse));
+        var rows = file.Values.Where(r => r.Length > Math.Max(seconds, Math.Max(watt, pulse)))
             .Select(r => (r[seconds], (int)r[watt], (int)r[pulse]));
         return new WorkoutRecording(name, Increasing(rows)) { FilePath = path };
     }
@@ -80,15 +81,16 @@ public sealed class WorkoutRecording
         var lines = File.ReadAllLines(path);
         if (lines.Length < 3)
             throw new InvalidDataException("Die Datei enthält keine Messwerte.");
-        var header = lines[0].TrimStart('\uFEFF').Split(';');
+        // German titles (the app's CSV export) or the ids; both map to the ids.
+        var header = lines[0].TrimStart('\uFEFF').Split(';').Select(RecordingFile.ColumnId).ToArray();
         int Column(string name)
         {
             var index = Array.IndexOf(header, name);
             return index >= 0 ? index : throw new InvalidDataException($"Spalte \"{name}\" fehlt – ist das eine Aufzeichnung dieser App?");
         }
-        var secondsColumn = Column("Sekunden");
-        var wattColumn = Column("Soll_W");
-        var pulseColumn = Column("Puls");
+        var secondsColumn = Column(RecordingFile.Col.Seconds);
+        var wattColumn = Column(RecordingFile.Col.TargetWatt);
+        var pulseColumn = Column(RecordingFile.Col.Pulse);
 
         var rows = new List<(double, int, int)>();
         foreach (var line in lines.Skip(1))

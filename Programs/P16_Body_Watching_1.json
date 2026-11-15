@@ -1,7 +1,12 @@
 {
-  "Name": "P16 Body Watching 1",
-  "Beschreibung": "Figurtraining mit gleichmäßigen Belastungswechseln, 34 min, maximal 125 W.\n\nHandbuch: für trainierte Damen bis 30 Jahre.",
-  "Profil": [
+  "Name": {
+    "de": "P16 Body Watching 1",
+    "en": "P16 Body Watching 1"
+  },
+  "Description": {
+    "de": "Figurtraining mit gleichmäßigen Belastungswechseln, 34 min, maximal 125 W.\n\nHandbuch: für trainierte Damen bis 30 Jahre."
+  },
+  "Profile": [
     [0, 55],
     [15, 55],
     [30, 55],
@@ -139,5 +144,6 @@
     [2010, 60],
     [2025, 60],
     [2040, 60]
-  ]
+  ],
+  "DisplayName": "P16 Body Watching 1"
 }

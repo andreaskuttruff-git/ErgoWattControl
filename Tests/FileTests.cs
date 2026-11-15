@@ -9,15 +9,15 @@ public class FileTests
         var file = new RecordingFile
         {
             Start = new DateTime(2026, 11, 14, 18, 0, 0),
-            Ende = new DateTime(2026, 11, 14, 18, 2, 0),
-            Einstellungen = new AppSettings(),
-            Spalten = RecordingFile.BaseColumns,
+            End = new DateTime(2026, 11, 14, 18, 2, 0),
+            Settings = new AppSettings(),
+            Columns = RecordingFile.BaseColumns,
         };
         for (var s = 0; s < 120; s++)
         {
             var watt = s < 60 ? 100 : 200;
             // Uhrzeit_s, Sekunden, Soll_W, Ist_W, RPM, Puls, Speed_kmh, Distanz_km, Energie_kJ, Umdrehungen
-            file.Werte.Add([s, s, watt, watt, 85, 100 + s / 2, 30, Math.Round(s / 120.0, 1), Math.Round(s * watt / 1000.0, 1), s * 85 / 60]);
+            file.Values.Add([s, s, watt, watt, 85, 100 + s / 2, 30, Math.Round(s / 120.0, 1), Math.Round(s * watt / 1000.0, 1), s * 85 / 60]);
         }
         return file;
     }
@@ -36,6 +36,86 @@ public class FileTests
         Assert.Equal(200, workout.WattAt(90));
         Assert.True(workout.HasPulse);
         Assert.Equal(115, workout.PulseAt(30));
+    }
+
+    [Fact]
+    public void Recording_IsWrittenWithEnglishKeysOnly()
+    {
+        var path = Path.Combine(TestFolder.New("format"), "Lauf.json");
+        SampleRecording().Save(path);
+
+        using var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(path));
+        var root = json.RootElement;
+        Assert.Equal("ErgoWattControl-Recording", root.GetProperty("Format").GetString());
+        Assert.Equal(2, root.GetProperty("Version").GetInt32());
+        foreach (var key in new[] { "Kind", "Start", "Settings", "Columns", "Values" })
+            Assert.True(root.TryGetProperty(key, out _), key);
+        foreach (var old in new[] { "Art", "Ende", "Einstellungen", "Vorgabe", "Spalten", "Werte" })
+            Assert.False(root.TryGetProperty(old, out _), old);
+        Assert.Equal(RecordingFile.Col.Watt, root.GetProperty("Columns")[3].GetString());
+    }
+
+    /// <summary>A route recording as v1.5 wrote it: German keys, column names and kind.</summary>
+    private const string OldRouteRecording = """
+        {
+          "Format": "ErgoWattControl-Aufzeichnung",
+          "Version": 1,
+          "Art": "Strecke",
+          "Start": "2026-11-09T18:00:00",
+          "Ende": "2026-11-09T18:00:12",
+          "Vorgabe": { "Name": "Hügel", "Datei": "C:\\GPX\\Huegel.gpx",
+                       "Strecke": [[0, 400, 47.0, 9.0], [10, 400.5, 47.0001, 9.0], [20, 401, 47.0002, 9.0]] },
+          "Spalten": ["Uhrzeit_s", "Sekunden", "Soll_W", "Ist_W", "RPM", "Puls", "Speed_kmh", "Distanz_km", "Energie_kJ", "Umdrehungen", "Steigung_Prozent", "Gang"],
+          "Werte": [
+            [0, 0, 150, 148, 80, 120, 20, 0, 0, 0, 5, 8],
+            [6, 6, 150, 150, 80, 125, 20, 0.033, 0.9, 8, 5, 8],
+            [12, 12, 160, 158, 82, 130, 21, 0.068, 1.8, 16, 5, 8]
+          ]
+        }
+        """;
+
+    [Fact]
+    public void OldRecording_IsReadWithCurrentNames()
+    {
+        var path = Path.Combine(TestFolder.New("alt"), "Strecke_alt.json");
+        File.WriteAllText(path, OldRouteRecording);
+
+        var file = RecordingFile.Load(path);
+
+        Assert.Equal(RecordingFile.Kinds.Route, file.Kind);
+        Assert.Equal(new DateTime(2026, 11, 9, 18, 0, 12), file.End);
+        Assert.Equal("C:\\GPX\\Huegel.gpx", file.Target!.File);
+        Assert.Equal(3, file.Target.Route!.Length);
+        Assert.Equal([.. RecordingFile.BaseColumns, .. RecordingFile.RouteColumns], file.Columns);
+        Assert.Equal(158, file.Values[2][file.ColumnIndex(RecordingFile.Col.Watt)]);
+    }
+
+    [Fact]
+    public void OldRecording_CanBeReplayedAndExported()
+    {
+        var folder = TestFolder.New("alt_export");
+        var path = Path.Combine(folder, "Strecke_alt.json");
+        File.WriteAllText(path, OldRouteRecording);
+
+        var workout = WorkoutRecording.Load(path);
+        Assert.Equal(160, workout.WattAt(12));
+        Assert.Equal(130, workout.PulseAt(12));
+
+        var fit = Path.Combine(folder, "alt.fit");
+        RecordingExport.WriteFit(RecordingFile.Load(path), fit);
+        Assert.Equal(3, FitImport.Load(fit).Samples.Count);
+    }
+
+    [Fact]
+    public void Csv_WithEnglishColumnIds_CanBeReplayed()
+    {
+        var path = Path.Combine(TestFolder.New("csv_en"), "Ride.csv");
+        File.WriteAllText(path, "Zeitstempel;Time_s;Seconds;Target_W;Pulse\n2026-11-15 10:00:00;0;0;100;110\n2026-11-15 10:00:20;20;20;150;120\n");
+
+        var workout = WorkoutRecording.Load(path);
+
+        Assert.Equal(150, workout.WattAt(20));
+        Assert.Equal(120, workout.PulseAt(20));
     }
 
     [Fact]
@@ -62,7 +142,7 @@ public class FileTests
     {
         var path = Path.Combine(TestFolder.New("fitleer"), "Leer.fit");
         var empty = SampleRecording();
-        empty.Werte.Clear();
+        empty.Values.Clear();
 
         Assert.Throws<InvalidDataException>(() => RecordingExport.WriteFit(empty, path));
         Assert.False(File.Exists(path));

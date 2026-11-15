@@ -7,7 +7,7 @@ Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist
 
 ## Aufgabe: ein Programm erstellen
 
-1. Neue Datei `<Name>.json` in **diesem** Ordner anlegen (nicht im Ordner `Programme` – den stellt die App beim Start
+1. Neue Datei `<Name>.json` in **diesem** Ordner anlegen (nicht im Ordner `Programs` – den stellt die App beim Start
    wieder her). Dateiname ohne Leerzeichen und Umlaute, z. B. `Intervall_6x2min.json`; er erscheint im Dateinamen
    der späteren Aufzeichnung.
 2. Inhalt nach `TrainingProgram.schema.json` (JSON-Schema, maßgeblich) – Vorlage: `Example_Custom_Program.json`.
@@ -17,12 +17,22 @@ Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist
 {
   "$schema": "./TrainingProgram.schema.json",
   "Name": "Intervall 6×2 min – FTP 150 W",
-  "Beschreibung": "Aufbau in einem Satz.\n\nZiel: …\n\nHinweis: …",
-  "Profil": [ [0, 70], [300, 140], [420, 80], [540, 140], [660, 70], [900, 70] ]
+  "Description": "Aufbau in einem Satz.\n\nZiel: …\n\nHinweis: …",
+  "Profile": [ [0, 70], [300, 140], [420, 80], [540, 140], [660, 70], [900, 70] ]
 }
 ```
 
-## Regeln für `Profil`
+`Name` und `Description` sind entweder **ein Text** (gilt für alle Sprachen) oder **ein Text je Sprache** – dann
+zeigt die App den Text in der Sprache ihrer Oberfläche, sonst Englisch, sonst Deutsch:
+
+```json
+  "Name": { "de": "Intervall 6×2 min", "en": "Intervals 6×2 min" },
+  "Description": { "de": "Aufbau …", "en": "Structure …" },
+```
+
+Wünscht der Fahrer nichts anderes, genügt ein Text in seiner Sprache; auf Wunsch beide Sprachen schreiben.
+
+## Regeln für `Profile`
 
 - Liste von Punkten `[Sekunde, Watt]`, beides ganze Zahlen. Die Leistung eines Punkts gilt **bis zum nächsten
   Punkt**; der **letzte Punkt markiert das Ende** (seine Sekunde = Gesamtdauer, Watt = wie der Punkt davor).
@@ -35,7 +45,7 @@ Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist
 ## Inhaltliche Konventionen
 
 - **Name** (max. 80 Zeichen): kurz und eindeutig; bei FTP-bezogenen Programmen die FTP nennen, z. B. `– FTP 150 W`.
-- **Beschreibung**: Aufbau (Blöcke, Dauer, Leistung in Watt und % FTP), Ziel, Hinweise (z. B. Trittfrequenz);
+- **Description**: Aufbau (Blöcke, Dauer, Leistung in Watt und % FTP), Ziel, Hinweise (z. B. Trittfrequenz);
   Absätze mit `\n\n`. Quelle angeben, wenn das Programm einer Trainingsmethode oder Studie folgt.
 - Aufbau: Einfahren (5–13 min ansteigend, ca. 45–75 % FTP), Hauptteil, Ausfahren (3–10 min, ca. 40–50 % FTP).
 - **FTP** = Leistung, die man etwa eine Stunde halten kann (Rampentest S00 in der App). Übliche Bereiche:
@@ -47,9 +57,14 @@ Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist
 ## Prüfen
 
 - Gegen das Schema validieren (z. B. VS Code mit der `$schema`-Zeile, oder `python -m jsonschema`).
-- In der App: eine fehlerhafte Datei erscheint im Dialog unter „Nicht lesbar“ mit Grund (z. B. „Profil, Punkt 3:
+- In der App: eine fehlerhafte Datei erscheint im Dialog unter „Nicht lesbar“ mit Grund (z. B. „Profile, Punkt 3:
   Sekunde 200 muss größer sein als beim Punkt davor“ oder die Zeile des JSON-Fehlers).
 - Der Dialog zeigt zum ausgewählten Programm den Verlauf als Grafik, Dauer, Ø- und Maximalleistung.
+
+## Ältere Dateien
+
+Programme mit den Feldern `Beschreibung` und `Profil` (bis ErgoWattControl 1.5) liest die App weiterhin; neue
+Programme bitte mit `Description` und `Profile` schreiben.
 
 ## Nicht ändern
 

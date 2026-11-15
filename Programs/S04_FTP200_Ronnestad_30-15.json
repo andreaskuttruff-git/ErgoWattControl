@@ -1,7 +1,12 @@
 {
-  "Name": "S04 Rønnestad 30/15 – FTP 200 W",
-  "Beschreibung": "3 Serien mit je 13 × (30 s bei 125 % FTP / 15 s bei 50 %), 3 min Pause zwischen den Serien, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: VO₂max und Leistung über 20 min. Die kurzen Pausen halten die Sauerstoffaufnahme lange auf hohem Niveau.\n\nQuelle: Rønnestad et al. 2015 und 2020 – bei trainierten Radfahrern bessere Ergebnisse als 4 × 5 min.",
-  "Profil": [
+  "Name": {
+    "de": "S04 Rønnestad 30/15 – FTP 200 W",
+    "en": "S04 Rønnestad 30/15 – FTP 200 W"
+  },
+  "Description": {
+    "de": "3 Serien mit je 13 × (30 s bei 125 % FTP / 15 s bei 50 %), 3 min Pause zwischen den Serien, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: VO₂max und Leistung über 20 min. Die kurzen Pausen halten die Sauerstoffaufnahme lange auf hohem Niveau.\n\nQuelle: Rønnestad et al. 2015 und 2020 – bei trainierten Radfahrern bessere Ergebnisse als 4 × 5 min."
+  },
+  "Profile": [
     [0, 90],
     [15, 90],
     [30, 90],
@@ -236,5 +241,6 @@
     [3465, 80],
     [3480, 80],
     [3495, 80]
-  ]
+  ],
+  "DisplayName": "S04 Rønnestad 30/15 – FTP 200 W"
 }

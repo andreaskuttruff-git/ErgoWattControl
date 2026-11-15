@@ -121,7 +121,7 @@ public sealed class DaumErgometer : IErgometer
                 Report($"Verbunden auf {port}", true, _capabilities.Info);
                 if (_lostAt is { } lost)
                 {
-                    AppPaths.Note($"Cockpit auf {port} wieder verbunden nach {(DateTime.Now - lost).TotalSeconds:0} s");
+                    AppPaths.Note($"Cockpit on {port} reconnected after {(DateTime.Now - lost).TotalSeconds:0} s");
                     _lostAt = null;
                 }
                 Poll(cockpit);
@@ -132,7 +132,7 @@ public sealed class DaumErgometer : IErgometer
                 if (IsConnected)
                 {
                     _lostAt = DateTime.Now;
-                    AppPaths.Log($"Cockpit-Verbindung auf {port} unterbrochen ({Describe(ex)})", ex);
+                    AppPaths.Log($"Cockpit connection on {port} lost ({ex.GetType().Name})", ex);
                 }
                 Report($"{port}: {Describe(ex)} – neuer Versuch …", false, $"{ex.GetType().Name}: {ex.Message}");
             }
@@ -204,8 +204,8 @@ public sealed class DaumErgometer : IErgometer
             if (data.Program != 0)
             {
                 if (++reinitsInRow > MaxReinitsInRow)
-                    throw new IOException($"Cockpit bleibt in Programm {data.Program} statt im freien Training");
-                AppPaths.Note($"Cockpit in Programm {data.Program} statt im freien Training – wird neu eingestellt ({reinitsInRow}. Mal)");
+                    throw new IOException($"Cockpit stays in program {data.Program} instead of free training");
+                AppPaths.Note($"Cockpit in program {data.Program} instead of free training – set up again (attempt {reinitsInRow})");
                 InitializeCockpit(cockpit);
                 continue;
             }
@@ -235,7 +235,7 @@ public sealed class DaumErgometer : IErgometer
     /// <summary>
     /// A single missing answer (a disturbed byte, a short load peak on the PC) is asked again at once instead of
     /// tearing down the connection – that took several seconds without data. Only repeated failures count as a lost
-    /// connection; each retry that rescued it is noted in Fehler.log.
+    /// connection; each retry that rescued it is noted in the log.
     /// </summary>
     private T Retry<T>(Func<T> request)
     {
@@ -245,7 +245,7 @@ public sealed class DaumErgometer : IErgometer
             {
                 var result = request();
                 if (attempt > 0)
-                    AppPaths.Note($"Cockpit: Antwort nach {attempt} Wiederholung(en) erhalten");
+                    AppPaths.Note($"Cockpit: answered after {attempt} retry/retries");
                 return result;
             }
             catch (TimeoutException) when (attempt < QuickRetries && _running)

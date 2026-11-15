@@ -16,19 +16,25 @@ public static class RecordingExport
     /// <summary>One row of the recording, by column name (columns a recording lacks read as null).</summary>
     private sealed class Row(RecordingFile file, double[] values)
     {
-        public double? this[string column] => Array.IndexOf(file.Spalten, column) is var i and >= 0 && i < values.Length ? values[i] : null;
+        public double? this[string column] => file.ColumnIndex(column) is var i and >= 0 && i < values.Length ? values[i] : null;
     }
+
+    private const string CsvTimestampTitle = "Zeitstempel";
+
+    /// <summary>Column title in the CSV for Excel: the German names (reading a CSV accepts these and the ids).</summary>
+    private static string CsvTitle(string column) =>
+        RecordingFile.OldColumns.FirstOrDefault(c => c.Value == column).Key ?? column;
 
     public static void WriteCsv(RecordingFile file, string path) => WriteComplete(path, temp => WriteCsvTo(file, temp));
 
     private static void WriteCsvTo(RecordingFile file, string path)
     {
         var text = new StringBuilder();
-        text.AppendLine("Zeitstempel;" + string.Join(';', file.Spalten));
-        var uhrzeit = Array.IndexOf(file.Spalten, "Uhrzeit_s");
-        foreach (var values in file.Werte)
+        text.AppendLine(CsvTimestampTitle + ";" + string.Join(';', file.Columns.Select(CsvTitle)));
+        var timeColumn = file.ColumnIndex(RecordingFile.Col.Time);
+        foreach (var values in file.Values)
         {
-            var time = file.Start.AddSeconds(uhrzeit >= 0 ? values[uhrzeit] : 0);
+            var time = file.Start.AddSeconds(timeColumn >= 0 ? values[timeColumn] : 0);
             text.AppendLine(time.ToString("yyyy-MM-dd HH:mm:ss", German) + ";" + string.Join(';', values.Select(v => v.ToString(German))));
         }
         File.WriteAllText(path, text.ToString(), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
@@ -56,22 +62,22 @@ public static class RecordingExport
 
     private static void WriteFitTo(RecordingFile file, string path)
     {
-        if (file.Werte.Count == 0)
+        if (file.Values.Count == 0)
             throw new InvalidDataException("Die Aufzeichnung enthält keine Messwerte.");
-        var rows = file.Werte.Select(v => new Row(file, v)).ToList();
-        var route = file.Vorgabe?.Strecke;
+        var rows = file.Values.Select(v => new Row(file, v)).ToList();
+        var route = file.Target?.Route;
         var virtualRide = route is { Length: > 1 };
-        Fit.DateTime At(Row row) => new(file.Start.AddSeconds(row["Uhrzeit_s"] ?? 0).ToUniversalTime());
+        Fit.DateTime At(Row row) => new(file.Start.AddSeconds(row[RecordingFile.Col.Time] ?? 0).ToUniversalTime());
 
         var start = new Fit.DateTime(file.Start.ToUniversalTime());
         var end = At(rows[^1]);
-        var elapsed = (float)(rows[^1]["Uhrzeit_s"] ?? 0);
-        var timer = (float)(rows[^1]["Sekunden"] ?? elapsed);
-        var distance = (float)((rows[^1]["Distanz_km"] ?? 0) * 1000);
-        var watts = rows.Select(r => r["Ist_W"] ?? 0).ToList();
-        var pulses = rows.Select(r => r["Puls"] ?? 0).Where(p => p > 0).ToList();
-        var cadences = rows.Select(r => r["RPM"] ?? 0).Where(c => c > 0).ToList();
-        var energyKJ = rows[^1]["Energie_kJ"] ?? watts.Sum() / 1000;
+        var elapsed = (float)(rows[^1][RecordingFile.Col.Time] ?? 0);
+        var timer = (float)(rows[^1][RecordingFile.Col.Seconds] ?? elapsed);
+        var distance = (float)((rows[^1][RecordingFile.Col.Distance] ?? 0) * 1000);
+        var watts = rows.Select(r => r[RecordingFile.Col.Watt] ?? 0).ToList();
+        var pulses = rows.Select(r => r[RecordingFile.Col.Pulse] ?? 0).Where(p => p > 0).ToList();
+        var cadences = rows.Select(r => r[RecordingFile.Col.Rpm] ?? 0).Where(c => c > 0).ToList();
+        var energyKJ = rows[^1][RecordingFile.Col.Energy] ?? watts.Sum() / 1000;
 
         using var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite);
         var encoder = new Fit.Encode(Fit.ProtocolVersion.V20);
@@ -97,15 +103,15 @@ public static class RecordingExport
         {
             var record = new Fit.RecordMesg();
             record.SetTimestamp(At(row));
-            if (row["Ist_W"] is { } watt)
+            if (row[RecordingFile.Col.Watt] is { } watt)
                 record.SetPower((ushort)Math.Max(0, watt));
-            if (row["RPM"] is { } rpm)
+            if (row[RecordingFile.Col.Rpm] is { } rpm)
                 record.SetCadence((byte)Math.Clamp(rpm, 0, 254));
-            if (row["Puls"] is { } pulse and > 0)
+            if (row[RecordingFile.Col.Pulse] is { } pulse and > 0)
                 record.SetHeartRate((byte)Math.Clamp(pulse, 0, 254));
-            if (row["Speed_kmh"] is { } speed)
+            if (row[RecordingFile.Col.Speed] is { } speed)
                 record.SetSpeed((float)(speed / 3.6));
-            if (row["Distanz_km"] is { } km)
+            if (row[RecordingFile.Col.Distance] is { } km)
             {
                 record.SetDistance((float)(km * 1000));
                 if (virtualRide && PointAt(route!, km * 1000) is { } point)

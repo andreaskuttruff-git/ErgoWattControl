@@ -36,13 +36,13 @@ static class Program
     static void Main(string[] args)
     {
         // Last line of defence: an unexpected error in an event handler is logged and reported instead of
-        // ending the app mid-training without a trace; the app keeps running (Fehler.log has the stack trace).
+        // ending the app mid-training without a trace; the app keeps running (the log has the stack trace).
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
         Application.ThreadException += (_, e) => ReportUnexpected(e.Exception);
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
         {
             if (e.ExceptionObject is Exception ex)
-                AppPaths.Log("Unbehandelter Fehler (App wird beendet)", ex);
+                AppPaths.Log("Unhandled error (app ends)", ex);
         };
         ApplicationConfiguration.Initialize();
         // All dialogs dark like the ride view (and the Windows dark title bar); MessageBox stays as Windows draws it.
@@ -88,7 +88,7 @@ static class Program
     /// <summary>Logs an error that escaped an event handler and tells the rider once (no stacked message boxes).</summary>
     private static void ReportUnexpected(Exception ex)
     {
-        AppPaths.Log("Unerwarteter Fehler", ex);
+        AppPaths.Log("Unexpected error", ex);
         if (_reporting)
             return;
         _reporting = true;

@@ -425,7 +425,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            AppPaths.Log("Aufzeichnung abgebrochen", ex);
+            AppPaths.Log("Recording stopped", ex);
             StopRecording();
             MessageBox.Show(this, $"Aufzeichnung abgebrochen:\n{ex.Message}", "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -460,7 +460,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            AppPaths.Log("Aufzeichnung anlegen", ex);
+            AppPaths.Log("Creating the recording", ex);
             // Route, replay and program: shown once – the controller doesn't try again in this run, the ride goes on.
             var text = Guided
                 ? $"Die Aufzeichnung konnte nicht angelegt werden – auch nicht im Ersatzordner. Das Training läuft ohne Aufzeichnung weiter:\n{ex.Message}\n\nOrdner: {_settings.RecordingDirectory}"
@@ -476,7 +476,7 @@ public sealed class RideForm : Form
         if (_training.RecordingInFallbackFolder && _training.Recorder is { } recorder)
             MessageBox.Show(this, $"Der Ablageordner ist nicht beschreibbar:\n{_settings.RecordingDirectory}\n\n"
                 + $"Die Aufzeichnung wird stattdessen hier gespeichert:\n{Path.GetDirectoryName(recorder.FilePath)}\n\n"
-                + "Export und „Aufzeichnung nachfahren“ finden sie dort. Der Grund steht in Fehler.log.",
+                + "Export und „Aufzeichnung nachfahren“ finden sie dort. Der Grund steht im Protokoll ErgoWattControl.log.",
                 "Aufzeichnung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
@@ -659,7 +659,7 @@ public sealed class RideForm : Form
     /// <summary>F1: the help section for what is on screen now.</summary>
     private string HelpSection => _training.Mode.HelpSection;
 
-    /// <summary>Shows why a route or training could not be loaded and keeps the full exception in Fehler.log.</summary>
+    /// <summary>Shows why a route or training could not be loaded and keeps the full exception in the log.</summary>
     private void ShowLoadError(string what, string caption, string path, Exception ex)
     {
         AppPaths.Log(path, ex);

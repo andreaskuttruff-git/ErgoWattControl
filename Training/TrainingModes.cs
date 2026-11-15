@@ -10,7 +10,7 @@ public abstract class TrainingMode
     /// <summary>The power comes from the route or profile, the rider only adjusts it; the recording starts by itself.</summary>
     public abstract bool Guided { get; }
 
-    /// <summary>"Art" of the recording file: "Training", "Strecke" or "Programm".</summary>
+    /// <summary>Kind of the recording file (<see cref="RecordingFile.Kinds"/>).</summary>
     public abstract string RecordingKind { get; }
 
     /// <summary>The route or power profile stored with the recording; null in free training.</summary>
@@ -63,7 +63,7 @@ public abstract class TrainingMode
 public sealed class FreeTraining : TrainingMode
 {
     public override bool Guided => false;
-    public override string RecordingKind => "Training";
+    public override string RecordingKind => RecordingFile.Kinds.Training;
     public override string HelpSection => "ansicht";
 
     public override string DefaultFileName(AppSettings settings, DateTime now) =>
@@ -80,7 +80,7 @@ public sealed class RouteTraining(RouteSession session) : TrainingMode
     public RouteSession Session { get; } = session;
 
     public override bool Guided => true;
-    public override string RecordingKind => "Strecke";
+    public override string RecordingKind => RecordingFile.Kinds.Route;
     public override RecordingTarget? RecordingTarget => RecordingTarget.FromRoute(Session.Route);
     public override string HelpSection => "strecke";
     public override string Name => Session.Route.Name;
@@ -133,7 +133,7 @@ public sealed class ReplayTraining(ReplaySession session, string? programFile) :
     public bool IsProgram => ProgramFile is not null;
 
     public override bool Guided => true;
-    public override string RecordingKind => IsProgram ? "Programm" : "Training";
+    public override string RecordingKind => IsProgram ? RecordingFile.Kinds.Program : RecordingFile.Kinds.Training;
     public override RecordingTarget? RecordingTarget => RecordingTarget.FromWorkout(Session.Workout);
     public override string HelpSection => IsProgram ? "programm" : "training";
     public override string Name => Session.Workout.Name;

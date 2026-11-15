@@ -1,7 +1,12 @@
 {
-  "Name": "S07 Sprint 3×20 s – FTP 150 W",
-  "Beschreibung": "10-min-Kurzprogramm: 2 min locker, dann 3 × 20 s Sprint bei 200 % FTP mit je 2 min lockerer Pause.\n\nDie Bremse hält eine feste Leistung, ein echter Maximalsprint ist daher nicht möglich – fahre die Sprints mit hoher Trittfrequenz.\n\nQuelle: Gillen et al. 2016 – nach 12 Wochen ähnliche Verbesserungen von Fitness und Insulinempfindlichkeit wie 50 min Dauertraining, bei einem Fünftel der Zeit.",
-  "Profil": [
+  "Name": {
+    "de": "S07 Sprint 3×20 s – FTP 150 W",
+    "en": "S07 Sprint 3×20 s – FTP 150 W"
+  },
+  "Description": {
+    "de": "10-min-Kurzprogramm: 2 min locker, dann 3 × 20 s Sprint bei 200 % FTP mit je 2 min lockerer Pause.\n\nDie Bremse hält eine feste Leistung, ein echter Maximalsprint ist daher nicht möglich – fahre die Sprints mit hoher Trittfrequenz.\n\nQuelle: Gillen et al. 2016 – nach 12 Wochen ähnliche Verbesserungen von Fitness und Insulinempfindlichkeit wie 50 min Dauertraining, bei einem Fünftel der Zeit."
+  },
+  "Profile": [
     [0, 60],
     [5, 60],
     [10, 60],
@@ -123,5 +128,6 @@
     [590, 60],
     [595, 60],
     [600, 60]
-  ]
+  ],
+  "DisplayName": "S07 Sprint 3×20 s – FTP 150 W"
 }

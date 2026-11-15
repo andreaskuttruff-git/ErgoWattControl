@@ -12,7 +12,7 @@ public static class AppPaths
     /// <summary>True if a settings.json lies next to the exe: settings and data stay in the app folder.</summary>
     public static bool Portable { get; } = File.Exists(Path.Combine(AppContext.BaseDirectory, "settings.json"));
 
-    /// <summary>Folder of settings.json and Fehler.log.</summary>
+    /// <summary>Folder of settings.json and the log (<see cref="LogFile"/>).</summary>
     public static string SettingsFolder { get; private set; } = Portable
         ? AppContext.BaseDirectory
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name);
@@ -23,7 +23,7 @@ public static class AppPaths
         : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Name);
 
     /// <summary>
-    /// Unit tests only: keeps settings, Fehler.log and data in <paramref name="folder"/>, so a test never touches the
+    /// Unit tests only: keeps settings, the log and data in <paramref name="folder"/>, so a test never touches the
     /// rider's real settings or recordings.
     /// </summary>
     internal static void UseFolderForTests(string folder)
@@ -35,16 +35,20 @@ public static class AppPaths
 
     /// <summary>
     /// Last resort for recordings when the chosen folder (and the default one) can't be written: in the rider's own
-    /// profile, %LocalAppData%\ErgoWattControl\Aufzeichnungen – not Temp, which Windows empties without asking.
+    /// profile, %LocalAppData%\ErgoWattControl\Recordings – not Temp, which Windows empties without asking.
     /// </summary>
     public static string FallbackRecordingFolder { get; private set; } =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Name, "Aufzeichnungen");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), Name, "Recordings");
 
     public static string SettingsFile => Path.Combine(SettingsFolder, "settings.json");
 
-    public static string LogFile => Path.Combine(SettingsFolder, "Fehler.log");
+    /// <summary>Errors and connection notes, in English whatever the app's language (for troubleshooting, not for the rider).</summary>
+    public static string LogFile => Path.Combine(SettingsFolder, "ErgoWattControl.log");
 
-    /// <summary>Appends an error with its details to Fehler.log; never throws.</summary>
+    /// <summary>Default folder for recordings below <see cref="DataFolder"/>.</summary>
+    public static string DefaultRecordingFolder => Path.Combine(DataFolder, "Recordings");
+
+    /// <summary>Appends an error with its details to the log; never throws.</summary>
     public static void Log(string what, Exception ex)
     {
         try
@@ -55,7 +59,7 @@ public static class AppPaths
         catch (Exception) { }
     }
 
-    /// <summary>Appends a one-line note (no exception) to Fehler.log, e.g. the cockpit connection coming back; never throws.</summary>
+    /// <summary>Appends a one-line note (no exception) to the log, e.g. the cockpit connection coming back; never throws.</summary>
     public static void Note(string what)
     {
         try

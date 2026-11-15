@@ -13,7 +13,7 @@ public sealed class AppSettings
     public string Device { get; set; } = ErgometerTypes.DaumRs232;
     /// <summary>COM port of the Daum cockpit.</summary>
     public string? PortName { get; set; }
-    public string RecordingDirectory { get; set; } = Path.Combine(AppPaths.DataFolder, "Aufzeichnungen");
+    public string RecordingDirectory { get; set; } = AppPaths.DefaultRecordingFolder;
 
     /// <summary>Windows device name (e.g. \\.\DISPLAY1) of the monitor for the ride view; null = first non-primary monitor.</summary>
     public string? RideMonitor { get; set; }
@@ -25,13 +25,24 @@ public sealed class AppSettings
 
     /// <summary>
     /// File name patterns per recording type (without extension). Placeholders:
-    /// {Datum} = yyyy-MM-dd, {Uhrzeit} = HH-mm-ss, {Strecke} = GPX file name, {Training} = replayed recording,
-    /// {Programm} = program file name (e.g. S02_FTP200_Norwegisch_4x4).
+    /// {Date} = yyyy-MM-dd, {Time} = HH-mm-ss, {Route} = GPX file name, {Training} = replayed recording,
+    /// {Program} = program file name (e.g. S02_FTP200_Norwegian_4x4). The German placeholders of v1.x
+    /// ({Datum}, {Uhrzeit}, {Strecke}, {Programm}) are converted when the settings are loaded.
     /// Training covers free training and replaying a recording: both are the rider's own training.
     /// </summary>
-    public string FileNameTraining { get; set; } = "Training_{Datum}_{Uhrzeit}";
-    public string FileNameRoute { get; set; } = "Strecke_{Strecke}_{Datum}_{Uhrzeit}";
-    public string FileNameProgram { get; set; } = "Prog_{Programm}_{Datum}_{Uhrzeit}";
+    public string FileNameTraining { get => _fileNameTraining; set => _fileNameTraining = EnglishPlaceholders(value); }
+    public string FileNameRoute { get => _fileNameRoute; set => _fileNameRoute = EnglishPlaceholders(value); }
+    public string FileNameProgram { get => _fileNameProgram; set => _fileNameProgram = EnglishPlaceholders(value); }
+    private string _fileNameTraining = "Training_{Date}_{Time}";
+    private string _fileNameRoute = "Route_{Route}_{Date}_{Time}";
+    private string _fileNameProgram = "Program_{Program}_{Date}_{Time}";
+
+    /// <summary>The placeholders of v1.x in a file name pattern replaced by the current ones.</summary>
+    public static string EnglishPlaceholders(string pattern) => (pattern ?? "")
+        .Replace("{Datum}", "{Date}")
+        .Replace("{Uhrzeit}", "{Time}")
+        .Replace("{Strecke}", "{Route}")
+        .Replace("{Programm}", "{Program}");
 
     /// <summary>"Aufzeichnung exportieren": formats ticked last time and the target folder (null = Export\ in the recording folder).</summary>
     public bool ExportFit { get; set; } = true;
@@ -90,13 +101,13 @@ public sealed class AppSettings
         catch (JsonException ex)
         {
             // Corrupt file: keep a copy for diagnosis, then fall back to defaults and overwrite it below.
-            AppPaths.Log("settings.json defekt, Standardwerte werden benutzt", ex);
+            AppPaths.Log("settings.json damaged, using defaults", ex);
             try { File.Copy(AppPaths.SettingsFile, AppPaths.SettingsFile + ".defekt", overwrite: true); } catch (Exception) { }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             // Unreadable (locked, no permission): start with defaults but don't overwrite the file.
-            AppPaths.Log("settings.json nicht lesbar, Standardwerte werden benutzt", ex);
+            AppPaths.Log("settings.json not readable, using defaults", ex);
             return Defaults();
         }
 
@@ -117,7 +128,7 @@ public sealed class AppSettings
         try { Save(); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            AppPaths.Log("settings.json speichern", ex);
+            AppPaths.Log("Saving settings.json", ex);
         }
     }
 
@@ -134,15 +145,15 @@ public sealed class AppSettings
     public AppSettings Snapshot() => JsonSerializer.Deserialize<AppSettings>(JsonSerializer.Serialize(this))!;
 
     /// <summary>Fills a file name pattern; characters not allowed in file names are replaced by "_".</summary>
-    /// <param name="route">Route, replayed recording or program that {Strecke}, {Training} and {Programm} stand for.</param>
+    /// <param name="route">Route, replayed recording or program that {Route}, {Training} and {Program} stand for.</param>
     public static string BuildFileName(string pattern, DateTime time, string? route)
     {
-        var name = pattern
-            .Replace("{Datum}", time.ToString("yyyy-MM-dd"))
-            .Replace("{Uhrzeit}", time.ToString("HH-mm-ss"))
-            .Replace("{Strecke}", route ?? "")
+        var name = EnglishPlaceholders(pattern)
+            .Replace("{Date}", time.ToString("yyyy-MM-dd"))
+            .Replace("{Time}", time.ToString("HH-mm-ss"))
+            .Replace("{Route}", route ?? "")
             .Replace("{Training}", route ?? "")
-            .Replace("{Programm}", route ?? "");
+            .Replace("{Program}", route ?? "");
         return SanitizeFileName(name) ?? $"Aufnahme_{time:yyyy-MM-dd_HH-mm-ss}";
     }
 
@@ -153,7 +164,7 @@ public sealed class AppSettings
     public IReadOnlyList<string> RecordingFolders()
     {
         var folders = new List<string>();
-        foreach (var folder in new[] { RecordingDirectory, Path.Combine(AppPaths.DataFolder, "Aufzeichnungen"), AppPaths.FallbackRecordingFolder })
+        foreach (var folder in new[] { RecordingDirectory, AppPaths.DefaultRecordingFolder, AppPaths.FallbackRecordingFolder })
         {
             if (!string.IsNullOrWhiteSpace(folder) && !folders.Any(f => SameFolder(f, folder)))
                 folders.Add(folder);
@@ -174,7 +185,7 @@ public sealed class AppSettings
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
             {
-                AppPaths.Log($"Aufzeichnungen in {folder} nicht lesbar", ex);
+                AppPaths.Log($"Recordings in {folder} not readable", ex);
             }
         }
         return [.. files.OrderByDescending(File.GetLastWriteTime)];

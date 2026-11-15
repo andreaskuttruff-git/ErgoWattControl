@@ -87,7 +87,7 @@ public class DaumErgometerTests
         Rig.WaitFor(() => rig.Received >= before + 2, "Daten nach dem Aussetzer");
 
         Assert.Equal(1, rig.Opened);
-        Assert.Contains("Antwort nach 2 Wiederholung(en) erhalten", TestFolder.LogSince(mark));
+        Assert.Contains("answered after 2 retry/retries", TestFolder.LogSince(mark));
     }
 
     [Fact]
@@ -99,12 +99,12 @@ public class DaumErgometerTests
         rig.Sim.FaultOnlyFor = 0x40;
         rig.Sim.Inject(Fault.Silent, Fault.Silent, Fault.Silent);
 
-        Rig.WaitFor(() => rig.Opened >= 2 && rig.Device.IsConnected, "neu verbunden", seconds: 15);
+        // The note is written just after IsConnected turns true: wait for the note itself, not only the flag.
+        Rig.WaitFor(() => rig.Opened >= 2 && TestFolder.LogSince(mark).Contains("reconnected"), "neu verbunden", seconds: 15);
 
         Assert.True(rig.First.Disposed);
-        var log = TestFolder.LogSince(mark);
-        Assert.Contains("unterbrochen (keine Antwort)", log);
-        Assert.Contains("wieder verbunden", log);
+        Assert.True(rig.Device.IsConnected);
+        Assert.Contains("lost (TimeoutException)", TestFolder.LogSince(mark));
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class DaumErgometerTests
 
         Assert.Equal(1, rig.Opened);
         Assert.All(rig.Data, d => Assert.Equal(100, d.Watt)); // no garbage values passed on
-        Assert.Contains("Antwort passt nicht zur Anfrage 0x40", TestFolder.LogSince(mark));
+        Assert.Contains("Reply does not match request 0x40", TestFolder.LogSince(mark));
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class DaumErgometerTests
 
         Rig.WaitFor(() => rig.Sim.Program == 0 && rig.Sim.WattSteps == 30, "freies Training mit 150 W wiederhergestellt");
         Assert.Equal(1, rig.Opened);
-        Assert.Contains("Cockpit in Programm 3 statt im freien Training", TestFolder.LogSince(mark));
+        Assert.Contains("Cockpit in program 3 instead of free training", TestFolder.LogSince(mark));
     }
 
     [Fact]
@@ -154,8 +154,8 @@ public class DaumErgometerTests
 
         Rig.WaitFor(() => rig.Opened >= 2, "neue Verbindung", seconds: 15);
         var log = TestFolder.LogSince(mark);
-        Assert.Contains("(3. Mal)", log);
-        Assert.Contains("bleibt in Programm 4", log);
+        Assert.Contains("(attempt 3)", log);
+        Assert.Contains("stays in program 4", log);
     }
 
     [Fact]

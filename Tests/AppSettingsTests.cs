@@ -53,7 +53,7 @@ public class AppSettingsTests : IDisposable
         Assert.NotNull(settings);
         Assert.Equal("{ \"PortName\": \"COM5\", kaputt", File.ReadAllText(File_ + ".defekt"));
         Assert.DoesNotContain("kaputt", File.ReadAllText(File_));
-        Assert.Contains("settings.json defekt", TestFolder.LogSince(mark));
+        Assert.Contains("settings.json damaged", TestFolder.LogSince(mark));
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class AppSettingsTests : IDisposable
             Assert.NotEqual("COM5", AppSettings.Load().PortName);
 
         Assert.Equal(before, File.ReadAllText(File_));
-        Assert.Contains("settings.json nicht lesbar", TestFolder.LogSince(mark));
+        Assert.Contains("settings.json not readable", TestFolder.LogSince(mark));
     }
 
     [Theory]

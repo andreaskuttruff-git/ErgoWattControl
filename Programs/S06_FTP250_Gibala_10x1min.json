@@ -1,7 +1,12 @@
 {
-  "Name": "S06 Gibala 10×1 min – FTP 250 W",
-  "Beschreibung": "10 × 1 min bei 115 % FTP mit je 1 min lockerer Pause, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: zeitsparendes Intervalltraining für Fitness und Blutzucker. Auch bei Untrainierten und Übergewichtigen untersucht.\n\nQuelle: Little et al. 2010 und 2011 (Arbeitsgruppe Gibala).",
-  "Profil": [
+  "Name": {
+    "de": "S06 Gibala 10×1 min – FTP 250 W",
+    "en": "S06 Gibala 10×1 min – FTP 250 W"
+  },
+  "Description": {
+    "de": "10 × 1 min bei 115 % FTP mit je 1 min lockerer Pause, dazu 13 min Aufwärmen und 10 min Ausfahren.\n\nZiel: zeitsparendes Intervalltraining für Fitness und Blutzucker. Auch bei Untrainierten und Übergewichtigen untersucht.\n\nQuelle: Little et al. 2010 und 2011 (Arbeitsgruppe Gibala)."
+  },
+  "Profile": [
     [0, 110],
     [15, 110],
     [30, 110],
@@ -171,5 +176,6 @@
     [2490, 100],
     [2505, 100],
     [2520, 100]
-  ]
+  ],
+  "DisplayName": "S06 Gibala 10×1 min – FTP 250 W"
 }

@@ -27,7 +27,7 @@ public sealed class JsonRecorder : IDisposable
     private readonly SinceStart _energy = new();
 
     public string FilePath { get; }
-    public int Rows => _file.Werte.Count;
+    public int Rows => _file.Values.Count;
     /// <summary>Recorded time; in a route only the time spent pedalling.</summary>
     public TimeSpan Elapsed { get; private set; }
 
@@ -44,14 +44,14 @@ public sealed class JsonRecorder : IDisposable
     {
         Directory.CreateDirectory(directory);
         FilePath = UniquePath(Path.Combine(directory, fileName + Extension));
-        _routeColumns = target?.Strecke is not null;
+        _routeColumns = target?.Route is not null;
         _file = new RecordingFile
         {
-            Art = kind,
+            Kind = kind,
             Start = _started,
-            Einstellungen = settings.Snapshot(),
-            Vorgabe = target,
-            Spalten = [.. RecordingFile.BaseColumns, .. _routeColumns ? RecordingFile.RouteColumns : []],
+            Settings = settings.Snapshot(),
+            Target = target,
+            Columns = [.. RecordingFile.BaseColumns, .. _routeColumns ? RecordingFile.RouteColumns : []],
         };
         _file.Save(FilePath);
     }
@@ -95,7 +95,7 @@ public sealed class JsonRecorder : IDisposable
             row.Add(Math.Round(route?.GradePercent ?? 0, 1));
             row.Add(route?.Gear ?? 0);
         }
-        _file.Werte.Add([.. row]);
+        _file.Values.Add([.. row]);
         if (now - _lastSave >= SaveInterval)
             Save();
     }
@@ -103,7 +103,7 @@ public sealed class JsonRecorder : IDisposable
     private void Save()
     {
         _lastSave = DateTime.Now;
-        _file.Ende = _lastSave;
+        _file.End = _lastSave;
         _file.Save(FilePath);
     }
 

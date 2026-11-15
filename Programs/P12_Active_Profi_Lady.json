@@ -1,7 +1,12 @@
 {
-  "Name": "P12 Active Profi Lady",
-  "Beschreibung": "Sanftes Wellenprofil, 25 min, maximal 110 W.\n\nHandbuch: für untrainierte Damen bis 40 Jahre.",
-  "Profil": [
+  "Name": {
+    "de": "P12 Active Profi Lady",
+    "en": "P12 Active Profi Lady"
+  },
+  "Description": {
+    "de": "Sanftes Wellenprofil, 25 min, maximal 110 W.\n\nHandbuch: für untrainierte Damen bis 40 Jahre."
+  },
+  "Profile": [
     [0, 25],
     [15, 25],
     [30, 25],
@@ -103,5 +108,6 @@
     [1470, 45],
     [1485, 45],
     [1500, 45]
-  ]
+  ],
+  "DisplayName": "P12 Active Profi Lady"
 }
