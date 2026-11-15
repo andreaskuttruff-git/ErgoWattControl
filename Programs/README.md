@@ -53,7 +53,7 @@ Benutzerhandbuch (S. 9–13). Dateinamen `P<Nr>_<Name>.json`.
 - **23–25 (4er Mannschaft):** Die Wechsel sind im Handbuch so dicht gezeichnet, dass sie nicht einzeln lesbar sind.
   Abgelesen sind Führungs- und Windschattenleistung (Ober- und Unterkante des Bandes); der Rhythmus ist nachgebildet:
   30 s Führung, 90 s Windschatten.
-- `Erzeugung/Vergleich.png` zeigt jedes Profil (gelb) über der Originalgrafik.
+- `Generator/compare.png` zeigt jedes Profil (gelb) über der Originalgrafik.
 
 ### Nicht enthalten
 
@@ -110,25 +110,25 @@ Alle Programme außer S07 und S08 enthalten 13 min Aufwärmen und 10 min Ausfahr
 
 ## C. Eigene Programme
 
-Eigene Programme gehören nicht in diesen Ordner, sondern nach `CustomPrograms` (unter `Dokumente\ErgoWattControl`, portabel neben der exe). Die App legt dort beim Start das JSON-Schema `Trainingsprogramm.schema.json` sowie `CLAUDE.md` und `AGENTS.md` (gleicher Inhalt aus `Schema/CLAUDE.md`) mit Anleitung für KI-Assistenten ab und beim ersten Mal die Vorlage `Beispiel_Eigenes_Programm.json`. Eigene Programme erscheinen mit ★ oben in der Programmliste; eine fehlerhafte Datei wird mit Grund unter „Nicht lesbar“ genannt.
+Eigene Programme gehören nicht in diesen Ordner, sondern nach `CustomPrograms` (unter `Dokumente\ErgoWattControl`, portabel neben der exe). Die App legt dort beim Start das JSON-Schema `TrainingProgram.schema.json` sowie `CLAUDE.md` und `AGENTS.md` (gleicher Inhalt aus `Schema/CLAUDE.md`) mit Anleitung für KI-Assistenten ab und beim ersten Mal die Vorlage `Example_Custom_Program.json`. Eigene Programme erscheinen mit ★ oben in der Programmliste; eine fehlerhafte Datei wird mit Grund unter „Nicht lesbar“ genannt.
 ## Neu erzeugen
 
 Die Profile entstehen in zwei Schritten: Python-Skripte schreiben sie als CSV (`Sekunden;Soll_W;Puls`), das Werkzeug
-`Erzeugung/ProgrammeNachJson` macht daraus die JSON-Dateien. Name und Beschreibung kommen aus
-`Erzeugung/beschreibungen.json` (Schlüssel ist das Kürzel vor dem ersten `_`, also `P22` oder `S02`).
+`Generator/ProgramsToJson` macht daraus die JSON-Dateien. Name und Beschreibung kommen aus
+`Generator/descriptions.json` (Schlüssel ist das Kürzel vor dem ersten `_`, also `P22` oder `S02`).
 
 1. **Handbuch-Programme** (Python 3 mit Pillow, `pdftoppm` aus Poppler), im Ordner mit dem Handbuch:
    ```
    pdftoppm -r 300 -f 11 -l 15 -png 8008TRS-pro-bike.pdf p
-   python Programme/Erzeugung/generate.py csv
-   python Programme/Erzeugung/compare.py
+   python Programs/Generator/generate.py csv
+   python Programs/Generator/compare.py
    ```
-   `compare.py` legt jedes Profil über die Originalgrafik (`Erzeugung/Vergleich.png`).
+   `compare.py` legt jedes Profil über die Originalgrafik (`Generator/compare.png`).
 2. **Studien-Programme**, z. B. für eine FTP von 180 W (ohne Angabe: 150, 200 und 250 W):
    ```
-   python Programme/Erzeugung/studien.py csv 180
+   python Programs/Generator/studies.py csv 180
    ```
 3. **JSON erzeugen** (.NET 10):
    ```
-   dotnet run --project Programme/Erzeugung/ProgrammeNachJson -- csv Programme/Erzeugung/beschreibungen.json Programme
+   dotnet run --project Programs/Generator/ProgramsToJson -- csv Programs/Generator/descriptions.json Programs
    ```

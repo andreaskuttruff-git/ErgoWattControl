@@ -1,10 +1,10 @@
 """
 Builds FTP-based training sessions from current exercise-physiology studies as replayable CSV profiles.
 
-    python studien.py <ausgabeordner> [ftp ...]      (default: 150 200 250 W)
+    python studies.py <ausgabeordner> [ftp ...]      (default: 150 200 250 W)
 
 Each session is written once per FTP as S<nr>_FTP<ftp>_<name>.csv, the FTP-independent ramp test as
-S00_FTP000_Rampentest.csv. Sources and intensities are documented in Programme/LIESMICH.md.
+S00_FTP000_Rampentest.csv. Sources and intensities are documented in Programs/README.md.
 """
 import os
 import sys

@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Training programs for "Programm wiederholen", shipped inside the exe and written to Programme\ at start
-         (ProgramFiles); the generator tool below them is a project of its own -->
-    <Compile Remove="Programme\**" />
-    <None Remove="Programme\**" />
+    <!-- Training programs for "Programm wiederholen", shipped inside the exe and written to Documents\ErgoWattControl\Programme
+         at start (ProgramFiles); the generator tool below them is a project of its own -->
+    <Compile Remove="Programs\**" />
+    <None Remove="Programs\**" />
     <!-- The WiX setup projects and their output are built separately (Setup\build-setup.ps1) -->
     <None Remove="Setup\**" />
     <Compile Remove="Setup\**" />
@@ -30,14 +30,15 @@
     <Compile Remove="Tests\**" />
     <None Remove="Tests\**" />
     <InternalsVisibleTo Include="ErgoWattControl.Tests" />
-    <EmbeddedResource Include="Programme\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
+    <!-- The resource name keeps "Programme": that is the folder the programs are written to on the rider's PC -->
+    <EmbeddedResource Include="Programs\*.json" LogicalName="Programme/%(Filename)%(Extension)" />
     <!-- JSON schema of a program (and an example) for the rider's own programs, written to CustomPrograms\ at start -->
     <None Remove="Schema\**" />
     <EmbeddedResource Include="Schema\*.json;Schema\CLAUDE.md" LogicalName="Schema/%(Filename)%(Extension)" />
     <!-- User help (F1 / menu "Hilfe"), shown from the exe in the help window (HelpWindow) -->
-    <None Remove="Hilfe.html;Hilfe-Bilder\**" />
+    <None Remove="Hilfe.html;HelpPics\**" />
     <EmbeddedResource Include="Hilfe.html" LogicalName="Hilfe/Hilfe.html" />
-    <EmbeddedResource Include="Hilfe-Bilder\*.png" LogicalName="Hilfe/Hilfe-Bilder/%(Filename)%(Extension)" />
+    <EmbeddedResource Include="HelpPics\*.png" LogicalName="Hilfe/HelpPics/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- The WebView2 package also references its WPF control; a WinForms app doesn't need it (and it drags in a

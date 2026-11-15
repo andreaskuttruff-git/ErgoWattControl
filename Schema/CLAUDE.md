@@ -10,12 +10,12 @@ Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist
 1. Neue Datei `<Name>.json` in **diesem** Ordner anlegen (nicht im Ordner `Programme` – den stellt die App beim Start
    wieder her). Dateiname ohne Leerzeichen und Umlaute, z. B. `Intervall_6x2min.json`; er erscheint im Dateinamen
    der späteren Aufzeichnung.
-2. Inhalt nach `Trainingsprogramm.schema.json` (JSON-Schema, maßgeblich) – Vorlage: `Beispiel_Eigenes_Programm.json`.
+2. Inhalt nach `TrainingProgram.schema.json` (JSON-Schema, maßgeblich) – Vorlage: `Example_Custom_Program.json`.
 3. Datei als UTF-8 speichern.
 
 ```json
 {
-  "$schema": "./Trainingsprogramm.schema.json",
+  "$schema": "./TrainingProgram.schema.json",
   "Name": "Intervall 6×2 min – FTP 150 W",
   "Beschreibung": "Aufbau in einem Satz.\n\nZiel: …\n\nHinweis: …",
   "Profil": [ [0, 70], [300, 140], [420, 80], [540, 140], [660, 70], [900, 70] ]
@@ -53,6 +53,6 @@ Die App liest den Ordner bei jedem Öffnen des Dialogs neu ein; ein Neustart ist
 
 ## Nicht ändern
 
-`Trainingsprogramm.schema.json`, `CLAUDE.md` und `AGENTS.md` (gleicher Inhalt, für Claude Code bzw. Codex und
+`TrainingProgram.schema.json`, `CLAUDE.md` und `AGENTS.md` (gleicher Inhalt, für Claude Code bzw. Codex und
 andere Assistenten) schreibt die App beim Start neu, falls sie abweichen – Änderungen daran gehen verloren. Alles
 andere in diesem Ordner fasst die App nicht an.

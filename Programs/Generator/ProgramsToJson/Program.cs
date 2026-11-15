@@ -3,12 +3,12 @@ using System.Text.RegularExpressions;
 using ErgoWattControl;
 
 // Turns the generated profiles (CSV: Sekunden;Soll_W;Puls) into the app's program files: name and description from
-// beschreibungen.json (keyed by the file's prefix, e.g. "P22" or "S02") and the profile.
+// descriptions.json (keyed by the file's prefix, e.g. "P22" or "S02") and the profile.
 //
-//   dotnet run -- <csv-ordner> <beschreibungen.json> <ziel-ordner>
+//   dotnet run -- <csv-ordner> <descriptions.json> <ziel-ordner>
 if (args.Length != 3)
 {
-    Console.Error.WriteLine("Aufruf: dotnet run -- <csv-ordner> <beschreibungen.json> <ziel-ordner>");
+    Console.Error.WriteLine("Aufruf: dotnet run -- <csv-ordner> <descriptions.json> <ziel-ordner>");
     return 1;
 }
 var (source, descriptionsFile, target) = (args[0], args[1], args[2]);

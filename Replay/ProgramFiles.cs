@@ -12,7 +12,7 @@ public static class ProgramFiles
     private const string SchemaPrefix = "Schema/";
 
     /// <summary>The JSON schema (like an XSD for XML) that describes a program file; editors validate against it.</summary>
-    public const string SchemaFileName = "Trainingsprogramm.schema.json";
+    public const string SchemaFileName = "TrainingProgram.schema.json";
 
     /// <summary>Documents\ErgoWattControl\Programme, or next to the exe in portable mode.</summary>
     public static string Folder => Path.Combine(AppPaths.DataFolder, "Programme");
@@ -82,7 +82,7 @@ public static class ProgramFiles
             if (WriteIfChanged(SchemaPrefix + "CLAUDE.md", Path.Combine(folder, name)))
                 written++;
         }
-        if (newFolder && WriteIfChanged(SchemaPrefix + "Beispiel_Eigenes_Programm.json", Path.Combine(folder, "Beispiel_Eigenes_Programm.json")))
+        if (newFolder && WriteIfChanged(SchemaPrefix + "Example_Custom_Program.json", Path.Combine(folder, "Example_Custom_Program.json")))
             written++;
         return written;
     }

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://andreaskuttruff-git.github.io/ErgoWattControl/Schema/Trainingsprogramm.schema.json",
+  "$id": "https://andreaskuttruff-git.github.io/ErgoWattControl/Schema/TrainingProgram.schema.json",
   "title": "ErgoWattControl – Trainingsprogramm",
-  "description": "Ein wattgesteuertes Trainingsprogramm für ErgoWattControl. Eigene Programme in den Ordner CustomPrograms legen; die App zeigt sie unter ☰ → Trainingsprogramm starten … an. Mit \"$schema\": \"./Trainingsprogramm.schema.json\" in der Datei prüfen Editoren wie VS Code das Programm beim Schreiben.",
+  "description": "Ein wattgesteuertes Trainingsprogramm für ErgoWattControl. Eigene Programme in den Ordner CustomPrograms legen; die App zeigt sie unter ☰ → Trainingsprogramm starten … an. Mit \"$schema\": \"./TrainingProgram.schema.json\" in der Datei prüfen Editoren wie VS Code das Programm beim Schreiben.",
   "type": "object",
   "required": ["Name", "Profil"],
   "properties": {

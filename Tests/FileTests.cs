@@ -113,7 +113,7 @@ public class FileTests
 
         ProgramFiles.EnsureCustomFolder(folder);
 
-        Assert.True(File.Exists(Path.Combine(folder, "Trainingsprogramm.schema.json")));
+        Assert.True(File.Exists(Path.Combine(folder, "TrainingProgram.schema.json")));
         Assert.True(File.Exists(Path.Combine(folder, "CLAUDE.md")));
         Assert.True(File.Exists(Path.Combine(folder, "AGENTS.md")));
         var example = Assert.Single(ProgramFiles.ProgramsIn(folder)); // the schema is not listed as a program

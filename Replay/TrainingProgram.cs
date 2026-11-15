@@ -44,7 +44,7 @@ public sealed partial class TrainingProgram
         return program;
     }
 
-    /// <summary>The rules of Trainingsprogramm.schema.json, with messages that point to the faulty point.</summary>
+    /// <summary>The rules of TrainingProgram.schema.json, with messages that point to the faulty point.</summary>
     private static void Validate(int[][] profil)
     {
         if (profil is null || profil.Length < 2)

@@ -273,7 +273,7 @@ public sealed class ReplayPickerForm : Form
                     _note.Text = $"Ordner nicht zu öffnen: {ex.Message}";
                 }
             };
-            new ToolTip().SetToolTip(own, $"{custom}\nEigene Programme (*.json) dort ablegen – sie stehen mit ★ oben in der Liste.\nAufbau: Trainingsprogramm.schema.json, Vorlage: Beispiel_Eigenes_Programm.json.");
+            new ToolTip().SetToolTip(own, $"{custom}\nEigene Programme (*.json) dort ablegen – sie stehen mit ★ oben in der Liste.\nAufbau: TrainingProgram.schema.json, Vorlage: Example_Custom_Program.json.");
             listPanel.Controls.Add(own);
         }
         Controls.Add(details);

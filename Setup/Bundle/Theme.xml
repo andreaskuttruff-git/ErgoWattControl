@@ -23,7 +23,7 @@
             <Label X="11" Y="60" Width="-11" Height="30" FontId="2" DisablePrefix="yes" Visible="no" Name="CheckingForUpdatesLabel" />
         </Page>
         <Page Name="Install">
-            <ImageControl X="11" Y="60" Width="320" Height="256" ImageFile="startfenster.png" />
+            <ImageControl X="11" Y="60" Width="320" Height="256" ImageFile="startwindow.png" />
             <Label X="345" Y="60" Width="-11" Height="200" FontId="3" DisablePrefix="yes">#(loc.InstallText)</Label>
             <Checkbox Name="DesktopShortcut" X="345" Y="270" Width="-11" Height="20" TabStop="yes" FontId="3">#(loc.DesktopShortcutCheckbox)</Checkbox>
             <Hypertext Name="EulaHyperlink" X="11" Y="-45" Width="-11" Height="17" TabStop="yes" FontId="3" HideWhenDisabled="yes">#(loc.InstallLicenseLinkText)</Hypertext>
