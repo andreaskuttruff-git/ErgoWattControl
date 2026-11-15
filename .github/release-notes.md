@@ -2,7 +2,7 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
-### Neu in v2.0.0
+### Neu in v2.0.1
 - **Deutsch und Englisch:** Die ganze App gibt es jetzt auf Deutsch und Englisch – Oberfläche, Meldungen, Hilfe (F1), Programmbeschreibungen und Setup. Umschalten unter **☰ → Einstellungen → Sprache / Language** (Automatisch wie Windows, Deutsch, English); die App bietet den Neustart gleich an. Zahlen und Datum folgen weiter den Windows-Einstellungen.
 - **Größe der Fahransicht** in den Einstellungen wählbar: wie bisher (Standard), ganzer Monitor oder eine feste Größe wie 1280 × 1024 oder 1920 × 1080.
 - **Lauf wird immer gespeichert:** Ist der Ablageordner nicht beschreibbar (Netzlaufwerk oder USB-Stick fehlt), landet die Aufnahme im Standardordner bzw. unter `%LocalAppData%\ErgoWattControl\Recordings`; Export und „Aufzeichnung nachfahren“ finden sie dort. Geht gar nichts, kommt nur eine Meldung statt einer pro Sekunde.
