@@ -2,6 +2,9 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.0.3
+- **Listen scrollen nicht mehr mit der Maus mit:** Manche Maus- oder Touchpad-Treiber (z. B. Synaptics) melden beim bloßen Bewegen der Maus ein seitliches Mausrad – Windows-Listen scrollen darauf senkrecht. Die Listen für Programme, Aufzeichnungen, Strecken und Export ignorieren das seitliche Rad jetzt; lange Namen lassen sich weiter mit der Scrollleiste verschieben.
+
 ### Neu in v2.0.2
 - **Programm- und Aufzeichnungsauswahl:** Die Liste scrollt nicht mehr von selbst mit, wenn man nach dem Anklicken eines Eintrags die Maus darüber bewegt (trat vor allem per Remotedesktop auf). Gilt auch für die Liste im Export.
 - **Log beim Start ohne Cockpit:** Antwortet das Cockpit beim Start nicht (z. B. im Schlafmodus), steht das jetzt einmal in `ErgoWattControl.log` – und sobald die Verbindung steht, auch nach wie vielen Sekunden.
