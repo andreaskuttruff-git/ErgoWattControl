@@ -1,68 +1,72 @@
 # ErgoWattControl
 
-🇩🇪 Deutsch · 🇬🇧 [English](README.en.md)
+🇬🇧 English · 🇩🇪 [Deutsch](README.de.md)
 
-Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle (RS232, 9600 8N1) – als Ersatz für das Cockpit-Bedienteil und die Originalsoftware ergo_win 2003. Die App spricht **Deutsch und Englisch** (☰ → Einstellungen → Sprache).
+**Windows app for indoor cycling on a Daum ergometer:** ride GPX or FIT routes with gradient simulation, follow training programs (FTP ramp test, 4×4 intervals, sub-threshold, sprints …) or your own earlier rides, record every ride and export it as a FIT file to Garmin Connect, Strava, intervals.icu or TrainingPeaks. Free and open source (MIT).
 
-📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – mit Screenshots; in der App mit F1.
+Control for the Daum **ergo_bike 8008 TRS** via the serial port (RS232, 9600 8N1) – as a replacement for the cockpit control unit and the original software ergo_win 2003. The app speaks **English and German** (☰ → Settings → Language).
 
-⬇️ **[Download der aktuellen Version](https://github.com/andreaskuttruff-git/ErgoWattControl/releases/latest)** – **Setup** (installiert bei Bedarf die .NET 10 Desktop Runtime mit, dann die App für den angemeldeten Benutzer) oder **ZIP** zum Entpacken (braucht die [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)).
+📖 **[Help / user guide](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html)** · [Hilfe (Deutsch)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html) – with screenshots; in the app with F1.
 
-## Die Modi
+⬇️ **[Download the latest version](https://github.com/andreaskuttruff-git/ErgoWattControl/releases/latest)** – **Setup** (installs the .NET 10 Desktop Runtime if needed, then the app for the signed-in user) or **ZIP** to unpack (needs the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0)).
 
-| Freies Training | Strecke fahren (GPX oder FIT) |
+## The modes
+
+The screenshots show the app in German; in English the texts are in the same places.
+
+| Free training | Riding a route (GPX or FIT) |
 |---|---|
-| ![Freies Training: Wattvorgabe, Leistung/RPM und Puls der letzten 10 Minuten](HelpPics/fahransicht.png) | ![Strecke fahren: eine MTB-Tour aus einer FIT-Datei – Gang, Höhenprofil mit dem Puls von damals (grün) und heute (rot), die nächsten 2 km](HelpPics/fahransicht_strecke.png) |
-| Leistung in 5-W-Schritten vorgeben; oben Leistung und Trittfrequenz, unten der Puls. | Gang statt Watt: Die Bremsleistung folgt aus Steigung, Gewicht und Tempo. Hier eine eigene MTB-Tour als FIT-Datei: im Höhenprofil der Puls von damals (grün) und heute (rot) nach Kilometer, die grüne Zahl neben dem Puls ist der Wert von damals an dieser Stelle. |
-| **Trainingsprogramm** | **Aufzeichnung nachfahren** |
-| ![Trainingsprogramm S08: Profil des ganzen Programms mit dem Puls, darunter die nächsten 10 Minuten](HelpPics/fahransicht_programm.png) | ![Aufzeichnung nachfahren: Puls von damals (grün) und von heute (rot) über dem Leistungsverlauf](HelpPics/fahransicht_aufzeichnung.png) |
-| Das Programm gibt die Leistung vor. Oben das ganze Programm mit deinem Puls, darunter die nächsten 10 Minuten mit dem nächsten Wechsel. | Eine frühere Fahrt als Vorgabe: Puls von damals (grün) neben dem von heute (rot), als Kurve und als Zahl neben der Pulsanzeige – so siehst du den Fortschritt. |
+| ![Free training: target power, power/RPM and pulse of the last 10 minutes](HelpPics/fahransicht.png) | ![Riding a route: an MTB tour from a FIT file – gear, elevation profile with the pulse back then (green) and today (red), the next 2 km](HelpPics/fahransicht_strecke.png) |
+| Set the power in steps of 5 W; at the top power and cadence, below the pulse. | Gear instead of watts: the brake power follows from gradient, weight and speed. Here an own MTB tour as a FIT file: in the elevation profile the pulse back then (green) and today (red) by kilometre, the green number next to the pulse is the value back then at this point. |
+| **Training program** | **Replaying a recording** |
+| ![Training program S08: profile of the whole program with the pulse, below it the next 10 minutes](HelpPics/fahransicht_programm.png) | ![Replaying a recording: pulse back then (green) and today (red) above the power profile](HelpPics/fahransicht_aufzeichnung.png) |
+| The program sets the power. At the top the whole program with your pulse, below it the next 10 minutes with the next change. | An earlier ride as target: the pulse back then (green) next to today’s (red), as a curve and as a number next to the pulse display – so you see your progress. |
 
-## Funktionen
+## Features
 
-- **Freies Training:** Wattvorgabe in 5-W-Schritten (Tasten ↑↓ + −, Mausrad, Bild ↑↓ ±25 W), Live-Daten von Leistung, RPM, Puls, Geschwindigkeit, Zeit
-- **Fahransicht** für einen kleinen Monitor am Rad (1280×1024): Verlaufsgraphen für Leistung/RPM und Puls, erlaubter Drehzahlbereich der Wirbelstrombremse als Band, Pfeile für schneller/langsamer treten
-- **Aufzeichnung** als JSON: Art (Training/Strecke/Programm), die Einstellungen beim Start, die Vorgabe (Strecke alle 10 m mit Höhe und Koordinaten bzw. Leistungsverlauf des Programms/Trainings) und eine Zeile Messwerte pro Sekunde. Die Datei wird alle 10 s vollständig neu geschrieben, ein Absturz kostet höchstens diese Sekunden. Ältere CSV-Aufzeichnungen lassen sich weiter nachfahren.
-- **Export** (☰ → Aufzeichnung exportieren): FIT für Strava, Garmin Connect, intervals.icu, TrainingPeaks (Strecken als virtuelle Fahrt mit Positionen, sonst Indoor-Training; Garmin FIT SDK) und CSV für Excel; mit Vorschau, Löschen und optionalem Upload in eingebauten Fenstern für Garmin Connect und Strava (selbst anmelden, die App speichert kein Kennwort)
-- **Aufzeichnung nachfahren** auch aus FIT-Dateien anderer Geräte und Apps: mit Leistungswerten als Leistungsprofil, sonst als Strecke.
-- **Aufzeichnung nachfahren / Trainingsprogramm starten:** Die Startdialoge zeigen die Einstellungen, die für den Lauf wirken, änderbar nur für diesen Lauf („Als Standard speichern“ übernimmt sie in die `settings.json`). Eine Strecken-Aufzeichnung wird wieder als Strecke gefahren (gespeicherte Strecke, simuliert mit den Einstellungen der Aufzeichnung: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze). Programme und andere Aufzeichnungen folgen dem Leistungsverlauf – dort wirkt nur die Wattgrenze.
-- **Strecke fahren:** GPX-Strecke oder FIT-Datei mit GPS und Höhe (z. B. eigene Touren aus Garmin Connect) nachfahren, mit dem Puls von damals (grün) und heute (rot) nach Kilometer im Höhenprofil; aus Steigung, Gewicht und virtueller Geschwindigkeit (Trittfrequenz × Gang) wird die Bremsleistung berechnet. Übersetzung Rennrad oder MTB, Steigungsfaktor einstellbar
-- Automatisches Verbinden und Neuverbinden nach einem Cockpit-Reset
-- **Trainingsprogramme** (JSON mit Beschreibung und Leistungsprofil), fahrbar über „Trainingsprogramm starten“. Sie sind in die exe eingebettet; beim Start schreibt die App fehlende oder veränderte Dateien nach `Dokumente\ErgoWattControl\Programs` (Änderungen dort werden also überschrieben, eigene Programme mit anderem Namen bleiben erhalten). Der Auswahldialog zeichnet zum markierten Programm den Leistungsverlauf und zeigt die Beschreibung (Details und Quellen in `Programs\README.md`):
-  - `P01`–`P44`: die wattgesteuerten Festprogramme des 8008 TRS aus dem Handbuch (1–28, Cool-down 42–44)
-  - `S00`–`S08`: Programme nach aktueller Trainingswissenschaft – Rampentest zur FTP-Bestimmung, Grundlage, 4×4, 4×8, 30/15, Unterschwelle, 10×1 min, 3×20 s, Schwellenblöcke 30 min, jeweils für FTP 150/200/250 W
-  - Eigene Programme: JSON-Dateien im Ordner `CustomPrograms` (Dokumente\ErgoWattControl bzw. neben der exe), stehen mit ★ oben in der Liste; das Format beschreibt das JSON-Schema [`Schema/TrainingProgram.schema.json`](Schema/TrainingProgram.schema.json), Vorlage [`Example_Custom_Program.json`](Schema/Example_Custom_Program.json)
-- **Hilfe** für Fahrer in einem eigenen Fenster (WebView2): F1 öffnet sie beim Abschnitt zur aktuellen Ansicht bzw. zum offenen Dialog, ☰ → Hilfe am Anfang. `Help.de.html`, `Help.en.html` und `HelpPics\` sind in die exe eingebettet (die Seite in der Sprache der App); ohne WebView2-Laufzeit öffnet sich die Hilfe im Browser
-- **Sprachen:** Deutsch und Englisch; „Automatisch“ richtet sich nach Windows (ohne deutsches Windows Englisch). Zahlen und Datum folgen den Windows-Einstellungen.
-- **Demo-Modus** ohne Ergometer: in den Einstellungen „Gerät: Demo“ oder `ErgoWattControl.exe --demo [strecke.gpx]`
-- **Start auf dem Hauptbildschirm** statt auf dem Fahrer-Monitor: `ErgoWattControl.exe -main` (kombinierbar mit `-demo`)
+- **Free training:** target power in steps of 5 W (keys ↑↓ + −, mouse wheel, PgUp/PgDn ±25 W), live data of power, RPM, pulse, speed, time
+- **Ride view** for a small monitor on the bike (1280×1024): graphs for power/RPM and pulse, the permitted cadence range of the eddy-current brake as a band, arrows for pedalling faster/slower
+- **Recording** as JSON: kind (training/route/program), the settings at the start, the target (route every 10 m with elevation and coordinates, or the power profile of the program/training) and one line of measured values per second. Keys and columns are English in every language. The file is written completely every 10 s, a crash costs at most these seconds. Recordings of version 1.x (German keys) and older CSV recordings can still be replayed.
+- **Export** (☰ → Export recordings): FIT for Strava, Garmin Connect, intervals.icu, TrainingPeaks (routes as a virtual ride with positions, otherwise indoor training; Garmin FIT SDK) and CSV for Excel; with preview, delete and optional upload in built-in windows for Garmin Connect and Strava (sign in yourself, the app stores no password)
+- **Replaying recordings** also from FIT files of other devices and apps: with power data as a power profile, otherwise as a route.
+- **Replaying a recording / starting a training program:** the start dialogs show the settings that apply to the run, changeable for this run only (“Save as default” takes them into `settings.json`). A route recording is ridden as a route again (stored route, simulated with the settings of the recording: weights, gearing, gradient factor, resistances, power limit). Programs and other recordings follow the power profile – only the power limit applies there.
+- **Riding a route:** ride a GPX route or a FIT file with GPS and elevation (e.g. your own tours from Garmin Connect), with the pulse back then (green) and today (red) by kilometre in the elevation profile; the brake power is calculated from gradient, weight and virtual speed (cadence × gear). Road bike or MTB gearing, adjustable gradient factor
+- Automatic connecting and reconnecting after a cockpit reset; if the recordings folder can’t be written, the ride is still saved in a fallback folder
+- **Training programs** (JSON with name, description and power profile, texts per language), ridden via “Start a training program”. They are embedded in the exe; at start the app writes missing or changed files to `Documents\ErgoWattControl\Programs` (so changes there are overwritten, own programs with another name are kept). The selection dialog draws the power profile of the selected program and shows its description (details and sources in `Programs\README.md`):
+  - `P01`–`P44`: the power-controlled fixed programs of the 8008 TRS from the manual (1–28, cool-down 42–44)
+  - `S00`–`S08`: programs based on current training science – ramp test to find the FTP, endurance base, 4×4, 4×8, 30/15, sub-threshold, 10×1 min, 3×20 s, threshold blocks 30 min, each for an FTP of 150/200/250 W
+  - Custom programs: JSON files in the folder `CustomPrograms` (Documents\ErgoWattControl or next to the exe), listed with ★ at the top; the format is described by the JSON schema [`Schema/TrainingProgram.schema.json`](Schema/TrainingProgram.schema.json), template [`Example_Custom_Program.json`](Schema/Example_Custom_Program.json)
+- **Help** for riders in a window of its own (WebView2): F1 opens it at the section for the current view or open dialog, ☰ → Help at the beginning. `Help.de.html`, `Help.en.html` and `HelpPics\` are embedded in the exe (the page in the language of the app); without the WebView2 runtime the help opens in the browser
+- **Languages:** English and German; “Automatic” follows Windows (English unless Windows is German). Numbers and dates follow the Windows settings.
+- **Demo mode** without an ergometer: “Device: Demo” in the settings or `ErgoWattControl.exe --demo [route.gpx]`
+- **Start on the main screen** instead of the rider’s monitor: `ErgoWattControl.exe -main` (can be combined with `-demo`)
 
-## Aufbau des Quellcodes
+## Structure of the source code
 
-| Ordner | Inhalt |
+| Folder | Content |
 |---|---|
-| `Devices/` | Geräteschicht: `IErgometer` (Schnittstelle jedes Ergometers: Zielleistung setzen, Messwerte `ErgometerData`, Status, Fähigkeiten), `ErgoController` (geräteunabhängig: Zielleistung, Wattgrenze, Gerätewechsel), `ErgometerTypes` (Liste der Gerätearten) |
-| `Devices/Daum/` | Daum ergo_bike über RS232: Protokoll (`DaumCockpit`), Verbindung/Neuverbinden/Reset (`DaumErgometer`), Drehzahlbereich der Wirbelstrombremse |
-| `Devices/Demo/` | Simulierter Fahrer (`DemoErgometer`) |
-| `Training/` | `TrainingController`: das laufende Training ohne Fenster – Modus, Aufnahme, Einstellungen für diese Fahrt. Die drei Modi `FreeTraining`, `RouteTraining` und `ReplayTraining` (Aufzeichnung oder Programm) bestimmen Leistung, Wirkung der Tasten, Aufnahmezeilen, Dateiname und Ergebnis |
-| `RideView/` | Fahransicht (`RideForm`, zeigt nur an und führt die Dialoge), Verlaufsgraph, Mausrad, Zusammenfassung, Monitorauswahl |
-| `Recording/` | Aufzeichnung (`JsonRecorder`, Dateiformat `RecordingFile`), Umbenennen/Verwerfen |
-| `Route/` | GPX-Strecke, Simulation (Gänge, Steigung, Leistung), Höhenprofil, Streckenauswahl |
-| `Replay/` | Aufzeichnung nachfahren oder Trainingsprogramm starten: Einlesen, Ablauf, Leistungsprofil, Übersicht, Programmauswahl |
-| `Localization/` | Mehrsprachigkeit: `Strings.resx` (Englisch, auch für Sprachen ohne Übersetzung) und `Strings.de.resx` (Deutsch), Zugriff über `L.T`/`L.F`; `Language` setzt die Sprache aus der Einstellung beim Start; `LocalizedText` für Texte je Sprache in Programmdateien |
-| `Settings/` | `settings.json` (`AppSettings`) mit den Fahrwerten als eigener Gruppe (`RideValues`: Gewichte, Übersetzung, Steigungsfaktor, Widerstände, Wattgrenze – auch pro Fahrt im Startdialog änderbar), Einstellungsdialog |
-| `Tests/` | Unittests (xUnit): Vertragstests für jedes Gerät, `ErgoController`, Cockpit-Protokoll und Verbindung gegen ein simuliertes Cockpit, Trainingsmodi, `settings.json`, Aufzeichnungen, FIT/CSV-Export, Programme, Strecken, Texte in beiden Sprachen und Pseudolokalisierung |
+| `Devices/` | Device layer: `IErgometer` (interface of every ergometer: set the target power, measured values `ErgometerData`, status, capabilities), `ErgoController` (device-independent: target power, power limit, changing device), `ErgometerTypes` (list of device kinds) |
+| `Devices/Daum/` | Daum ergo_bike via RS232: protocol (`DaumCockpit`), connecting/reconnecting/reset (`DaumErgometer`), cadence range of the eddy-current brake |
+| `Devices/Demo/` | Simulated rider (`DemoErgometer`) |
+| `Training/` | `TrainingController`: the running training without a window – mode, recording, settings for this ride. The three modes `FreeTraining`, `RouteTraining` and `ReplayTraining` (recording or program) decide power, effect of the keys, recorded rows, file name and result |
+| `RideView/` | Ride view (`RideForm`, only displays and runs the dialogs), graphs, mouse wheel, summary, monitor selection |
+| `Recording/` | Recording (`JsonRecorder`, file format `RecordingFile`), export, upload, renaming/discarding |
+| `Route/` | GPX route, simulation (gears, gradient, power), elevation profile, route selection |
+| `Replay/` | Replaying a recording or starting a training program: reading, run, power profile, overview, program selection |
+| `Localization/` | Languages: `Strings.resx` (English, also for languages without a translation) and `Strings.de.resx` (German), accessed via `L.T`/`L.F`; `Language` sets the language from the setting at start; `LocalizedText` for texts per language in program files |
+| `Settings/` | `settings.json` (`AppSettings`) with the ride values as a group of their own (`RideValues`: weights, gearing, gradient factor, resistances, power limit – also changeable per ride in the start dialog), settings dialog |
+| `Tests/` | Unit tests (xUnit): contract tests for every device, `ErgoController`, cockpit protocol and connection against a simulated cockpit, training modes, `settings.json`, recordings, FIT/CSV export, programs, routes, texts in both languages and pseudo-localization |
 
-## Weitere Geräte anbinden
+## Connecting other devices
 
-Die Oberfläche spricht nur mit `ErgoController`, der nur mit `IErgometer`. Für ein neues Gerät (z. B. Bluetooth-Trainer mit FTMS, ANT+ FE-C):
+The user interface only talks to `ErgoController`, which only talks to `IErgometer`. For a new device (e.g. a Bluetooth trainer with FTMS, ANT+ FE-C):
 
-1. Klasse in einem eigenen Ordner unter `Devices/` anlegen, die `IErgometer` implementiert: Verbindung im Hintergrund halten, `SetTargetPower` umsetzen, `DataReceived`/`StatusChanged` auslösen und in `Capabilities` angeben, was das Gerät kann (Maximalleistung, Wattraster, ggf. Drehzahlbereich der Bremse). Werte, die das Gerät nicht misst (Strecke, Energie …), bleiben `null` – die App rechnet sie dann selbst. Den Vertrag, den jedes Gerät einhalten muss (erst `Start` verbindet, Zielleistung auch vor dem Verbinden, nach `Dispose` keine Ereignisse mehr …), beschreibt `IErgometer`.
-2. Einen Eintrag `ErgometerType` in `ErgometerTypes.All`: Id für die `settings.json` (danach nie mehr ändern), Schlüssel des Namens in `Localization\Strings*.resx`, Erzeugung, ob es über einen COM-Port verbunden wird und wie „Verbindung testen“ geht. Der Einstellungsdialog richtet sich danach.
-3. In `Tests/ErgometerContractTests.cs` eine Unterklasse anlegen – am besten gegen eine Simulation des Protokolls wie `SimulatedCockpit` für Daum. Dann laufen dieselben Vertragstests wie für Daum und Demo.
-4. Nur wenn das Gerät andere Verbindungsdaten als einen COM-Port braucht (z. B. eine Bluetooth-Adresse): Feld in `AppSettings` und eine Zeile im Einstellungsdialog ergänzen.
+1. Create a class in a folder of its own under `Devices/` that implements `IErgometer`: keep the connection alive in the background, apply `SetTargetPower`, raise `DataReceived`/`StatusChanged` and state in `Capabilities` what the device can do (maximum power, power steps, possibly the cadence range of the brake). Values the device doesn’t measure (distance, energy …) stay `null` – the app then works them out itself. The contract every device must keep (only `Start` connects, a target power also before connecting, no events after `Dispose` …) is described in `IErgometer`.
+2. An entry `ErgometerType` in `ErgometerTypes.All`: id for `settings.json` (never change it afterwards), name key in `Localization\Strings*.resx`, creation, whether it is connected via a COM port and how “Test connection” works. The settings dialog follows it.
+3. Add a subclass in `Tests/ErgometerContractTests.cs` – ideally against a simulation of the protocol like `SimulatedCockpit` for Daum. Then the same contract tests run as for Daum and Demo.
+4. Only if the device needs connection data other than a COM port (e.g. a Bluetooth address): add a field to `AppSettings` and a row to the settings dialog.
 
-## Bauen
+## Building
 
 .NET 10, Windows Forms:
 
@@ -70,33 +74,39 @@ Die Oberfläche spricht nur mit `ErgoController`, der nur mit `IErgometer`. Für
 dotnet publish ErgoWattControl.csproj -c Release -o publish
 ```
 
-Tests (laufen auch vor jedem Release auf GitHub; ein Fehler stoppt das Release):
+Tests (also run before every release on GitHub; a failure stops the release):
 
 ```
 dotnet test Tests\ErgoWattControl.Tests.csproj
 ```
 
-**Pseudolokalisierung:** Die Tests bauen jedes Fenster mit künstlich verfremdeten Texten (Akzente, etwa 40 % länger, in `⟦ ⟧`) und prüfen, dass kein Text an den Ressourcen vorbei gesetzt ist, keiner in einem festen Feld abgeschnitten wird und kein Dialog größer als der Monitor am Ergometer (1280 × 1024) wird. Zum Ansehen: `"Language": "pseudo"` in die `settings.json` schreiben.
+**Pseudo-localization:** the tests build every window with artificially altered texts (accents, about 40 % longer, between `⟦ ⟧`) and check that no text is set past the resources, none is cut off in a fixed field and no dialog grows larger than the monitor at the ergometer (1280 × 1024). To look at it: write `"Language": "pseudo"` into `settings.json`.
 
-Sie brauchen kein Ergometer: `SimulatedCockpit` spielt das Daum-Cockpit nach – mit ausbleibenden oder verrutschten Antworten und Resets. Einstellungen und Dateien landen in einem eigenen Temp-Ordner, nie in den echten.
+They need no ergometer: `SimulatedCockpit` plays the Daum cockpit – with missing or out-of-step replies and resets. Settings and files go to a temporary folder of their own, never to the real ones.
 
-Setup (WiX 5, wird beim Bauen per NuGet geholt): `Setup\build-setup.ps1 [-Version 1.0.0]` veröffentlicht die App, lädt die aktuelle .NET 10 Desktop Runtime von Microsoft (Prüfsumme wird kontrolliert) und baut `Setup\out\ErgoWattControl-Setup.exe`:
+Setup (WiX 5, fetched via NuGet when building): `Setup\build-setup.ps1 [-Version 1.0.0]` publishes the app, downloads the current .NET 10 Desktop Runtime from Microsoft (the checksum is verified) and builds `Setup\out\ErgoWattControl-Setup.exe`:
 
-- `Setup\Installer`: MSI, pro Benutzer nach `%LocalAppData%\Programs\ErgoWattControl`, Verknüpfung im Startmenü und (abwählbar, `DESKTOPSHORTCUT`) auf dem Desktop
-- `Setup\Bundle`: Setup.exe (Burn), installiert die Runtime nur, wenn sie fehlt, dann das MSI. Eigene Oberfläche (`Theme.xml`, Texte in `Theme.en.wxl` und `Theme.de.wxl` – auf deutschem Windows Deutsch, sonst Englisch): Bild der App, Häkchen „Verknüpfung auf dem Desktop“, am Ende „Starten“ mit Wahl Demo-Modus (startet `ErgoWattControl.exe -demo:1` bzw. `-demo:0`). Still: `ErgoWattControl-Setup.exe /passive DesktopShortcut=0`
+- `Setup\Installer`: MSI, per user to `%LocalAppData%\Programs\ErgoWattControl`, shortcut in the Start menu and (optional, `DESKTOPSHORTCUT`) on the desktop
+- `Setup\Bundle`: Setup.exe (Burn), installs the runtime only if it is missing, then the MSI. Own user interface (`Theme.xml`, texts in `Theme.en.wxl` and `Theme.de.wxl` – German on a German Windows, English otherwise): picture of the app, tick box “Desktop shortcut”, at the end “Start” with the choice of demo mode (starts `ErgoWattControl.exe -demo:1` or `-demo:0`). Silent: `ErgoWattControl-Setup.exe /passive DesktopShortcut=0`
 
-Ein Versions-Tag (`v1.2.3`) baut beides auf GitHub und legt ein Release mit Setup und ZIP an (`.github/workflows/release.yml`).
+A version tag (`v1.2.3`) builds both on GitHub and creates a release with setup and ZIP (`.github/workflows/release.yml`).
 
-## Konfiguration
+## Configuration
 
-Datenordner: `settings.json` und das Protokoll `ErgoWattControl.log` in `%AppData%\ErgoWattControl`, Aufzeichnungen, GPX-Strecken und Programme in `Dokumente\ErgoWattControl`. **Portabel:** Liegt eine `settings.json` neben der exe, bleibt alles im Programmordner (so laufen ältere Installationen und ZIP-Kopien unverändert weiter).
+Data folders: `settings.json` and the log `ErgoWattControl.log` in `%AppData%\ErgoWattControl`, recordings, GPX routes and programs in `Documents\ErgoWattControl`. **Portable:** if a `settings.json` lies next to the exe, everything stays in the program folder (so older installations and ZIP copies keep working unchanged).
 
-`settings.json` (wird beim ersten Start angelegt): Sprache (`Language`: `auto`, `de` oder `en`), Gerät (`Device`: `DaumRs232` oder `Demo`), COM-Port, Ablageordner, Monitor der Fahransicht, die Fahrwerte (`Ride`: Gewichte, Übersetzung, Steigungsfaktor, …) sowie die Dateinamen-Muster der Aufzeichnungen:
+`settings.json` (created on the first start): language (`Language`: `auto`, `de` or `en`), device (`Device`: `DaumRs232` or `Demo`), COM port, recordings folder, monitor of the ride view, the ride values (`Ride`: weights, gearing, gradient factor, …) and the file name patterns of the recordings:
 
-| Einstellung | Für | Vorgabe |
+| Setting | For | Default |
 |---|---|---|
-| `FileNameTraining` | freies Training und nachgefahrene Aufzeichnung | `Training_{Date}_{Time}` |
-| `FileNameRoute` | Strecke fahren | `Route_{Route}_{Date}_{Time}` |
-| `FileNameProgram` | Trainingsprogramm starten | `Program_{Program}_{Date}_{Time}` |
+| `FileNameTraining` | free training and replayed recording | `Training_{Date}_{Time}` |
+| `FileNameRoute` | riding a route | `Route_{Route}_{Date}_{Time}` |
+| `FileNameProgram` | starting a training program | `Program_{Program}_{Date}_{Time}` |
 
-Platzhalter: `{Date}`, `{Time}`, `{Route}` (GPX-Dateiname), `{Training}` (nachgefahrene Aufzeichnung), `{Program}` (Programmdatei, z. B. `S02_FTP200_Norwegian_4x4`); die deutschen Platzhalter älterer Versionen stellt die App beim Start um. Der Name lässt sich im Startdialog von Strecke, Aufzeichnung und Programm ändern, im freien Training nach „Stop“.
+Placeholders: `{Date}`, `{Time}`, `{Route}` (GPX file name), `{Training}` (replayed recording), `{Program}` (program file, e.g. `S02_FTP200_Norwegian_4x4`); the German placeholders of older versions are converted at start. The name can be changed in the start dialog of route, recording and program, and in free training after “Stop”.
+
+## License
+
+[MIT](LICENSE) – free to use, change and pass on, also commercially, as long as the copyright notice stays in. No warranty: using an ergometer is at your own risk.
+
+The app uses the [Garmin FIT SDK](https://developer.garmin.com/fit/) (under the FIT Protocol License), [Microsoft WebView2](https://www.nuget.org/packages/Microsoft.Web.WebView2) and `System.IO.Ports`, each under its own license. “Daum” and “ergo_bike” are names of Daum Electronic; this project is not connected with Daum Electronic.
