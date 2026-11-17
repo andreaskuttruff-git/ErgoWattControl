@@ -2,7 +2,7 @@
 
   <!-- Unit tests: dotnet test Tests\ErgoWattControl.Tests.csproj (also run by the release workflow before building the setup) -->
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWindowsForms>true</UseWindowsForms>

@@ -38,12 +38,14 @@ public static class ErgometerTypes
 {
     public const string DaumRs232 = "DaumRs232";
     public const string Demo = "Demo";
+    public const string Ftms = "Ftms";
 
     public static readonly IReadOnlyList<ErgometerType> All =
     [
         new(DaumRs232, "Device_DaumRs232", settings => new DaumErgometer(settings.PortName),
             UsesSerialPort: true,
             TestConnection: (port, running) => DaumErgometer.TestPort(port, running as DaumErgometer)),
+        new(Ftms, "Device_Ftms", _ => new FtmsErgometer()),
         new(Demo, "Device_Demo", _ => new DemoErgometer()),
     ];
 

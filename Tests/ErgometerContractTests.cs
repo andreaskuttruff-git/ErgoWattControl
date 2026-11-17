@@ -153,3 +153,10 @@ public class DaumErgometerContractTests : ErgometerContractTests
         new DaumErgometer("COM-TEST", _ => new DaumCockpit(new SimulatedCockpit()));
     protected override TimeSpan ReadingInterval => TimeSpan.FromSeconds(0.6);
 }
+
+/// <summary>A Bluetooth FTMS trainer (an ErgoBridge) against <see cref="SimulatedFtmsLink"/> instead of Windows' Bluetooth stack.</summary>
+public class FtmsErgometerContractTests : ErgometerContractTests
+{
+    protected override IErgometer CreateDevice() => new FtmsErgometer(new SimulatedFtmsLink(), TimeSpan.FromMilliseconds(200));
+    protected override TimeSpan ReadingInterval => TimeSpan.FromSeconds(0.6);
+}

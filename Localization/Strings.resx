@@ -56,6 +56,7 @@ Not deleted: {0}</value></data>
   <data name="Demo_Status" xml:space="preserve"><value>Demo mode (no cockpit)</value></data>
   <data name="Device_DaumRs232" xml:space="preserve"><value>Daum ergo_bike (RS232)</value></data>
   <data name="Device_Demo" xml:space="preserve"><value>Demo (simulated rider)</value></data>
+  <data name="Device_Ftms" xml:space="preserve"><value>(not tested yet) Bluetooth smart trainer (FTMS, e.g. ErgoBridge)</value></data>
   <data name="Device_NoDevice" xml:space="preserve"><value>No device</value></data>
   <data name="End_Ask" xml:space="preserve"><value>End training</value></data>
   <data name="End_CloseApp" xml:space="preserve"><value>Exit ErgoWattControl</value></data>
@@ -126,6 +127,22 @@ Sign in yourself the first time – with “Remember me” it goes straight to t
   <data name="Fit_NotFit" xml:space="preserve"><value>This is not a FIT file.</value></data>
   <data name="Fit_NoTrackButPower" xml:space="preserve"><value>The FIT file has no GPS route with elevation (e.g. an indoor ride) – it can be replayed as a power profile under “Replay a recording”.</value></data>
   <data name="Fit_NoTrackNoPower" xml:space="preserve"><value>The FIT file has no GPS route with elevation (e.g. an indoor ride) – it cannot be ridden as a route.</value></data>
+  <data name="Ftms_CockpitMissing" xml:space="preserve"><value>{0} connected, but the cockpit is not answering</value></data>
+  <data name="Ftms_Connected" xml:space="preserve"><value>Connected to {0} (Bluetooth)</value></data>
+  <data name="Ftms_ConnectionLost" xml:space="preserve"><value>connection lost</value></data>
+  <data name="Ftms_ControlRefused" xml:space="preserve"><value>{0} refuses control (another app – or the last connection is still open)</value></data>
+  <data name="Ftms_DisplayName" xml:space="preserve"><value>Bluetooth</value></data>
+  <data name="Ftms_DisplayNameOf" xml:space="preserve"><value>Bluetooth ({0})</value></data>
+  <data name="Ftms_Info" xml:space="preserve"><value>{0}: max. {1} W in {2} W steps</value></data>
+  <data name="Ftms_InfoBridge" xml:space="preserve"><value>{0} with cockpit {1}: max. {2} W</value></data>
+  <data name="Ftms_InfoBridgeUnknown" xml:space="preserve"><value>{0}: cockpit type not known yet, max. {1} W</value></data>
+  <data name="Ftms_InfoUnknownYet" xml:space="preserve"><value>Bluetooth trainer: limits not known yet, until then max. {0} W</value></data>
+  <data name="Ftms_NoAdapter" xml:space="preserve"><value>no Bluetooth LE adapter found (Bluetooth switched off?)</value></data>
+  <data name="Ftms_NoAnswer" xml:space="preserve"><value>no answer</value></data>
+  <data name="Ftms_NotFound" xml:space="preserve"><value>No Bluetooth trainer found – is the ErgoBridge switched on? Trying again …</value></data>
+  <data name="Ftms_RadioOff" xml:space="preserve"><value>Bluetooth is switched off</value></data>
+  <data name="Ftms_Retrying" xml:space="preserve"><value>Bluetooth: {0} – trying again …</value></data>
+  <data name="Ftms_Searching" xml:space="preserve"><value>Searching for a Bluetooth trainer …</value></data>
   <data name="Gearing_Mtb" xml:space="preserve"><value>MTB</value></data>
   <data name="Gearing_Road" xml:space="preserve"><value>Road bike</value></data>
   <data name="Gpx_NoTrack" xml:space="preserve"><value>The GPX file contains no track with elevations.</value></data>
