@@ -14,13 +14,32 @@ Control for the Daum **ergo_bike 8008 TRS** via the serial port (RS232, 9600 8N1
 
 The screenshots show the app in German; in English the texts are in the same places.
 
-| Free training | Riding a route (GPX or FIT) |
-|---|---|
-| <img src="HelpPics/fahransicht.png" width="400" alt="Free training: target power, power/RPM and pulse of the last 10 minutes"> | <img src="HelpPics/fahransicht_strecke.png" width="400" alt="Riding a route: an MTB tour from a FIT file – gear, elevation profile with the pulse back then (green) and today (red), the next 2 km"> |
-| Set the power in steps of 5 W; at the top power and cadence, below the pulse. | Gear instead of watts: the brake power follows from gradient, weight and speed. Here an own MTB tour as a FIT file: in the elevation profile the pulse back then (green) and today (red) by kilometre, the green number next to the pulse is the value back then at this point. |
-| **Training program** | **Replaying a recording** |
-| <img src="HelpPics/fahransicht_programm.png" width="400" alt="Training program S08: profile of the whole program with the pulse, below it the next 10 minutes"> | <img src="HelpPics/fahransicht_aufzeichnung.png" width="400" alt="Replaying a recording: pulse back then (green) and today (red) above the power profile"> |
-| The program sets the power. At the top the whole program with your pulse, below it the next 10 minutes with the next change. | An earlier ride as target: the pulse back then (green) next to today’s (red), as a curve and as a number next to the pulse display – so you see your progress. |
+<table>
+<tr>
+<th width="50%">Free training</th>
+<th width="50%">Riding a route (GPX or FIT)</th>
+</tr>
+<tr>
+<td width="50%"><img src="HelpPics/fahransicht.png" width="100%" alt="Free training: target power, power/RPM and pulse of the last 10 minutes"></td>
+<td width="50%"><img src="HelpPics/fahransicht_strecke.png" width="100%" alt="Riding a route: an MTB tour from a FIT file – gear, elevation profile with the pulse back then (green) and today (red), the next 2 km"></td>
+</tr>
+<tr>
+<td width="50%">Set the power in steps of 5 W; at the top power and cadence, below the pulse.</td>
+<td width="50%">Gear instead of watts: the brake power follows from gradient, weight and speed. Here an own MTB tour as a FIT file: in the elevation profile the pulse back then (green) and today (red) by kilometre, the green number next to the pulse is the value back then at this point.</td>
+</tr>
+<tr>
+<th width="50%">Training program</th>
+<th width="50%">Replaying a recording</th>
+</tr>
+<tr>
+<td width="50%"><img src="HelpPics/fahransicht_programm.png" width="100%" alt="Training program S08: profile of the whole program with the pulse, below it the next 10 minutes"></td>
+<td width="50%"><img src="HelpPics/fahransicht_aufzeichnung.png" width="100%" alt="Replaying a recording: pulse back then (green) and today (red) above the power profile"></td>
+</tr>
+<tr>
+<td width="50%">The program sets the power. At the top the whole program with your pulse, below it the next 10 minutes with the next change.</td>
+<td width="50%">An earlier ride as target: the pulse back then (green) next to today’s (red), as a curve and as a number next to the pulse display – so you see your progress.</td>
+</tr>
+</table>
 
 ## Features
 

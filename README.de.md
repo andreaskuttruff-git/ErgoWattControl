@@ -10,13 +10,32 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 ## Die Modi
 
-| Freies Training | Strecke fahren (GPX oder FIT) |
-|---|---|
-| <img src="HelpPics/fahransicht.png" width="400" alt="Freies Training: Wattvorgabe, Leistung/RPM und Puls der letzten 10 Minuten"> | <img src="HelpPics/fahransicht_strecke.png" width="400" alt="Strecke fahren: eine MTB-Tour aus einer FIT-Datei – Gang, Höhenprofil mit dem Puls von damals (grün) und heute (rot), die nächsten 2 km"> |
-| Leistung in 5-W-Schritten vorgeben; oben Leistung und Trittfrequenz, unten der Puls. | Gang statt Watt: Die Bremsleistung folgt aus Steigung, Gewicht und Tempo. Hier eine eigene MTB-Tour als FIT-Datei: im Höhenprofil der Puls von damals (grün) und heute (rot) nach Kilometer, die grüne Zahl neben dem Puls ist der Wert von damals an dieser Stelle. |
-| **Trainingsprogramm** | **Aufzeichnung nachfahren** |
-| <img src="HelpPics/fahransicht_programm.png" width="400" alt="Trainingsprogramm S08: Profil des ganzen Programms mit dem Puls, darunter die nächsten 10 Minuten"> | <img src="HelpPics/fahransicht_aufzeichnung.png" width="400" alt="Aufzeichnung nachfahren: Puls von damals (grün) und von heute (rot) über dem Leistungsverlauf"> |
-| Das Programm gibt die Leistung vor. Oben das ganze Programm mit deinem Puls, darunter die nächsten 10 Minuten mit dem nächsten Wechsel. | Eine frühere Fahrt als Vorgabe: Puls von damals (grün) neben dem von heute (rot), als Kurve und als Zahl neben der Pulsanzeige – so siehst du den Fortschritt. |
+<table>
+<tr>
+<th width="50%">Freies Training</th>
+<th width="50%">Strecke fahren (GPX oder FIT)</th>
+</tr>
+<tr>
+<td width="50%"><img src="HelpPics/fahransicht.png" width="100%" alt="Freies Training: Wattvorgabe, Leistung/RPM und Puls der letzten 10 Minuten"></td>
+<td width="50%"><img src="HelpPics/fahransicht_strecke.png" width="100%" alt="Strecke fahren: eine MTB-Tour aus einer FIT-Datei – Gang, Höhenprofil mit dem Puls von damals (grün) und heute (rot), die nächsten 2 km"></td>
+</tr>
+<tr>
+<td width="50%">Leistung in 5-W-Schritten vorgeben; oben Leistung und Trittfrequenz, unten der Puls.</td>
+<td width="50%">Gang statt Watt: Die Bremsleistung folgt aus Steigung, Gewicht und Tempo. Hier eine eigene MTB-Tour als FIT-Datei: im Höhenprofil der Puls von damals (grün) und heute (rot) nach Kilometer, die grüne Zahl neben dem Puls ist der Wert von damals an dieser Stelle.</td>
+</tr>
+<tr>
+<th width="50%">Trainingsprogramm</th>
+<th width="50%">Aufzeichnung nachfahren</th>
+</tr>
+<tr>
+<td width="50%"><img src="HelpPics/fahransicht_programm.png" width="100%" alt="Trainingsprogramm S08: Profil des ganzen Programms mit dem Puls, darunter die nächsten 10 Minuten"></td>
+<td width="50%"><img src="HelpPics/fahransicht_aufzeichnung.png" width="100%" alt="Aufzeichnung nachfahren: Puls von damals (grün) und von heute (rot) über dem Leistungsverlauf"></td>
+</tr>
+<tr>
+<td width="50%">Das Programm gibt die Leistung vor. Oben das ganze Programm mit deinem Puls, darunter die nächsten 10 Minuten mit dem nächsten Wechsel.</td>
+<td width="50%">Eine frühere Fahrt als Vorgabe: Puls von damals (grün) neben dem von heute (rot), als Kurve und als Zahl neben der Pulsanzeige – so siehst du den Fortschritt.</td>
+</tr>
+</table>
 
 ## Funktionen
 
