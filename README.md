@@ -16,10 +16,10 @@ The screenshots show the app in German; in English the texts are in the same pla
 
 | Free training | Riding a route (GPX or FIT) |
 |---|---|
-| ![Free training: target power, power/RPM and pulse of the last 10 minutes](HelpPics/fahransicht.png) | ![Riding a route: an MTB tour from a FIT file – gear, elevation profile with the pulse back then (green) and today (red), the next 2 km](HelpPics/fahransicht_strecke.png) |
+| <img src="HelpPics/fahransicht.png" width="400" alt="Free training: target power, power/RPM and pulse of the last 10 minutes"> | <img src="HelpPics/fahransicht_strecke.png" width="400" alt="Riding a route: an MTB tour from a FIT file – gear, elevation profile with the pulse back then (green) and today (red), the next 2 km"> |
 | Set the power in steps of 5 W; at the top power and cadence, below the pulse. | Gear instead of watts: the brake power follows from gradient, weight and speed. Here an own MTB tour as a FIT file: in the elevation profile the pulse back then (green) and today (red) by kilometre, the green number next to the pulse is the value back then at this point. |
 | **Training program** | **Replaying a recording** |
-| ![Training program S08: profile of the whole program with the pulse, below it the next 10 minutes](HelpPics/fahransicht_programm.png) | ![Replaying a recording: pulse back then (green) and today (red) above the power profile](HelpPics/fahransicht_aufzeichnung.png) |
+| <img src="HelpPics/fahransicht_programm.png" width="400" alt="Training program S08: profile of the whole program with the pulse, below it the next 10 minutes"> | <img src="HelpPics/fahransicht_aufzeichnung.png" width="400" alt="Replaying a recording: pulse back then (green) and today (red) above the power profile"> |
 | The program sets the power. At the top the whole program with your pulse, below it the next 10 minutes with the next change. | An earlier ride as target: the pulse back then (green) next to today’s (red), as a curve and as a number next to the pulse display – so you see your progress. |
 
 ## Features
