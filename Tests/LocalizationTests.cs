@@ -91,7 +91,9 @@ public partial class LocalizationTests
             .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")
                         && !f.Contains($"{Path.DirectorySeparatorChar}Tests{Path.DirectorySeparatorChar}"))
             .Select(File.ReadAllText));
-        Assert.Empty(English.Keys.Where(k => !code.Contains($"\"{k}\"")));
+        // A list, not DoesNotContain: the failure then names every unused key at once.
+        var unused = English.Keys.Where(k => !code.Contains($"\"{k}\"")).ToList();
+        Assert.Empty(unused);
     }
 
     [Fact]

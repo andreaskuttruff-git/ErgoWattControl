@@ -115,7 +115,7 @@ public class ProgramFormatTests
             var program = TrainingProgram.Load(path);
             Assert.Contains("de", program.Name.Languages);
             Assert.Contains("en", program.Name.Languages);
-            Assert.NotEqual(program.Name.In("de"), "");
+            Assert.NotEqual("", program.Name.In("de"));
             Assert.Contains("de", program.Description.Languages);
             Assert.Contains("en", program.Description.Languages);
             // Language-neutral file names: plain ASCII, no German words with umlauts.
