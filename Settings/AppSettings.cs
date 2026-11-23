@@ -77,6 +77,10 @@ public sealed class AppSettings
 
     public string GpxDirectory { get; set; } = Path.Combine(AppPaths.DataFolder, "GPX");
 
+    /// <summary>The last routes, recordings and programs ridden (☰ → … → Kürzlich), newest first.</summary>
+    public RecentRides Recent { get => _recent; set => _recent = value ?? new(); }
+    private RecentRides _recent = new();
+
     // settings.json and recordings up to v1.5.1 kept the ride values at the top level: they are still read (into
     // Ride) but never written again – the next save moves them under "Ride".
     [JsonInclude, JsonPropertyName("RiderWeightKg"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

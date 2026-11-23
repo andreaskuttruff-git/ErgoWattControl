@@ -159,6 +159,9 @@ Sign in yourself the first time – with “Remember me” it goes straight to t
   <data name="Info_Folders" xml:space="preserve"><value>Settings: {0}
 Data: {1}</value></data>
   <data name="Info_HelpOnline" xml:space="preserve"><value>Help online</value></data>
+  <data name="Menu_Recent" xml:space="preserve"><value>Recent</value></data>
+  <data name="Info_OpenFolder" xml:space="preserve"><value>Folder</value></data>
+  <data name="Info_OpenLog" xml:space="preserve"><value>Open log (errors and cockpit connection)</value></data>
   <data name="Info_HelpUrl" xml:space="preserve"><value>https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html</value></data>
   <data name="Info_Portable" xml:space="preserve"><value>
 (portable – everything next to the exe)</value></data>

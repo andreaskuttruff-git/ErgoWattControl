@@ -23,6 +23,16 @@ public sealed class RoutePickerForm : Form
     /// <summary>File name the rider typed for the recording; null = use the configured pattern.</summary>
     public string? RecordingFileName => _fileName.CustomName;
 
+    /// <summary>File of the selected route (for "Kürzlich").</summary>
+    public string? SelectedFile => _list.SelectedIndex >= 0 ? _files[_list.SelectedIndex] : null;
+
+    /// <summary>Selects <paramref name="file"/> (from "Kürzlich"); a file outside the route folder is added to the list.</summary>
+    public void Preselect(string file)
+    {
+        if (File.Exists(file))
+            Select(file);
+    }
+
     public RoutePickerForm(AppSettings settings, int maxWatt)
     {
         _settings = settings;
@@ -89,13 +99,17 @@ public sealed class RoutePickerForm : Form
             InitialDirectory = Directory.Exists(_settings.GpxDirectory) ? _settings.GpxDirectory : null,
             Filter = L.T("Route_Filter"),
         };
-        if (picker.ShowDialog(this) != DialogResult.OK)
-            return;
-        var index = _files.FindIndex(f => string.Equals(f, picker.FileName, StringComparison.OrdinalIgnoreCase));
+        if (picker.ShowDialog(this) == DialogResult.OK)
+            Select(picker.FileName);
+    }
+
+    private void Select(string file)
+    {
+        var index = _files.FindIndex(f => string.Equals(f, file, StringComparison.OrdinalIgnoreCase));
         if (index < 0)
         {
-            _files.Insert(0, picker.FileName);
-            _list.Items.Insert(0, FitImport.DisplayName(picker.FileName));
+            _files.Insert(0, file);
+            _list.Items.Insert(0, FitImport.DisplayName(file));
             index = 0;
         }
         _list.SelectedIndex = index;

@@ -159,6 +159,9 @@ Beim ersten Mal selbst anmelden – mit „Eingeloggt bleiben“ geht es danach 
   <data name="Info_Folders" xml:space="preserve"><value>Einstellungen: {0}
 Daten: {1}</value></data>
   <data name="Info_HelpOnline" xml:space="preserve"><value>Hilfe online</value></data>
+  <data name="Menu_Recent" xml:space="preserve"><value>Kürzlich</value></data>
+  <data name="Info_OpenFolder" xml:space="preserve"><value>Ordner</value></data>
+  <data name="Info_OpenLog" xml:space="preserve"><value>Log öffnen (Fehler und Verbindung zum Cockpit)</value></data>
   <data name="Info_HelpUrl" xml:space="preserve"><value>https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html</value></data>
   <data name="Info_Portable" xml:space="preserve"><value>
 (portabel – alles neben der exe)</value></data>

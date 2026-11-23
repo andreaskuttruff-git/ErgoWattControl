@@ -1,6 +1,6 @@
 namespace ErgoWattControl;
 
-/// <summary>☰ → Info: version of this build, links to the project page, new versions and the help, and where the data is.</summary>
+/// <summary>☰ → Info: version of this build, links to the project page, new versions, the help and the log, and where the data is.</summary>
 public sealed class InfoForm : Form
 {
     public InfoForm()
@@ -30,6 +30,10 @@ public sealed class InfoForm : Form
         text.Controls.Add(Link(L.T("Info_Project"), AppInfo.ProjectUrl));
         text.Controls.Add(Link(L.T("Info_Releases"), AppInfo.ProjectUrl + "/releases/latest"));
         text.Controls.Add(Link(L.T("Info_HelpOnline"), L.T("Info_HelpUrl")));
+        var logRow = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = Padding.Empty };
+        logRow.Controls.Add(Link(L.T("Info_OpenLog"), AppPaths.LogFile, OpenLog));
+        logRow.Controls.Add(Link(L.T("Info_OpenFolder"), AppPaths.SettingsFolder, OpenFolder));
+        text.Controls.Add(logRow);
         text.Controls.Add(new Label
         {
             AutoSize = true,
@@ -48,7 +52,50 @@ public sealed class InfoForm : Form
         CancelButton = ok;
     }
 
-    private static LinkLabel Link(string text, string url)
+    /// <summary>
+    /// Opens the log in a text editor: Notepad++ if installed (it notices when the running app appends), else Notepad.
+    /// Without a log yet (nothing went wrong so far), the folder opens instead.
+    /// </summary>
+    private static void OpenLog()
+    {
+        var log = AppPaths.LogFile;
+        if (!File.Exists(log)) { OpenFolder(); return; }
+        Start(new System.Diagnostics.ProcessStartInfo(LogEditor(), $"\"{log}\""));
+    }
+
+    /// <summary>Opens the folder of the log and settings.json in Explorer.</summary>
+    private static void OpenFolder()
+    {
+        try { Directory.CreateDirectory(AppPaths.SettingsFolder); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", $"\"{AppPaths.SettingsFolder}\""));
+    }
+
+    private static void Start(System.Diagnostics.ProcessStartInfo start)
+    {
+        try { System.Diagnostics.Process.Start(start); }
+        catch (System.ComponentModel.Win32Exception) { }
+    }
+
+    /// <summary>The editor for the log: Notepad++ (registered in App Paths or in Program Files), else Notepad.</summary>
+    internal static string LogEditor()
+    {
+        foreach (var root in new[] { Microsoft.Win32.Registry.CurrentUser, Microsoft.Win32.Registry.LocalMachine })
+        {
+            using var key = root.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\notepad++.exe");
+            if (key?.GetValue(null) is string path && File.Exists(path.Trim('"')))
+                return path.Trim('"');
+        }
+        foreach (var folder in new[] { Environment.SpecialFolder.ProgramFiles, Environment.SpecialFolder.ProgramFilesX86 })
+        {
+            var path = Path.Combine(Environment.GetFolderPath(folder), "Notepad++", "notepad++.exe");
+            if (File.Exists(path))
+                return path;
+        }
+        return "notepad.exe";
+    }
+
+    private static LinkLabel Link(string text, string url, Action? open = null)
     {
         var link = new LinkLabel
         {
@@ -62,6 +109,7 @@ public sealed class InfoForm : Form
         new ToolTip().SetToolTip(link, url);
         link.LinkClicked += (_, _) =>
         {
+            if (open is not null) { open(); return; }
             try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }); }
             catch (System.ComponentModel.Win32Exception) { /* no browser registered */ }
         };

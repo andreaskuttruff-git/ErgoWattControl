@@ -370,12 +370,31 @@ public sealed class ReplayPickerForm : Form
             InitialDirectory = Directory.Exists(directory) ? directory : null,
             Filter = L.T("Pick_TrainingFilter"),
         };
-        if (picker.ShowDialog(this) != DialogResult.OK)
-            return;
-        var index = _entries.FindIndex(e => string.Equals(e.Path, picker.FileName, StringComparison.OrdinalIgnoreCase));
+        if (picker.ShowDialog(this) == DialogResult.OK)
+            SelectFile(picker.FileName);
+    }
+
+    /// <summary>File of the selected program or recording (for "Kürzlich").</summary>
+    public string? SelectedFile => _list.SelectedIndex >= 0 ? _entries[_list.SelectedIndex].Path : null;
+
+    /// <summary>
+    /// Selects <paramref name="file"/> (from "Kürzlich"). A recording from another folder is added to the list; a program
+    /// that is no longer in the program folders is not – the dialog then opens as usual.
+    /// </summary>
+    public void Preselect(string file)
+    {
+        if (File.Exists(file))
+            SelectFile(file);
+    }
+
+    private void SelectFile(string file)
+    {
+        var index = _entries.FindIndex(e => string.Equals(e.Path, file, StringComparison.OrdinalIgnoreCase));
         if (index < 0)
         {
-            _entries.Insert(0, RecordingEntry(picker.FileName));
+            if (_programs)
+                return;
+            _entries.Insert(0, RecordingEntry(file));
             _list.Items.Insert(0, _entries[0].Title);
             index = 0;
         }

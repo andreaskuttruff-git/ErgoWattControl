@@ -30,6 +30,7 @@ public sealed class RideForm : Form
     private ToolStripMenuItem _menuProgramStart = null!;
     /// <summary>Ends whatever runs: route, replay, program or the recording of a free training.</summary>
     private ToolStripMenuItem _menuTrainingEnd = null!;
+    private ToolStripMenuItem _menuRouteRecent = null!, _menuReplayRecent = null!, _menuProgramRecent = null!;
 
     /// <summary>A route or a replayed training sets the power; free training is controlled by the rider.</summary>
     private bool Guided => _training.Guided;
@@ -233,14 +234,21 @@ public sealed class RideForm : Form
         menuButton.Dock = DockStyle.Left;
         menuButton.Width = 48;
         var menu = new ContextMenuStrip { Font = new Font("Segoe UI", 14) };
-        _menuRouteStart = new ToolStripMenuItem(L.T("Menu_Route"), null, (_, _) => StartRoute());
-        _menuReplayStart = new ToolStripMenuItem(L.T("Menu_Replay"), null, (_, _) => StartReplay());
-        _menuProgramStart = new ToolStripMenuItem(L.T("Menu_Program"), null, (_, _) => StartProgram());
+        _menuRouteStart = new ToolStripMenuItem(L.T("Menu_Route"), null, (_, _) => PickRoute());
+        _menuReplayStart = new ToolStripMenuItem(L.T("Menu_Replay"), null, (_, _) => PickReplay());
+        _menuProgramStart = new ToolStripMenuItem(L.T("Menu_Program"), null, (_, _) => PickProgram());
         _menuTrainingEnd = new ToolStripMenuItem(L.T("Menu_EndTraining"), null, (_, _) => EndTraining()) { Enabled = false };
+        _menuRouteRecent = RecentMenu(PickRoute);
+        _menuReplayRecent = RecentMenu(PickReplay);
+        _menuProgramRecent = RecentMenu(PickProgram);
         menu.Items.Add(_menuRouteStart);
+        menu.Items.Add(_menuRouteRecent);
         menu.Items.Add(_menuReplayStart);
+        menu.Items.Add(_menuReplayRecent);
         menu.Items.Add(_menuProgramStart);
+        menu.Items.Add(_menuProgramRecent);
         menu.Items.Add(_menuTrainingEnd);
+        menu.Opening += (_, _) => FillRecentMenus();
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(L.T("Menu_Export"), null, (_, _) => OpenExport());
         menu.Items.Add(new ToolStripSeparator());
@@ -514,6 +522,56 @@ public sealed class RideForm : Form
     private void SetGuidedMenus() =>
         _menuRouteStart.Enabled = _menuReplayStart.Enabled = _menuProgramStart.Enabled = !Guided;
 
+    /// <summary>"Kürzlich" below a start item: indented and grey; its submenu lists the last files ridden from that dialog.</summary>
+    private static ToolStripMenuItem RecentMenu(Action<string?> start) => new("      " + L.T("Menu_Recent"))
+    {
+        ForeColor = Color.FromArgb(170, 170, 170),
+        Tag = start,
+    };
+
+    /// <summary>Fills the three "Kürzlich" submenus when the menu opens: files that no longer exist are left out.</summary>
+    private void FillRecentMenus()
+    {
+        var recent = _settings.Recent;
+        Fill(_menuRouteRecent, recent.Routes, FitImport.DisplayName);
+        Fill(_menuReplayRecent, recent.Recordings, RecentRecordingName);
+        Fill(_menuProgramRecent, recent.Programs, RecentProgramName);
+
+        void Fill(ToolStripMenuItem item, List<string> files, Func<string, string> name)
+        {
+            var start = (Action<string?>)item.Tag!;
+            item.DropDownItems.Clear();
+            foreach (var file in RecentRides.Existing(files))
+            {
+                var entry = new ToolStripMenuItem(Safe(name, file), null, (_, _) => start(file)) { ToolTipText = file };
+                item.DropDownItems.Add(entry);
+            }
+            // No submenu without entries: greyed out, without the arrow. Nothing new during a guided training.
+            item.Enabled = item.DropDownItems.Count > 0 && !Guided;
+        }
+
+        static string Safe(Func<string, string> name, string file)
+        {
+            try { return name(file); }
+            catch (Exception) { return Path.GetFileNameWithoutExtension(file); }
+        }
+    }
+
+    /// <summary>A recording in "Kürzlich": date first, the names often look alike.</summary>
+    private static string RecentRecordingName(string file) =>
+        $"{File.GetLastWriteTime(file):d}  " + (FitImport.IsFit(file) ? FitImport.DisplayName(file) : Path.GetFileNameWithoutExtension(file));
+
+    private static string RecentProgramName(string file) => TrainingProgram.Load(file).DisplayName;
+
+    /// <summary>Remembers a file just started from a dialog for "Kürzlich" and saves the settings.</summary>
+    private void RememberRecent(List<string> list, string? file)
+    {
+        if (file is null)
+            return;
+        RecentRides.Remember(list, file);
+        try { _settings.Save(); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+    }
+
     /// <summary>Menu "Training beenden": ends the route or replay, or stops the free training's recording like "■ Stop".</summary>
     private void EndTraining()
     {
@@ -523,13 +581,16 @@ public sealed class RideForm : Form
             FinishFreeRecording();
     }
 
-    private void StartReplay()
+    private void PickReplay(string? preselect = null)
     {
         if (Guided)
             return;
         using var picker = ReplayPickerForm.ForRecordings(_settings, _training.SaveRideDefaults);
+        if (preselect is not null)
+            picker.Preselect(preselect);
         if (picker.ShowDialog(this) != DialogResult.OK || picker.Workout is not { } workout)
             return;
+        RememberRecent(_settings.Recent.Recordings, picker.SelectedFile);
         // The checkbox is the setting: remember the choice for the next replay.
         if (workout.HasPulse && picker.ShowOriginalPulse != _settings.ReplayShowOriginalPulse)
         {
@@ -566,13 +627,17 @@ public sealed class RideForm : Form
         BeginReplay(workout, customName: null, programFile: workout.IsProgram && csvPath.Length > 0 ? Path.GetFileNameWithoutExtension(csvPath) : null);
     }
 
-    private void StartProgram()
+    private void PickProgram(string? preselect = null)
     {
         if (Guided)
             return;
         using var picker = ReplayPickerForm.ForPrograms(ProgramFiles.Folder, ProgramFiles.CustomFolder, _settings, _training.SaveRideDefaults);
-        if (picker.ShowDialog(this) == DialogResult.OK && picker.Workout is { } workout)
-            BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideValues, picker.PowerOffset);
+        if (preselect is not null)
+            picker.Preselect(preselect);
+        if (picker.ShowDialog(this) != DialogResult.OK || picker.Workout is not { } workout)
+            return;
+        RememberRecent(_settings.Recent.Programs, picker.SelectedFile);
+        BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideValues, picker.PowerOffset);
     }
 
     /// <summary>The pulse of the original ride at the same point (route: same kilometre, recording: same time), just the number.</summary>
@@ -665,14 +730,18 @@ public sealed class RideForm : Form
         MessageBox.Show(this, L.F(messageKey, reason, AppPaths.LogFile), caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
-    private void StartRoute()
+    private void PickRoute(string? preselect = null)
     {
         if (Guided)
             return;
         Directory.CreateDirectory(_settings.GpxDirectory);
         using var picker = new RoutePickerForm(_settings, _controller.MaxWatt);
-        if (picker.ShowDialog(this) == DialogResult.OK && picker.Route is { } route)
-            BeginRoute(route, picker.RecordingFileName);
+        if (preselect is not null)
+            picker.Preselect(preselect);
+        if (picker.ShowDialog(this) != DialogResult.OK || picker.Route is not { } route)
+            return;
+        RememberRecent(_settings.Recent.Routes, picker.SelectedFile);
+        BeginRoute(route, picker.RecordingFileName);
     }
 
     /// <summary>Rides a file given on the command line (demo), without the start dialog.</summary>
