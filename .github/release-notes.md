@@ -2,6 +2,9 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.2.1
+- **Freies Training:** Die Aufzeichnung pausiert jetzt auch hier, solange nicht getreten wird – wie schon bei Strecken, Aufzeichnungen und Programmen. Die Zeit läuft nur beim Treten, Pausen fehlen in der Aufzeichnung (und im FIT-Export).
+
 ### Neu in v2.2.0
 - **Kürzlich gefahren:** Im Menü ☰ steht unter „Strecke fahren …“, „Aufzeichnung nachfahren …“ und „Trainingsprogramm starten …“ je ein Punkt **Kürzlich** mit den letzten drei dort gestarteten Einträgen. Ein Klick öffnet den gewohnten Dialog mit dem Eintrag schon ausgewählt – Wattgrenze und Leistungsoffset lassen sich vor „Start“ noch prüfen. Gelöschte oder verschobene Dateien werden nicht angezeigt.
 - **Info:** Neue Links **Log öffnen** (öffnet `ErgoWattControl.log` in Notepad++, falls installiert, sonst im Editor) und **Ordner** (öffnet den Ordner mit Log und `settings.json` im Explorer).

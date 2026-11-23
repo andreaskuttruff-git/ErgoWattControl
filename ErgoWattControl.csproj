@@ -9,7 +9,7 @@
     <!-- Elevation profile as icon (exe, shortcuts, taskbar, setup); drawn by Setup\make-icon.py -->
     <ApplicationIcon>ErgoWattControl.ico</ApplicationIcon>
     <!-- Version of local builds (shown under Einstellungen → Info); a release build takes it from the tag instead -->
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <!-- Texts in LocalizationStrings.resx are English; other languages come as satellite assemblies (de…) -->
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
