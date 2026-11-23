@@ -286,7 +286,12 @@ public sealed class ReplayPickerForm : Form
         {
             // Docked to the bottom in this order: caption above the values; the button sits behind the "W" of the power limit.
             var saved = new Label { AutoSize = true, ForeColor = DialogColors.Ok, Margin = new Padding(8, 0, 0, 0) };
-            var saveAsDefault = new Button { Text = L.T("Pick_SaveAsDefault"), AutoSize = true, Margin = new Padding(16, 0, 0, 0) };
+            // Right behind the "W" (whose own margin leaves 4 px); a small button, about half the area of a normal one.
+            var saveAsDefault = new Button
+            {
+                Text = L.T("Pick_SaveAsDefault"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Font = new Font("Segoe UI", 7), Padding = Padding.Empty, Margin = Padding.Empty,
+            };
             saveAsDefault.Click += (_, _) =>
             {
                 _saveAsDefault(_rideSettings.Apply(_current.Ride));
