@@ -2,6 +2,15 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.1.0
+- **Leistungsoffset beim Start:** In „Trainingsprogramm starten“ und „Aufzeichnung nachfahren“ lässt sich das ganze Leistungsprofil für diesen Lauf in 5-W-Schritten verschieben – nach unten höchstens bis der tiefste Punkt bei 0 W liegt, nach oben höchstens bis der höchste die Wattgrenze erreicht. Die Vorschau zeigt es gleich verschoben; in der Fahrt verschieben + / − und das Mausrad von dort aus weiter. Der Offset gilt nur für diesen Lauf.
+- **Profilgrafik:** Ein nach oben verschobenes Profil wird nicht mehr oben flach abgeschnitten gezeichnet – die Skala wächst mit.
+- **„Als Standard speichern“ heißt jetzt „Standard“** und steht hinter der Wattgrenze; die Beschreibung des Programms bekommt dafür mehr Platz.
+- **Hochladen zu Garmin Connect / Strava:** Alle Knöpfe stehen jetzt unter der Seite, dazu ein eigener **Schließen**-Knopf (auch Esc).
+- **Export:** „Ordner öffnen“ wird bei größerer Windows-Skalierung nicht mehr abgeschnitten.
+- **Dialoge:** Etwas mehr Abstand unter den Knöpfen unten; ausgegraute Knöpfe (z. B. „Start“ ohne Auswahl) haben einen sichtbaren Rahmen und eine deutlich dunklere Schrift.
+- **Vorschau – noch nicht getestet:** Neuer Gerätetyp **Bluetooth-Smart-Trainer (FTMS, z. B. ErgoBridge)** unter ☰ → Einstellungen → Gerät. Damit soll die App das Ergometer künftig über eine ESP32-Bluetooth-Brücke statt über das RS232-Kabel steuern – oder einen anderen FTMS-Trainer mit Zielleistung. Mit echter Bluetooth-Hardware ist das noch nicht ausprobiert; für das Daum am Kabel bleibt „Daum ergo_bike (RS232)“ die richtige Wahl.
+
 ### Neu in v2.0.3
 - **Listen scrollen nicht mehr mit der Maus mit:** Manche Maus- oder Touchpad-Treiber (z. B. Synaptics) melden beim bloßen Bewegen der Maus ein seitliches Mausrad – Windows-Listen scrollen darauf senkrecht. Die Listen für Programme, Aufzeichnungen, Strecken und Export ignorieren das seitliche Rad jetzt; lange Namen lassen sich weiter mit der Scrollleiste verschieben.
 
