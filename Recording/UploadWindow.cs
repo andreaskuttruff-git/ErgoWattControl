@@ -51,7 +51,7 @@ public sealed record UploadService(
 /// An upload platform (Garmin Connect, Strava) in a window of its own (WebView2) to upload exported FIT files. The
 /// rider signs in there himself – the app never sees or stores the password; the window doesn't offer to save it
 /// either. The platform's session cookie stays in the window's own profile folder, so the next time it opens the
-/// upload page directly. There the exported files are put into the page's file field; the strip above the page
+/// upload page directly. There the exported files are put into the page's file field; the strip below the page
 /// also lets them be dragged in by hand.
 /// </summary>
 public sealed class UploadWindow : Form
@@ -195,7 +195,7 @@ public sealed class UploadWindow : Form
 
         var caption = new Label
         {
-            Dock = DockStyle.Top, AutoSize = false, Height = 26, Padding = new Padding(8, 6, 0, 0),
+            Dock = DockStyle.Bottom, AutoSize = false, Height = 26, Padding = new Padding(8, 6, 0, 0),
             Text = L.F("Upload_FilesStrip", L.T(service.PageName)),
         };
         var insert = new Button { Text = L.T("Upload_InsertAgain"), AutoSize = true, Margin = new Padding(8, 4, 4, 4) };
@@ -208,14 +208,25 @@ public sealed class UploadWindow : Form
         };
         var actions = new FlowLayoutPanel { Dock = DockStyle.Right, AutoSize = true, WrapContents = false };
         actions.Controls.AddRange([insert, openFolder]);
-        var strip = new Panel { Dock = DockStyle.Top, Height = 54, Padding = new Padding(4, 0, 4, 0) };
+        var strip = new Panel { Dock = DockStyle.Bottom, Height = 54, Padding = new Padding(4, 0, 4, 0) };
         strip.Controls.Add(_fileStrip);
         strip.Controls.Add(actions);
+        // Closing by hand – also while signing in from the settings, so it sits next to the status line.
+        var close = new Button { Text = L.T("Button_Close"), AutoSize = true, Dock = DockStyle.Right, Margin = new Padding(4) };
+        close.Click += (_, _) => Close();
+        CancelButton = close;
+        // Right edge in line with "Ordner öffnen" (strip padding + button margin = 8), button as high as the ones
+        // above (30), and some room below it.
+        var bottom = new Panel { Dock = DockStyle.Bottom, Height = 52, Padding = new Padding(4, 4, 8, 18) };
+        _status.Dock = DockStyle.Fill;
+        bottom.Controls.Add(_status);
+        bottom.Controls.Add(close);
 
+        // Everything below the page: caption, files with their buttons, then status line and "Schließen".
         Controls.Add(_view);
-        Controls.Add(strip);
         Controls.Add(caption);
-        Controls.Add(_status);
+        Controls.Add(strip);
+        Controls.Add(bottom);
         // Signing in only (from the settings): the page and the status line, no file strip.
         _fileControls = [caption, strip];
         foreach (var control in _fileControls)

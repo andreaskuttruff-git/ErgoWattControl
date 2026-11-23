@@ -222,8 +222,10 @@ Aufbau: TrainingProgram.schema.json, Vorlage: Example_Custom_Program.json.</valu
   <data name="Pick_RecordingsTitle" xml:space="preserve"><value>Aufzeichnung nachfahren</value></data>
   <data name="Pick_RouteNote" xml:space="preserve"><value>Die Aufnahme beginnt mit dem ersten Tritt und pausiert, solange du nicht trittst.</value></data>
   <data name="Pick_RunSettings" xml:space="preserve"><value>Einstellungen – für diesen Lauf änderbar</value></data>
-  <data name="Pick_SaveAsDefault" xml:space="preserve"><value>Als Standard speichern</value></data>
+  <data name="Pick_SaveAsDefault" xml:space="preserve"><value>Standard</value></data>
   <data name="Pick_SaveAsDefaultTip" xml:space="preserve"><value>Übernimmt diese Werte in die settings.json – sie gelten dann auch für neue Strecken und im Einstellungsdialog.</value></data>
+  <data name="Pick_PowerOffset" xml:space="preserve"><value>Leistungsoffset</value></data>
+  <data name="Pick_PowerOffsetTip" xml:space="preserve"><value>Verschiebt das ganze Leistungsprofil für diesen Lauf in 5-W-Schritten: nach unten höchstens so weit, dass der tiefste Punkt bei 0 W bleibt, nach oben höchstens bis der höchste Punkt die Wattgrenze erreicht. Während der Fahrt verschieben + / − und das Mausrad weiter.</value></data>
   <data name="Pick_SavedAsDefault" xml:space="preserve"><value>✓ in den Einstellungen gespeichert</value></data>
   <data name="Pick_SavedAt" xml:space="preserve"><value>Gespeichert am {0:dd.MM.yyyy} um {0:HH:mm} Uhr</value></data>
   <data name="Pick_ShowPulse" xml:space="preserve"><value>Puls vom Original während der Fahrt einblenden</value></data>

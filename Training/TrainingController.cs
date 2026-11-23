@@ -48,10 +48,11 @@ public sealed class TrainingController
     }
 
     /// <summary>Starts a replay of a recording or, with <paramref name="programFile"/>, a training program.</summary>
-    public ReplayTraining BeginReplay(WorkoutRecording workout, string? customName, string? programFile, RideValues? runValues = null)
+    /// <param name="powerOffset">Shift of the whole profile chosen in the start dialog, in W.</param>
+    public ReplayTraining BeginReplay(WorkoutRecording workout, string? customName, string? programFile, RideValues? runValues = null, int powerOffset = 0)
     {
         Prepare(customName, runValues);
-        var mode = new ReplayTraining(new ReplaySession(workout, ErgoController.MinWatt, _ergo.MaxWatt), programFile);
+        var mode = new ReplayTraining(new ReplaySession(workout, ErgoController.MinWatt, _ergo.MaxWatt, powerOffset), programFile);
         Mode = mode;
         _ergo.SetTargetWatt(mode.Session.TargetWatt);
         return mode;

@@ -202,6 +202,7 @@ public sealed class SettingsForm : Form
         AutoSizeMode = AutoSizeMode.GrowAndShrink;
         Font = new Font("Segoe UI", 10);
         HelpWindow.Attach(this, "einstellungen");
+        DisabledButtonFrame.Apply(this);
         Padding = new Padding(12);
 
         var btnRefresh = new Button { Text = L.T("Button_Refresh"), AutoSize = true };

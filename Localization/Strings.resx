@@ -222,8 +222,10 @@ Format: TrainingProgram.schema.json, template: Example_Custom_Program.json.</val
   <data name="Pick_RecordingsTitle" xml:space="preserve"><value>Replay a recording</value></data>
   <data name="Pick_RouteNote" xml:space="preserve"><value>The recording starts with the first pedal stroke and pauses while you don’t pedal.</value></data>
   <data name="Pick_RunSettings" xml:space="preserve"><value>Settings – changeable for this run</value></data>
-  <data name="Pick_SaveAsDefault" xml:space="preserve"><value>Save as default</value></data>
+  <data name="Pick_SaveAsDefault" xml:space="preserve"><value>Default</value></data>
   <data name="Pick_SaveAsDefaultTip" xml:space="preserve"><value>Takes these values into settings.json – they then also apply to new routes and in the settings dialog.</value></data>
+  <data name="Pick_PowerOffset" xml:space="preserve"><value>Power offset</value></data>
+  <data name="Pick_PowerOffsetTip" xml:space="preserve"><value>Shifts the whole power profile for this run in 5 W steps: down at most until its lowest point is at 0 W, up at most until its highest point reaches the power limit. During the ride + / − and the mouse wheel shift it further.</value></data>
   <data name="Pick_SavedAsDefault" xml:space="preserve"><value>✓ saved in the settings</value></data>
   <data name="Pick_SavedAt" xml:space="preserve"><value>Saved on {0:d} at {0:t}</value></data>
   <data name="Pick_ShowPulse" xml:space="preserve"><value>Show the original pulse while riding</value></data>

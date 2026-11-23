@@ -35,8 +35,30 @@ public sealed class RideSettingsPanel : TableLayoutPanel
         Controls.Add(weights);
         Controls.Add(gears);
         Controls.Add(resistances);
-        Controls.Add(Row(Unit(L.T("RideValues_PowerLimit")), _maxWatt, Unit("W")));
+        _powerLimitRow = Row(Unit(L.T("RideValues_PowerLimit")), _maxWatt, Unit("W"));
+        Controls.Add(_powerLimitRow);
         _routeOnly = [weights, gears, resistances];
+    }
+
+    private readonly FlowLayoutPanel _powerLimitRow;
+
+    /// <summary>The power limit shown (W).</summary>
+    public int PowerLimit => (int)_maxWatt.Value;
+    internal NumericUpDown PowerLimitBox => _maxWatt;
+
+    /// <summary>Raised when the power limit is changed in the dialog or by <see cref="Show"/>.</summary>
+    public event EventHandler? PowerLimitChanged
+    {
+        add => _maxWatt.ValueChanged += value;
+        remove => _maxWatt.ValueChanged -= value;
+    }
+
+    /// <summary>Puts controls of the dialog (e.g. "Als Standard speichern") behind the "W" of the power limit, in the same row.</summary>
+    public void AddBehindPowerLimit(params Control[] controls)
+    {
+        foreach (var c in controls)
+            c.Anchor = AnchorStyles.Left;
+        _powerLimitRow.Controls.AddRange(controls);
     }
 
     /// <summary>

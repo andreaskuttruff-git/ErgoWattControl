@@ -71,7 +71,9 @@ public sealed class WorkoutProfile : Control
         using var infoFont = new Font("Segoe UI", 16, FontStyle.Bold);
         using var labelBrush = new SolidBrush(LabelColor);
         var wattAt = _wattAt ?? workout.WattAt;
-        var top = Math.Max(100, (int)Math.Ceiling(Math.Max(workout.MaxWatt, wattAt(_position)) * 1.1 / 50) * 50);
+        // Scale over the profile as drawn: a profile shifted up must not be cut off flat at the top.
+        var highest = _wattAt is null ? workout.MaxWatt : Math.Max(workout.MaxWatt, workout.MaxWattOf(wattAt));
+        var top = Math.Max(100, (int)Math.Ceiling(highest * 1.1 / 50) * 50);
 
         if (!ShowPreview)
         {

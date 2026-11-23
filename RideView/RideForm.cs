@@ -539,7 +539,7 @@ public sealed class RideForm : Form
         if (picker.Route is { } route)
             BeginRoute(route, picker.RecordingFileName, picker.RideValues);
         else
-            BeginReplay(workout, picker.RecordingFileName, programFile: null, picker.RideValues);
+            BeginReplay(workout, picker.RecordingFileName, programFile: null, picker.RideValues, picker.PowerOffset);
     }
 
     private static bool IsRouteOnly(string fit)
@@ -572,7 +572,7 @@ public sealed class RideForm : Form
             return;
         using var picker = ReplayPickerForm.ForPrograms(ProgramFiles.Folder, ProgramFiles.CustomFolder, _settings, _training.SaveRideDefaults);
         if (picker.ShowDialog(this) == DialogResult.OK && picker.Workout is { } workout)
-            BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideValues);
+            BeginReplay(workout, picker.RecordingFileName, picker.ProgramFile, picker.RideValues, picker.PowerOffset);
     }
 
     /// <summary>The pulse of the original ride at the same point (route: same kilometre, recording: same time), just the number.</summary>
@@ -632,10 +632,10 @@ public sealed class RideForm : Form
         _runNameTip.SetToolTip(_runName, file is null ? _runName.Text : $"{_runName.Text}\n{file}");
     }
 
-    private void BeginReplay(WorkoutRecording workout, string? customName, string? programFile, RideValues? runValues = null)
+    private void BeginReplay(WorkoutRecording workout, string? customName, string? programFile, RideValues? runValues = null, int powerOffset = 0)
     {
         StopRecording();
-        var replay = _training.BeginReplay(workout, customName, programFile, runValues);
+        var replay = _training.BeginReplay(workout, customName, programFile, runValues, powerOffset);
         ShowRunName();
         _workoutProfile.SetWorkout(workout, replay.Session.WattAt, _settings.ReplayShowOriginalPulse);
         _workoutProfile.Visible = true;

@@ -18,6 +18,8 @@ public sealed class WorkoutRecording
     public double Duration => _seconds[^1];
     public bool HasPulse { get; }
     public int MaxWatt { get; }
+    /// <summary>Lowest power of the profile (limits how far the start dialog lets it be shifted down).</summary>
+    public int MinWatt { get; }
     public double AverageWatt { get; }
     public double AveragePulse { get; }
     public int Count => _seconds.Length;
@@ -31,6 +33,7 @@ public sealed class WorkoutRecording
         _watts = rows.Select(r => r.Watt).ToArray();
         _pulses = rows.Select(r => r.Pulse).ToArray();
         MaxWatt = _watts.Max();
+        MinWatt = _watts.Min();
         AverageWatt = _watts.Average();
         var pulses = _pulses.Where(p => p > 0).ToArray();
         HasPulse = pulses.Length > 0;
@@ -136,6 +139,15 @@ public sealed class WorkoutRecording
 
     /// <summary>Target power that was set at this point of the recording.</summary>
     public int WattAt(double seconds) => _watts[IndexAt(seconds)];
+
+    /// <summary>Highest power of the profile as <paramref name="wattAt"/> draws it (e.g. shifted by an offset).</summary>
+    public int MaxWattOf(Func<double, int> wattAt)
+    {
+        var max = 0;
+        foreach (var seconds in _seconds)
+            max = Math.Max(max, wattAt(seconds));
+        return max;
+    }
 
     /// <summary>Pulse at this point; 0 = no reading.</summary>
     public int PulseAt(double seconds) => _pulses[IndexAt(seconds)];

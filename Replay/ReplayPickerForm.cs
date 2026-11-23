@@ -58,6 +58,51 @@ public sealed class ReplayPickerForm : Form
 
     public bool ShowOriginalPulse => _showPulse.Checked;
 
+    private const int OffsetStep = 5;
+    private readonly NumericUpDown _offset = new() { Minimum = -1000, Maximum = 1000, Increment = OffsetStep, Width = 70, TextAlign = HorizontalAlignment.Right };
+    private Control[] _offsetControls = [];
+
+    /// <summary>
+    /// Shift of the whole power profile for this run („Leistungsoffset“), in 5-W steps: the profile's lowest point
+    /// stays at 0 W or above, its highest at the power limit or below. 0 for a route (it rides by gear).
+    /// </summary>
+    public int PowerOffset => Route is null ? (int)_offset.Value : 0;
+
+    /// <summary>For the tests: the offset box and the power limit box of the dialog.</summary>
+    internal NumericUpDown OffsetBox => _offset;
+    internal NumericUpDown PowerLimitBox => _rideSettings.PowerLimitBox;
+
+    /// <summary>For the tests: selects an entry like a click in the list.</summary>
+    internal void Select(int index) => _list.SelectedIndex = index;
+
+    /// <summary>What the offset may be for the selected profile and the power limit shown.</summary>
+    internal static (int Min, int Max) OffsetRange(WorkoutRecording workout, int powerLimit)
+    {
+        var min = -(workout.MinWatt / OffsetStep * OffsetStep);
+        var max = (int)Math.Floor((powerLimit - workout.MaxWatt) / (double)OffsetStep) * OffsetStep;
+        return (min, Math.Max(min, max));
+    }
+
+    private void UpdateOffsetRange()
+    {
+        if (Workout is not { } workout)
+            return;
+        var (min, max) = OffsetRange(workout, _rideSettings.PowerLimit);
+        _offset.Minimum = Math.Min(min, _offset.Minimum);
+        _offset.Maximum = max;
+        _offset.Minimum = min;
+    }
+
+    /// <summary>The preview of the profile, shifted by the offset chosen.</summary>
+    private void ShowProfile()
+    {
+        if (Workout is not { } workout || Route is not null)
+            return;
+        var offset = PowerOffset;
+        var limit = _rideSettings.PowerLimit;
+        _profile.SetWorkout(workout, offset == 0 ? null : s => Math.Clamp(workout.WattAt(s) + offset, 0, limit), _showPulse.Checked);
+    }
+
     /// <summary>The training programs (*.json) of <paramref name="directory"/>.</summary>
     /// <param name="current">The current settings: file name pattern and the power limit shown.</param>
     /// <param name="saveAsDefault">Stores the values shown as the new defaults in settings.json.</param>
@@ -187,6 +232,7 @@ public sealed class ReplayPickerForm : Form
         _saveAsDefault = saveAsDefault;
         _programs = programs;
         HelpWindow.Attach(this, programs ? "programm" : "training");
+        DisabledButtonFrame.Apply(this);
         Text = title;
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -200,8 +246,22 @@ public sealed class ReplayPickerForm : Form
         {
             if (Route is { } route)
                 _routeProfile.SetRoute(route, _showPulse.Checked);
-            else if (Workout is { } workout)
-                _profile.SetWorkout(workout, null, _showPulse.Checked);
+            else
+                ShowProfile();
+        };
+        _offset.ValueChanged += (_, _) =>
+        {
+            // Typed values go to the 5-W steps.
+            var stepped = Math.Clamp(Math.Round(_offset.Value / OffsetStep) * OffsetStep, _offset.Minimum, _offset.Maximum);
+            if (stepped != _offset.Value)
+                _offset.Value = stepped;
+            else
+                ShowProfile();
+        };
+        _rideSettings.PowerLimitChanged += (_, _) =>
+        {
+            UpdateOffsetRange();
+            ShowProfile();
         };
         ListBoxCapture.OnSelectionSettled(_list, ShowSelected);
         ListBoxCapture.ReleaseStuckCapture(_list);
@@ -224,21 +284,26 @@ public sealed class ReplayPickerForm : Form
         details.Controls.Add(graph);
         details.Controls.Add(_showPulse);
         {
-            // Docked to the bottom in this order: caption above the values, the button below them.
-            var saved = new Label { AutoSize = true, Anchor = AnchorStyles.Left, ForeColor = DialogColors.Ok, Margin = new Padding(8, 6, 0, 0) };
-            var saveAsDefault = new Button { Text = L.T("Pick_SaveAsDefault"), AutoSize = true, Margin = new Padding(0, 4, 0, 0) };
+            // Docked to the bottom in this order: caption above the values; the button sits behind the "W" of the power limit.
+            var saved = new Label { AutoSize = true, ForeColor = DialogColors.Ok, Margin = new Padding(8, 0, 0, 0) };
+            var saveAsDefault = new Button { Text = L.T("Pick_SaveAsDefault"), AutoSize = true, Margin = new Padding(16, 0, 0, 0) };
             saveAsDefault.Click += (_, _) =>
             {
                 _saveAsDefault(_rideSettings.Apply(_current.Ride));
                 saved.Text = L.T("Pick_SavedAsDefault");
             };
             _list.SelectedIndexChanged += (_, _) => saved.Text = "";
-            var defaultsRow = new FlowLayoutPanel { Dock = DockStyle.Bottom, AutoSize = true, WrapContents = false };
-            defaultsRow.Controls.AddRange([saveAsDefault, saved]);
-            new ToolTip().SetToolTip(saveAsDefault, L.T("Pick_SaveAsDefaultTip"));
+            // The power offset: for this run only, so after "Standard" (which does not save it).
+            var offsetLabel = new Label { Text = L.T("Pick_PowerOffset"), AutoSize = true, Margin = new Padding(24, 3, 4, 3) };
+            var offsetUnit = new Label { Text = "W", AutoSize = true, Margin = new Padding(0, 3, 4, 3) };
+            _offsetControls = [offsetLabel, _offset, offsetUnit];
+            _rideSettings.AddBehindPowerLimit(saveAsDefault, offsetLabel, _offset, offsetUnit, saved);
+            var tips = new ToolTip();
+            tips.SetToolTip(saveAsDefault, L.T("Pick_SaveAsDefaultTip"));
+            tips.SetToolTip(_offset, L.T("Pick_PowerOffsetTip"));
+            tips.SetToolTip(offsetLabel, L.T("Pick_PowerOffsetTip"));
             details.Controls.Add(_rideSettingsCaption);
             details.Controls.Add(_rideSettings);
-            details.Controls.Add(defaultsRow);
         }
         details.Controls.Add(_note);
         details.Controls.Add(nameRow);
@@ -246,7 +311,7 @@ public sealed class ReplayPickerForm : Form
         var cancel = new Button { Text = L.T("Button_Cancel"), DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(100, 0) };
         AcceptButton = _start;
         CancelButton = cancel;
-        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
+        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 60, Padding = new Padding(8, 8, 8, 20) };
         buttons.Controls.AddRange([cancel, _start]);
 
         var listPanel = new Panel { Dock = DockStyle.Left, Width = 372, Padding = new Padding(12, 12, 0, 0) };
@@ -325,10 +390,15 @@ public sealed class ReplayPickerForm : Form
             // A route recording is drawn as the route it will ride again.
             _routeProfile.Visible = Route is not null;
             _profile.Visible = Route is null;
-            _profile.SetWorkout(Workout, null, _showPulse.Checked);
             _routeProfile.SetRoute(Route, _showPulse.Checked);
             _note.Text = (Route is null ? ProfileNote : RouteNote) + _failed;
             _rideSettings.Show(selection.Ride ?? _current.Ride, route: Route is not null);
+            // A route rides by gear: no power offset there.
+            foreach (var control in _offsetControls)
+                control.Visible = Route is null;
+            UpdateOffsetRange();
+            _profile.SetWorkout(Workout, null, _showPulse.Checked);
+            ShowProfile();
             _rideSettingsCaption.Text = _programs || selection.Ride is null
                 ? L.T("Pick_RunSettings")
                 : L.T("Pick_RecordingSettings");

@@ -29,18 +29,21 @@ public sealed class ReplaySession
     public double AverageWatt => _wattSamples == 0 ? 0 : _wattSum / _wattSamples;
     public double AveragePulse => _pulseSamples == 0 ? 0 : _pulseSum / _pulseSamples;
 
-    public ReplaySession(WorkoutRecording workout, int minWatt, int maxWatt)
+    /// <param name="offset">Shift chosen in the start dialog („Leistungsoffset“); the keys go on from there.</param>
+    public ReplaySession(WorkoutRecording workout, int minWatt, int maxWatt, int offset = 0)
     {
         Workout = workout;
         _minWatt = minWatt;
         _maxWatt = maxWatt;
+        Offset = offset;
         TargetWatt = Compute();
     }
 
     /// <summary>Shifts the profile and returns the new target power.</summary>
     public int ShiftOffset(int delta)
     {
-        Offset = Math.Clamp(Offset + delta, -MaxOffset, MaxOffset);
+        // The keys stop at ±MaxOffset; a larger offset from the start dialog can still be stepped back from.
+        Offset = Math.Clamp(Offset + delta, Math.Min(-MaxOffset, Offset), Math.Max(MaxOffset, Offset));
         TargetWatt = Compute();
         return TargetWatt;
     }

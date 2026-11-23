@@ -35,6 +35,7 @@ public sealed class ExportForm : Form
         ClientSize = new Size(1250, 680);
         Font = new Font("Segoe UI", 11);
         HelpWindow.Attach(this, "export");
+        DisabledButtonFrame.Apply(this);
 
         // Also recordings that had to go to a fallback folder (chosen folder not writable), marked as such.
         _files.AddRange(settings.RecordingFiles("*" + JsonRecorder.Extension));
@@ -89,7 +90,16 @@ public sealed class ExportForm : Form
         foreach (Control c in folderRow.Controls)
             c.Anchor = AnchorStyles.Left;
 
-        var right = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(16, 12, 12, 0) };
+        // Right padding so "Ordner öffnen" ends in line with "Schließen" in the button row below.
+        var right = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(16, 12, 16, 0) };
+        // The folder box takes what the two buttons leave, so they are never cut off (larger fonts, longer texts).
+        right.Layout += (_, _) =>
+        {
+            var width = right.ClientSize.Width - right.Padding.Horizontal - _folder.Margin.Horizontal
+                - browse.Width - browse.Margin.Horizontal - open.Width - open.Margin.Horizontal;
+            if (width > 100 && _folder.Width != width)
+                _folder.Width = width;
+        };
         right.Controls.Add(_profile);
         right.Controls.Add(_facts);
         right.Controls.Add(new Label { Text = "", AutoSize = true, Margin = new Padding(0, 8, 0, 0) });
@@ -109,7 +119,7 @@ public sealed class ExportForm : Form
         CancelButton = close;
         AcceptButton = _export;
         _export.Click += (_, _) => Export();
-        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
+        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 60, Padding = new Padding(8, 8, 8, 20) };
         _garmin.Checked = settings.ExportOpenGarmin;
         _strava.Checked = settings.ExportOpenStrava;
         // Uploads take the FIT files only.

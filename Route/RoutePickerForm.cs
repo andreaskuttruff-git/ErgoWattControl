@@ -35,6 +35,7 @@ public sealed class RoutePickerForm : Form
         ClientSize = new Size(1180, 680);
         Font = new Font("Segoe UI", 11);
         HelpWindow.Attach(this, "strecke");
+        DisabledButtonFrame.Apply(this);
 
         if (Directory.Exists(settings.GpxDirectory))
             _files.AddRange(Directory.GetFiles(settings.GpxDirectory, "*.gpx").Concat(Directory.GetFiles(settings.GpxDirectory, "*.fit")).Order(StringComparer.OrdinalIgnoreCase));
@@ -61,7 +62,7 @@ public sealed class RoutePickerForm : Form
         var cancel = new Button { Text = L.T("Button_Cancel"), DialogResult = DialogResult.Cancel, AutoSize = true, MinimumSize = new Size(100, 0) };
         AcceptButton = _start;
         CancelButton = cancel;
-        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 48, Padding = new Padding(8) };
+        var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 60, Padding = new Padding(8, 8, 8, 20) };
         buttons.Controls.AddRange([cancel, _start]);
 
         var other = new Button { Text = L.T("Route_OtherFolder"), Dock = DockStyle.Bottom, Height = 36 };
