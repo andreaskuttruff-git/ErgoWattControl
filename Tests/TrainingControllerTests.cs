@@ -67,6 +67,19 @@ public class TrainingControllerTests
     }
 
     [Fact]
+    public void FreeRecording_PausesWhileNotPedalling()
+    {
+        var recorder = _training.StartRecording();
+        _training.Record(Standing);
+        Assert.Equal(0, recorder.Rows);
+        Assert.Equal(TimeSpan.Zero, recorder.Elapsed);
+
+        _training.Record(Pedalling());
+        Assert.Equal(1, recorder.Rows);
+        _training.StopRecording();
+    }
+
+    [Fact]
     public void Route_PowerKeysShiftGears_AndTheRouteSetsThePower()
     {
         var route = _training.BeginRoute(Hill(), customName: null);

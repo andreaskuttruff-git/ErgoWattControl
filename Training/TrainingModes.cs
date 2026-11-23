@@ -59,7 +59,7 @@ public abstract class TrainingMode
     }
 }
 
-/// <summary>The rider sets the power; recording on demand, it keeps running through pauses.</summary>
+/// <summary>The rider sets the power; recording on demand, it pauses while the rider isn't pedalling.</summary>
 public sealed class FreeTraining : TrainingMode
 {
     public override bool Guided => false;
@@ -71,7 +71,9 @@ public sealed class FreeTraining : TrainingMode
 
     public override void Step(int step, ErgoController ergo) => ergo.SetTargetWatt(ergo.TargetWatt + step);
 
-    public override void Write(JsonRecorder recorder, ErgometerData d, int targetWatt) => recorder.Write(d, targetWatt);
+    // Only pedalling time counts, as in a route or replay: a break doesn't stretch the recording.
+    public override void Write(JsonRecorder recorder, ErgometerData d, int targetWatt) =>
+        recorder.Write(d, targetWatt, counting: d.Rpm > 0);
 }
 
 /// <summary>A GPX/FIT route: gradient, weight and gear set the power; the power keys shift gears (5 W ≙ 1 gear).</summary>

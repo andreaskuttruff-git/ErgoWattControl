@@ -413,8 +413,7 @@ public sealed class RideForm : Form
         _rpm.ForeColor = _rpmCaption.ForeColor = tooSlow || tooFast ? Color.OrangeRed : RpmColor;
         _rpmHint.Text = tooSlow ? "▲" : tooFast ? "▼" : "";
         _speed.Text = (_training.Mode.SpeedKmh ?? d.SpeedKmh) is { } kmh ? $"{kmh:0}" : "--";
-        // While recording, show the recording's own duration (free training: keeps running through pauses;
-        // route: pedalling time only); otherwise the cockpit's pedaling time.
+        // While recording, show the recording's own duration (pedalling time only); otherwise the cockpit's pedaling time.
         var time = _training.Recorder?.Elapsed ?? (Guided ? TimeSpan.Zero : TimeSpan.FromSeconds(d.TimeSeconds ?? 0));
         _time.Text = $"{time:h\\:mm\\:ss}";
         _powerGraph.Add([d.Watt, d.Rpm], rpmRange);
