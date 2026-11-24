@@ -57,8 +57,11 @@ public sealed class RideSettingsPanel : TableLayoutPanel
     public void AddBehindPowerLimit(params Control[] controls)
     {
         foreach (var c in controls)
-            c.Anchor = AnchorStyles.Left;
-        _powerLimitRow.Controls.AddRange(controls);
+        {
+            var outer = FieldFrame.Wrap(c);
+            outer.Anchor = AnchorStyles.Left;
+            _powerLimitRow.Controls.Add(outer);
+        }
     }
 
     /// <summary>
@@ -103,8 +106,11 @@ public sealed class RideSettingsPanel : TableLayoutPanel
     {
         var row = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = Padding.Empty };
         foreach (var c in controls)
-            c.Anchor = AnchorStyles.Left;
-        row.Controls.AddRange(controls);
+        {
+            var outer = FieldFrame.Wrap(c);
+            outer.Anchor = AnchorStyles.Left;
+            row.Controls.Add(outer);
+        }
         return row;
     }
 }

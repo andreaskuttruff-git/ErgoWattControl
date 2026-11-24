@@ -78,7 +78,7 @@ public sealed class RoutePickerForm : Form
         var other = new Button { Text = L.T("Route_OtherFolder"), Dock = DockStyle.Bottom, Height = 36 };
         other.Click += (_, _) => PickOtherFile();
         var listPanel = new Panel { Dock = DockStyle.Left, Width = 372, Padding = new Padding(12, 12, 0, 0) };
-        listPanel.Controls.Add(_list);
+        listPanel.Controls.Add(FieldFrame.Wrap(_list));
         listPanel.Controls.Add(other);
         Controls.Add(details);
         Controls.Add(listPanel);

@@ -320,7 +320,7 @@ public sealed class ReplayPickerForm : Form
         buttons.Controls.AddRange([cancel, _start]);
 
         var listPanel = new Panel { Dock = DockStyle.Left, Width = 372, Padding = new Padding(12, 12, 0, 0) };
-        listPanel.Controls.Add(_list);
+        listPanel.Controls.Add(FieldFrame.Wrap(_list));
         if (!_programs)
         {
             // Recordings may also lie elsewhere (an older folder, a USB stick).
@@ -419,7 +419,7 @@ public sealed class ReplayPickerForm : Form
             _rideSettings.Show(selection.Ride ?? _current.Ride, route: Route is not null);
             // A route rides by gear: no power offset there.
             foreach (var control in _offsetControls)
-                control.Visible = Route is null;
+                FieldFrame.Outer(control).Visible = Route is null;
             UpdateOffsetRange();
             _profile.SetWorkout(Workout, null, _showPulse.Checked);
             ShowProfile();

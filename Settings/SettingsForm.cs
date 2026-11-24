@@ -124,13 +124,13 @@ public sealed class SettingsForm : Form
         // Labels and fields in a table of their own so the fields line up at any display scaling.
         var block = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Margin = new Padding(0, 4, 0, 4), Anchor = AnchorStyles.Left };
         block.Controls.Add(Unit(L.T("Upload_SignInLabel")), 0, 0);
-        block.Controls.Add(login, 1, 0);
+        block.Controls.Add(FieldFrame.Wrap(login), 1, 0);
         block.Controls.Add(Unit(uploadLabel), 0, 1);
-        block.Controls.Add(upload, 1, 1);
+        block.Controls.Add(FieldFrame.Wrap(upload), 1, 1);
         var buttons = Row(btnDefault, btnLogout, btnLogin, status);
         block.Controls.Add(buttons, 0, 2);
         block.SetColumnSpan(buttons, 2);
-        login.Anchor = upload.Anchor = AnchorStyles.Left;
+        FieldFrame.Outer(login).Anchor = FieldFrame.Outer(upload).Anchor = AnchorStyles.Left;
         grid.Controls.Add(block, 1, row);
         login.Text = loginUrl;
         upload.Text = uploadUrl;
@@ -410,8 +410,11 @@ public sealed class SettingsForm : Form
     {
         var row = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 4, 0, 4), Anchor = AnchorStyles.Left };
         foreach (var control in controls)
-            control.Anchor = AnchorStyles.Left;
-        row.Controls.AddRange(controls);
+        {
+            var outer = FieldFrame.Wrap(control);
+            outer.Anchor = AnchorStyles.Left;
+            row.Controls.Add(outer);
+        }
         return row;
     }
 

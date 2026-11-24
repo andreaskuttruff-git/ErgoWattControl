@@ -86,7 +86,7 @@ public sealed class ExportForm : Form
         var open = new Button { Text = L.T("Button_OpenFolder"), AutoSize = true };
         open.Click += (_, _) => OpenFolder();
         var folderRow = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = Padding.Empty };
-        folderRow.Controls.AddRange([_folder, browse, open]);
+        folderRow.Controls.AddRange([FieldFrame.Wrap(_folder), browse, open]);
         foreach (Control c in folderRow.Controls)
             c.Anchor = AnchorStyles.Left;
 
@@ -95,10 +95,11 @@ public sealed class ExportForm : Form
         // The folder box takes what the two buttons leave, so they are never cut off (larger fonts, longer texts).
         right.Layout += (_, _) =>
         {
-            var width = right.ClientSize.Width - right.Padding.Horizontal - _folder.Margin.Horizontal
+            var folder = FieldFrame.Outer(_folder);
+            var width = right.ClientSize.Width - right.Padding.Horizontal - folder.Margin.Horizontal
                 - browse.Width - browse.Margin.Horizontal - open.Width - open.Margin.Horizontal;
-            if (width > 100 && _folder.Width != width)
-                _folder.Width = width;
+            if (width > 100 && folder.Width != width)
+                folder.Width = width;
         };
         right.Controls.Add(_profile);
         right.Controls.Add(_facts);
@@ -142,7 +143,7 @@ public sealed class ExportForm : Form
         listPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         listPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         _list.Margin = Padding.Empty;
-        listPanel.Controls.Add(_list, 0, 0);
+        listPanel.Controls.Add(FieldFrame.Wrap(_list), 0, 0);
         listPanel.Controls.Add(_delete, 0, 1);
         Controls.Add(right);
         Controls.Add(listPanel);

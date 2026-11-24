@@ -17,7 +17,7 @@ public sealed class RecordingNameBox : FlowLayoutPanel
         AutoSize = true;
         WrapContents = false;
         Margin = Padding.Empty;
-        Controls.Add(_text);
+        Controls.Add(FieldFrame.Wrap(_text));
         Controls.Add(new Label { Text = JsonRecorder.Extension, AutoSize = true, Anchor = AnchorStyles.Left, Margin = new Padding(2, 6, 0, 0) });
     }
 
