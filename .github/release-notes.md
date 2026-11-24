@@ -2,6 +2,11 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.3.0
+- **Dunkle Meldungen:** Rückfragen, Warnungen und Fehlermeldungen (z. B. „Jetzt neu starten?“ nach einem Sprachwechsel) erscheinen jetzt im dunklen Stil der App statt als weißes Windows-Fenster – mit Windows-Symbol und -Ton; lange Pfade werden umbrochen.
+- **Runde Eingabefelder:** Text-, Zahlen- und Listenfelder haben abgerundete Rahmen wie die Knöpfe (hell, solange das Feld aktiv ist). Text, Cursor und die Markierung in Listen haben etwas Abstand zum Rahmen. Auswahlfelder bleiben eckig.
+- **Größe der Fahransicht:** Die Standardeinstellung heißt jetzt **„Kleinster Monitor (B × H) – Standard“** und zeigt die Größe, die die Fahransicht damit bekommt – im Demo-Modus 1280 × 1024. Das Auswahlfeld ist breit genug für den ganzen Eintrag.
+
 ### Neu in v2.2.1
 - **Freies Training:** Die Aufzeichnung pausiert jetzt auch hier, solange nicht getreten wird – wie schon bei Strecken, Aufzeichnungen und Programmen. Die Zeit läuft nur beim Treten, Pausen fehlen in der Aufzeichnung (und im FIT-Export).
 
