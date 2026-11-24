@@ -1,12 +1,21 @@
+using System.Media;
+
 namespace ErgoWattControl;
 
 /// <summary>
 /// A message box in the app's dark look: Windows' own MessageBox ignores the dark colour mode and stays white.
-/// Same calls as <see cref="MessageBox.Show(IWin32Window, string, string, MessageBoxButtons, MessageBoxIcon)"/>.
+/// Same calls as <see cref="MessageBox.Show(IWin32Window, string, string, MessageBoxButtons, MessageBoxIcon)"/>, and
+/// like it: the first button is the default, Esc answers No/Cancel (or OK when that is the only button), and the
+/// icon plays its Windows sound.
 /// </summary>
 public sealed class DarkMessageBox : Form
 {
     private static readonly Color FooterColor = Color.FromArgb(44, 44, 44);
+    /// <summary>Widest the text gets before it wraps, at 96 dpi.</summary>
+    private const int MaxTextWidth = 560;
+
+    private readonly Bitmap? _iconImage;
+    private readonly SystemSound? _sound;
 
     public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon) =>
         Show(null, text, caption, buttons, icon);
@@ -16,11 +25,15 @@ public sealed class DarkMessageBox : Form
     {
         using var box = new DarkMessageBox(text, caption, buttons, icon);
         if (owner is null)
+        {
+            // Without an owner it would not be in the taskbar and could end up behind other windows.
             box.StartPosition = FormStartPosition.CenterScreen;
+            box.ShowInTaskbar = true;
+        }
         return box.ShowDialog(owner);
     }
 
-    private DarkMessageBox(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
+    internal DarkMessageBox(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
     {
         Text = caption;
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -33,17 +46,28 @@ public sealed class DarkMessageBox : Form
         Font = new Font("Segoe UI", 10);
 
         var body = new TableLayoutPanel { AutoSize = true, ColumnCount = 2, Dock = DockStyle.Fill, Padding = new Padding(20, 20, 24, 20) };
-        if (StockIcon(icon) is { } stock)
+        if (Kind(icon) is { } kind)
         {
+            // The text scales with the screen's DPI (font in points); the icon is taken in the matching size.
+            var size = 32 * DeviceDpi / 96;
+            using (var stockIcon = SystemIcons.GetStockIcon(kind.Icon, size))
+                _iconImage = stockIcon.ToBitmap();
+            _sound = kind.Sound;
             body.Controls.Add(new PictureBox
             {
-                Image = SystemIcons.GetStockIcon(stock, 32).ToBitmap(),
+                Image = _iconImage,
                 SizeMode = PictureBoxSizeMode.Zoom,
-                Size = new Size(32, 32),
+                Size = new Size(size, size),
                 Margin = new Padding(0, 0, 14, 0),
             }, 0, 0);
         }
-        body.Controls.Add(new Label { Text = text, AutoSize = true, MaximumSize = new Size(520, 0), Margin = new Padding(0, 6, 0, 0) }, 1, 0);
+        body.Controls.Add(new Label
+        {
+            Text = Breakable(text),
+            AutoSize = true,
+            MaximumSize = new Size(MaxTextWidth * DeviceDpi / 96, 0),
+            Margin = new Padding(0, 6, 0, 0),
+        }, 1, 0);
 
         var footer = new FlowLayoutPanel
         {
@@ -68,10 +92,27 @@ public sealed class DarkMessageBox : Form
         Controls.Add(body);
         Controls.Add(footer);
         MinimumSize = new Size(360, 0);
-        Shown += (_, _) => (AcceptButton as Control)?.Focus();
+        Shown += (_, _) =>
+        {
+            (AcceptButton as Control)?.Focus();
+            _sound?.Play();
+        };
     }
 
-    private static DialogResult[] Results(MessageBoxButtons buttons) => buttons switch
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+            _iconImage?.Dispose(); // a PictureBox doesn't dispose its image
+        base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Lets the text wrap inside long paths and addresses too: a label only wraps at spaces, so an invisible break
+    /// opportunity follows each \ and /.
+    /// </summary>
+    internal static string Breakable(string text) => text.Replace("\\", "\\​").Replace("/", "/​");
+
+    internal static DialogResult[] Results(MessageBoxButtons buttons) => buttons switch
     {
         MessageBoxButtons.OKCancel => [DialogResult.OK, DialogResult.Cancel],
         MessageBoxButtons.YesNo => [DialogResult.Yes, DialogResult.No],
@@ -89,12 +130,13 @@ public sealed class DarkMessageBox : Form
         _ => L.T("Button_Ok"),
     };
 
-    private static StockIconId? StockIcon(MessageBoxIcon icon) => icon switch
+    /// <summary>The Windows icon and sound of a message kind; null for none.</summary>
+    private static (StockIconId Icon, SystemSound Sound)? Kind(MessageBoxIcon icon) => icon switch
     {
-        MessageBoxIcon.Question => StockIconId.Help,
-        MessageBoxIcon.Warning => StockIconId.Warning,
-        MessageBoxIcon.Error => StockIconId.Error,
-        MessageBoxIcon.Information => StockIconId.Info,
+        MessageBoxIcon.Question => (StockIconId.Help, SystemSounds.Question),
+        MessageBoxIcon.Warning => (StockIconId.Warning, SystemSounds.Exclamation),
+        MessageBoxIcon.Error => (StockIconId.Error, SystemSounds.Hand),
+        MessageBoxIcon.Information => (StockIconId.Info, SystemSounds.Asterisk),
         _ => null,
     };
 }
