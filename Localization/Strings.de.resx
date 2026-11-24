@@ -13,15 +13,18 @@
   <data name="Button_Delete" xml:space="preserve"><value>Löschen</value></data>
   <data name="Button_Discard" xml:space="preserve"><value>Verwerfen</value></data>
   <data name="Button_Identify" xml:space="preserve"><value>Identifizieren</value></data>
+  <data name="Button_No" xml:space="preserve"><value>Nein</value></data>
   <data name="Button_Ok" xml:space="preserve"><value>OK</value></data>
   <data name="Button_Open" xml:space="preserve"><value>Öffnen</value></data>
   <data name="Button_OpenFolder" xml:space="preserve"><value>Ordner öffnen</value></data>
   <data name="Button_Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="Button_Retry" xml:space="preserve"><value>Wiederholen</value></data>
   <data name="Button_Resume" xml:space="preserve"><value>Weiterfahren</value></data>
   <data name="Button_SignIn" xml:space="preserve"><value>Anmelden</value></data>
   <data name="Button_SignOut" xml:space="preserve"><value>Abmelden</value></data>
   <data name="Button_Start" xml:space="preserve"><value>Start</value></data>
   <data name="Button_TestConnection" xml:space="preserve"><value>Verbindung testen</value></data>
+  <data name="Button_Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="Caption_Folder" xml:space="preserve"><value>Ordner</value></data>
   <data name="Caption_Recording" xml:space="preserve"><value>Aufzeichnung</value></data>
   <data name="Caption_Replay" xml:space="preserve"><value>Aufzeichnung nachfahren</value></data>
@@ -358,11 +361,11 @@ Jetzt neu starten?</value></data>
   <data name="Settings_Route" xml:space="preserve"><value>Strecke fahren:</value></data>
   <data name="Settings_SaveFailed" xml:space="preserve"><value>Einstellungen konnten nicht gespeichert werden:
 {0}</value></data>
-  <data name="Settings_SizeAuto" xml:space="preserve"><value>Wie bisher (Standard)</value></data>
+  <data name="Settings_SizeAuto" xml:space="preserve"><value>Kleinster Monitor ({0} × {1}) – Standard</value></data>
   <data name="Settings_SizeFixed" xml:space="preserve"><value>{0} × {1}</value></data>
   <data name="Settings_SizeScreen" xml:space="preserve"><value>Ganzer Monitor ({0} × {1})</value></data>
   <data name="Settings_SizeTip" xml:space="preserve"><value>Wie groß die Fahransicht auf ihrem Monitor ist.
-„Wie bisher“: so groß wie der Monitor, höchstens so groß wie der kleinste angeschlossene Bildschirm (Demo: 1280 × 1024).
+„Kleinster Monitor“: die Auflösung des kleinsten angeschlossenen Bildschirms, höchstens der ganze Monitor (Demo: höchstens 1280 × 1024).
 „Ganzer Monitor“: füllt den Monitor. Eine feste Größe (in Bildschirmpunkten) wird mittig angezeigt.
 Gilt sofort nach OK.</value></data>
   <data name="Settings_StartGear" xml:space="preserve"><value>   Startgang</value></data>

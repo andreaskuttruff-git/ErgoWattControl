@@ -433,7 +433,7 @@ public sealed class RideForm : Form
         {
             AppPaths.Log("Recording stopped", ex);
             StopRecording();
-            MessageBox.Show(this, L.F("Rec_Stopped", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            DarkMessageBox.Show(this, L.F("Rec_Stopped", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -457,7 +457,7 @@ public sealed class RideForm : Form
     {
         if (!_controller.IsConnected)
         {
-            MessageBox.Show(this, L.T("Rec_NotConnected"), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            DarkMessageBox.Show(this, L.T("Rec_NotConnected"), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
         try
@@ -471,7 +471,7 @@ public sealed class RideForm : Form
             var text = Guided
                 ? L.F("Rec_CreateFailedGuided", ex.Message, _settings.RecordingDirectory)
                 : L.F("Rec_CreateFailed", ex.Message);
-            MessageBox.Show(this, text, L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            DarkMessageBox.Show(this, text, L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
         UpdateRecordButton();
@@ -480,7 +480,7 @@ public sealed class RideForm : Form
         ShowTotals(0, 0, 0, Color.OrangeRed);
         // Recording already runs (a guided ride goes on behind the message); just say where it ends up.
         if (_training.RecordingInFallbackFolder && _training.Recorder is { } recorder)
-            MessageBox.Show(this, L.F("Rec_InFallbackFolder", _settings.RecordingDirectory, Path.GetDirectoryName(recorder.FilePath)),
+            DarkMessageBox.Show(this, L.F("Rec_InFallbackFolder", _settings.RecordingDirectory, Path.GetDirectoryName(recorder.FilePath)),
                 L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
@@ -726,7 +726,7 @@ public sealed class RideForm : Form
     {
         AppPaths.Log(path, ex);
         var reason = string.IsNullOrWhiteSpace(ex.Message) ? ex.GetType().Name : $"{ex.GetType().Name}: {ex.Message}";
-        MessageBox.Show(this, L.F(messageKey, reason, AppPaths.LogFile), caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        DarkMessageBox.Show(this, L.F(messageKey, reason, AppPaths.LogFile), caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
     }
 
     private void PickRoute(string? preselect = null)
@@ -860,7 +860,7 @@ public sealed class RideForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, L.F("Settings_SaveFailed", ex.Message), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DarkMessageBox.Show(this, L.F("Settings_SaveFailed", ex.Message), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         // A new device (or port) takes over at once; the target power carries over.
         if (deviceChanged)
@@ -879,10 +879,10 @@ public sealed class RideForm : Form
     {
         if (Guided || _training.Recorder is not null)
         {
-            MessageBox.Show(this, L.T("Settings_RestartLater"), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            DarkMessageBox.Show(this, L.T("Settings_RestartLater"), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        if (MessageBox.Show(this, L.T("Settings_RestartNow"), L.T("Settings_Title"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+        if (DarkMessageBox.Show(this, L.T("Settings_RestartNow"), L.T("Settings_Title"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             Application.Restart();
     }
 
@@ -916,7 +916,7 @@ public sealed class RideForm : Form
     private void FitTo(Screen screen)
     {
         var area = screen.Bounds;
-        // As before: laid out for the small rider monitor, never larger than the smallest screen; in the demo as on the
+        // Smallest monitor (default): laid out for the small rider monitor, never larger than the smallest screen; in the demo as on the
         // ergometer's 1280×1024 monitor, also on a larger one.
         var autoMax = Monitors.MaxRideViewSize(RiderScreen());
         if (IsDemo && screen.DeviceName == RiderScreen().DeviceName)

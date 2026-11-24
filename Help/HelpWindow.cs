@@ -194,7 +194,7 @@ public static class HelpWindow
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            MessageBox.Show(L.F("Help_OpenFailed", ex.Message), L.T("Help_Caption"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DarkMessageBox.Show(L.F("Help_OpenFailed", ex.Message), L.T("Help_Caption"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 
@@ -206,7 +206,7 @@ public static class HelpWindow
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            MessageBox.Show(L.F("Help_TargetFailed", target, ex.Message), L.T("Help_Caption"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DarkMessageBox.Show(L.F("Help_TargetFailed", target, ex.Message), L.T("Help_Caption"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

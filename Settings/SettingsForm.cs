@@ -31,7 +31,7 @@ public sealed class SettingsForm : Form
     }
 
     /// <summary>
-    /// The sizes for the chosen monitor: as before, the whole monitor, and the fixed sizes that fit it. A saved size
+    /// The sizes for the chosen monitor: the smallest monitor (default), the whole monitor, and the fixed sizes that fit it. A saved size
     /// larger than this monitor stays in the list (the window is then simply as large as the monitor).
     /// </summary>
     private void FillSizes(string selected)
@@ -39,7 +39,8 @@ public sealed class SettingsForm : Form
         var screen = Monitors.RideScreen(RideMonitor);
         var physical = Monitors.PhysicalSize(screen);
         _cmbSize.Items.Clear();
-        _cmbSize.Items.Add(new SizeItem(Monitors.SizeAuto, L.T("Settings_SizeAuto")));
+        var smallest = Monitors.SmallestPhysicalSize(screen);
+        _cmbSize.Items.Add(new SizeItem(Monitors.SizeAuto, L.F("Settings_SizeAuto", smallest.Width, smallest.Height)));
         _cmbSize.Items.Add(new SizeItem(Monitors.SizeScreen, L.F("Settings_SizeScreen", physical.Width, physical.Height)));
         var sizes = Monitors.FixedRideViewSizes.Where(s => s.Width <= physical.Width && s.Height <= physical.Height).ToList();
         if (Monitors.ParseSize(selected) is { } saved && !sizes.Contains(saved))
@@ -47,6 +48,9 @@ public sealed class SettingsForm : Form
         foreach (var size in sizes.OrderBy(s => s.Width).ThenBy(s => s.Height))
             _cmbSize.Items.Add(new SizeItem(Monitors.FormatSize(size), L.F("Settings_SizeFixed", size.Width, size.Height)));
         _cmbSize.SelectedItem = _cmbSize.Items.Cast<SizeItem>().FirstOrDefault(i => i.Setting == selected) ?? _cmbSize.Items[0];
+        // Wide enough for the longest entry ("… – Standard"), plus the drop-down arrow.
+        var widest = _cmbSize.Items.Cast<SizeItem>().Max(i => TextRenderer.MeasureText(i.Text, _cmbSize.Font).Width);
+        _cmbSize.Width = Math.Max(_cmbSize.Width, widest + SystemInformation.VerticalScrollBarWidth + 16);
     }
 
     private readonly NumericUpDown _numRider = new() { Minimum = 30, Maximum = 250, Width = 80 };
@@ -345,7 +349,7 @@ public sealed class SettingsForm : Form
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, L.T("Caption_Folder"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show(this, ex.Message, L.T("Caption_Folder"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         };
         FormClosing += (_, e) =>
@@ -358,7 +362,7 @@ public sealed class SettingsForm : Form
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, L.F("Settings_FolderInvalid", ex.Message), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show(this, L.F("Settings_FolderInvalid", ex.Message), L.T("Settings_Title"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
             }
         };

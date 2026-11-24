@@ -17,7 +17,18 @@ public static partial class Monitors
         return new Size(Math.Min(rideScreen.Bounds.Width, smallest.Width), Math.Min(rideScreen.Bounds.Height, smallest.Height));
     }
 
-    /// <summary>Ride view size "as before": the rider monitor, at most the smallest connected screen (the demo: 1280×1024).</summary>
+    /// <summary>
+    /// <see cref="MaxRideViewSize"/> in real screen pixels, for the settings list: the smallest connected monitor's
+    /// resolution, at most that of <paramref name="rideScreen"/>.
+    /// </summary>
+    public static Size SmallestPhysicalSize(Screen rideScreen)
+    {
+        var smallest = PhysicalSize(Screen.AllScreens.MinBy(s => s.Bounds.Width * s.Bounds.Height)!);
+        var ride = PhysicalSize(rideScreen);
+        return new Size(Math.Min(ride.Width, smallest.Width), Math.Min(ride.Height, smallest.Height));
+    }
+
+    /// <summary>Ride view size "smallest monitor" (the default, formerly "as before"): the rider monitor, at most the smallest connected screen (the demo: 1280×1024).</summary>
     public const string SizeAuto = "auto";
     /// <summary>Ride view size: the whole monitor it is on.</summary>
     public const string SizeScreen = "screen";

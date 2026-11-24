@@ -57,7 +57,7 @@ public sealed class SummaryForm : Form
         folder.Click += (_, _) =>
         {
             try { System.Diagnostics.Process.Start("explorer.exe", File.Exists(savedFile) ? $"/select,\"{savedFile}\"" : $"\"{Path.GetDirectoryName(savedFile)}\""); }
-            catch (Exception ex) { MessageBox.Show(this, ex.Message, L.T("Caption_Folder"), MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception ex) { DarkMessageBox.Show(this, ex.Message, L.T("Caption_Folder"), MessageBoxButtons.OK, MessageBoxIcon.Warning); }
         };
         var buttons = new FlowLayoutPanel { AutoSize = true, Anchor = AnchorStyles.Right, Margin = new Padding(0, 16, 0, 0) };
         buttons.Controls.Add(folder);

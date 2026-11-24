@@ -19,7 +19,8 @@ static class Program
         // Settings first: they set the language of everything that follows (also the -help window).
         var settings = AppSettings.Load();
         Language.Apply(settings.Language);
-        // All dialogs dark like the ride view (and the Windows dark title bar); MessageBox stays as Windows draws it.
+        // All dialogs dark like the ride view (and the Windows dark title bar); messages via DarkMessageBox, since
+        // Windows' MessageBox stays white.
         Application.SetColorMode(SystemColorMode.Dark);
 
         bool demo = false, mainScreen = false;

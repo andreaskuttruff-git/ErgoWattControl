@@ -83,7 +83,7 @@ public sealed class RenameRecordingForm : Form
             }
             catch (Exception ex)
             {
-                MessageBox.Show(owner, L.F("End_DeleteFailed", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show(owner, L.F("End_DeleteFailed", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return savedFile;
             }
         }
@@ -97,7 +97,7 @@ public sealed class RenameRecordingForm : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show(owner, L.F("End_RenameFailed", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            DarkMessageBox.Show(owner, L.F("End_RenameFailed", ex.Message), L.T("Caption_Recording"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return savedFile;
         }
     }
