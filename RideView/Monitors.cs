@@ -10,25 +10,33 @@ public static partial class Monitors
         ?? Screen.AllScreens.FirstOrDefault(s => !s.Primary)
         ?? Screen.PrimaryScreen!;
 
-    /// <summary>The ride view is laid out for the small rider monitor, so it never grows beyond the smallest connected screen.</summary>
-    public static Size MaxRideViewSize(Screen rideScreen)
-    {
-        var smallest = Screen.AllScreens.MinBy(s => s.Bounds.Width * s.Bounds.Height)!.Bounds.Size;
-        return new Size(Math.Min(rideScreen.Bounds.Width, smallest.Width), Math.Min(rideScreen.Bounds.Height, smallest.Height));
-    }
+    /// <summary>The ergometer's monitor (real pixels): the ride view is laid out for it, and the demo shows it in this size.</summary>
+    public static readonly Size ErgometerMonitorSize = new(1280, 1024);
 
     /// <summary>
-    /// <see cref="MaxRideViewSize"/> in real screen pixels, for the settings list: the smallest connected monitor's
-    /// resolution, at most that of <paramref name="rideScreen"/>.
+    /// Size of the ride view for <see cref="SizeAuto"/> ("smallest monitor", the default): the rider monitor, at most
+    /// the smallest connected screen (the view is laid out for the small rider monitor), in the demo at most
+    /// <paramref name="demoLimit"/>. All sizes in the same unit.
     /// </summary>
-    public static Size SmallestPhysicalSize(Screen rideScreen)
+    public static Size AutoRideViewSize(Size rideScreen, Size smallestScreen, Size? demoLimit)
     {
-        var smallest = PhysicalSize(Screen.AllScreens.MinBy(s => s.Bounds.Width * s.Bounds.Height)!);
-        var ride = PhysicalSize(rideScreen);
-        return new Size(Math.Min(ride.Width, smallest.Width), Math.Min(ride.Height, smallest.Height));
+        var size = Smaller(rideScreen, smallestScreen);
+        return demoLimit is { } limit ? Smaller(size, limit) : size;
     }
 
-    /// <summary>Ride view size "smallest monitor" (the default, formerly "as before"): the rider monitor, at most the smallest connected screen (the demo: 1280×1024).</summary>
+    /// <summary><see cref="AutoRideViewSize(Size, Size, Size?)"/> in app pixels, for the window on <paramref name="rideScreen"/>.</summary>
+    public static Size AutoRideViewSize(Screen rideScreen, bool demo) =>
+        AutoRideViewSize(rideScreen.Bounds.Size, SmallestScreen().Bounds.Size, demo ? FromPhysical(rideScreen, ErgometerMonitorSize) : null);
+
+    /// <summary>The same size in real screen pixels, as the settings list shows it.</summary>
+    public static Size AutoRideViewPhysicalSize(Screen rideScreen, bool demo) =>
+        ToPhysical(rideScreen, AutoRideViewSize(rideScreen, demo));
+
+    private static Screen SmallestScreen() => Screen.AllScreens.MinBy(s => s.Bounds.Width * s.Bounds.Height)!;
+
+    private static Size Smaller(Size a, Size b) => new(Math.Min(a.Width, b.Width), Math.Min(a.Height, b.Height));
+
+    /// <summary>Ride view size "smallest monitor" (the default): see <see cref="AutoRideViewSize(Size, Size, Size?)"/>.</summary>
     public const string SizeAuto = "auto";
     /// <summary>Ride view size: the whole monitor it is on.</summary>
     public const string SizeScreen = "screen";
@@ -64,12 +72,15 @@ public static partial class Monitors
     }
 
     /// <summary>Resolution of the monitor in real pixels (its display mode), or its bounds if that can't be read.</summary>
-    public static Size PhysicalSize(Screen screen)
+    public static Size PhysicalSize(Screen screen) => DisplayMode(screen) ?? screen.Bounds.Size;
+
+    /// <summary>The monitor's current display mode (real pixels); null if it can't be read.</summary>
+    private static Size? DisplayMode(Screen screen)
     {
         var mode = new DevMode { dmSize = (short)System.Runtime.InteropServices.Marshal.SizeOf<DevMode>() };
         return EnumDisplaySettings(screen.DeviceName, -1 /* ENUM_CURRENT_SETTINGS */, ref mode) && mode.dmPelsWidth > 0 && mode.dmPelsHeight > 0
             ? new Size(mode.dmPelsWidth, mode.dmPelsHeight)
-            : screen.Bounds.Size;
+            : null;
     }
 
     /// <summary>Number as Windows shows it in display settings (taken from \\.\DISPLAYn), falling back to list position.</summary>
@@ -124,13 +135,17 @@ public static partial class Monitors
     /// monitor with a different scaling Windows stretches it: 1280 app pixels are only 1024 real ones on a 100 %
     /// monitor next to a 125 % main monitor.
     /// </summary>
-    public static Size FromPhysical(Screen screen, Size physical)
-    {
-        var mode = new DevMode { dmSize = (short)System.Runtime.InteropServices.Marshal.SizeOf<DevMode>() };
-        if (!EnumDisplaySettings(screen.DeviceName, -1 /* ENUM_CURRENT_SETTINGS */, ref mode) || mode.dmPelsWidth <= 0 || mode.dmPelsHeight <= 0)
-            return physical;
-        return new Size(physical.Width * screen.Bounds.Width / mode.dmPelsWidth, physical.Height * screen.Bounds.Height / mode.dmPelsHeight);
-    }
+    public static Size FromPhysical(Screen screen, Size physical) =>
+        DisplayMode(screen) is { } mode ? Scale(physical, screen.Bounds.Size, mode) : physical;
+
+    /// <summary>Real screen pixels for the given app pixels on that monitor (the reverse of <see cref="FromPhysical"/>).</summary>
+    public static Size ToPhysical(Screen screen, Size app) =>
+        DisplayMode(screen) is { } mode ? Scale(app, mode, screen.Bounds.Size) : app;
+
+    /// <summary><paramref name="size"/> × <paramref name="to"/> / <paramref name="from"/>, rounded, so converting there and back gives the same size.</summary>
+    internal static Size Scale(Size size, Size to, Size from) => new(
+        (int)Math.Round((double)size.Width * to.Width / from.Width),
+        (int)Math.Round((double)size.Height * to.Height / from.Height));
 
     [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
     private static extern bool EnumDisplaySettings(string deviceName, int modeNum, ref DevMode devMode);

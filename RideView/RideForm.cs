@@ -904,9 +904,6 @@ public sealed class RideForm : Form
         _btnScreen.Text = OnRiderScreen && !single ? L.T("Ride_ToMainScreen") : L.T("Ride_ToRideView");
     }
 
-    /// <summary>Size of the small rider monitor at the ergometer (KellerPC); the demo shows the ride view in it.</summary>
-    private static readonly Size ErgometerMonitorSize = new(1280, 1024);
-
     private readonly bool _demoStart;
 
     /// <summary>Demo: started with -demo or the demo device chosen (before the device is created at Shown, from the settings).</summary>
@@ -916,14 +913,8 @@ public sealed class RideForm : Form
     private void FitTo(Screen screen)
     {
         var area = screen.Bounds;
-        // Smallest monitor (default): laid out for the small rider monitor, never larger than the smallest screen; in the demo as on the
-        // ergometer's 1280×1024 monitor, also on a larger one.
-        var autoMax = Monitors.MaxRideViewSize(RiderScreen());
-        if (IsDemo && screen.DeviceName == RiderScreen().DeviceName)
-        {
-            var monitor = Monitors.FromPhysical(screen, ErgometerMonitorSize);
-            autoMax = new Size(Math.Min(autoMax.Width, monitor.Width), Math.Min(autoMax.Height, monitor.Height));
-        }
+        // Smallest monitor (default): the same calculation the settings list shows; the demo limit only on the rider monitor.
+        var autoMax = Monitors.AutoRideViewSize(RiderScreen(), demo: IsDemo && screen.DeviceName == RiderScreen().DeviceName);
         var size = Monitors.RideViewMax(_settings.RideViewSize, area.Size, autoMax, physical => Monitors.FromPhysical(screen, physical));
         // The limit follows the setting (dragging a window edge isn't possible anyway, it has none).
         MaximumSize = size;

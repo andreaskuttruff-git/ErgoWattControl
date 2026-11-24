@@ -16,6 +16,15 @@ public sealed class SettingsForm : Form
     /// <summary>The chosen kind of ergometer (<see cref="ErgometerTypes"/>).</summary>
     public ErgometerType DeviceType => (ErgometerType)_cmbDevice.SelectedItem!;
     public string Device => DeviceType.Id;
+
+    /// <summary>The device the dialog opened with (to tell whether it was changed here).</summary>
+    private readonly string _openedDevice;
+
+    /// <summary>
+    /// The ride view will show the demo: the demo device is chosen here, or the app runs the demo (-demo) and the device
+    /// wasn't changed here. The default size is then limited to the ergometer's monitor, as in the ride view.
+    /// </summary>
+    private bool RidesDemo => Device == ErgometerTypes.Demo || (_controller.Device is DemoErgometer && Device == _openedDevice);
     public string? PortName => _cmbPorts.SelectedItem as string;
     public string RecordingDirectory => _txtFolder.Text.Trim();
     public string? RideMonitor => (_cmbMonitor.SelectedItem as MonitorItem)?.DeviceName;
@@ -36,11 +45,13 @@ public sealed class SettingsForm : Form
     /// </summary>
     private void FillSizes(string selected)
     {
+        if (_cmbDevice.SelectedItem is null)
+            return; // still being built
         var screen = Monitors.RideScreen(RideMonitor);
         var physical = Monitors.PhysicalSize(screen);
         _cmbSize.Items.Clear();
-        var smallest = Monitors.SmallestPhysicalSize(screen);
-        _cmbSize.Items.Add(new SizeItem(Monitors.SizeAuto, L.F("Settings_SizeAuto", smallest.Width, smallest.Height)));
+        var auto = Monitors.AutoRideViewPhysicalSize(screen, RidesDemo);
+        _cmbSize.Items.Add(new SizeItem(Monitors.SizeAuto, L.F("Settings_SizeAuto", auto.Width, auto.Height)));
         _cmbSize.Items.Add(new SizeItem(Monitors.SizeScreen, L.F("Settings_SizeScreen", physical.Width, physical.Height)));
         var sizes = Monitors.FixedRideViewSizes.Where(s => s.Width <= physical.Width && s.Height <= physical.Height).ToList();
         if (Monitors.ParseSize(selected) is { } saved && !sizes.Contains(saved))
@@ -196,6 +207,7 @@ public sealed class SettingsForm : Form
     public SettingsForm(AppSettings settings, ErgoController controller)
     {
         _controller = controller;
+        _openedDevice = ErgometerTypes.Find(settings.Device).Id;
         _appSettings = settings;
         Text = L.T("Settings_Title");
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -274,7 +286,12 @@ public sealed class SettingsForm : Form
             portLabel.Visible = portRow.Visible = _lblTest.Visible = DeviceType.UsesSerialPort;
             btnTest.Visible = DeviceType.TestConnection is not null;
         }
-        _cmbDevice.SelectedIndexChanged += (_, _) => ShowDeviceFields();
+        _cmbDevice.SelectedIndexChanged += (_, _) =>
+        {
+            ShowDeviceFields();
+            if (_cmbSize.Items.Count > 0)
+                FillSizes(RideViewSize); // the demo limits the default size
+        };
         ShowDeviceFields();
         Controls.Add(grid);
 

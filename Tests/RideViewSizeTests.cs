@@ -48,6 +48,33 @@ public class RideViewSizeTests
         Assert.Equal(new Size(1024, 819), Monitors.RideViewMax("1280x1024", FullHd, AsBefore, Scaled));
     }
 
+    [Fact]
+    public void SmallestMonitor_IsTheRideMonitor_AtMostTheSmallestScreen() =>
+        Assert.Equal(new Size(1280, 1024), Monitors.AutoRideViewSize(FullHd, new Size(1280, 1024), demoLimit: null));
+
+    [Fact]
+    public void SmallestMonitor_LimitsEachSideOnItsOwn() =>
+        Assert.Equal(new Size(1680, 1050), Monitors.AutoRideViewSize(new Size(1920, 1200), new Size(1680, 1050), demoLimit: null));
+
+    [Fact]
+    public void SmallestMonitor_InTheDemo_IsAtMostTheErgometerMonitor()
+    {
+        var big = new Size(1920, 1200);
+        Assert.Equal(big, Monitors.AutoRideViewSize(big, big, demoLimit: null));
+        Assert.Equal(Monitors.ErgometerMonitorSize, Monitors.AutoRideViewSize(big, big, Monitors.ErgometerMonitorSize));
+    }
+
+    [Fact]
+    public void ScaledMonitor_ConvertsThereAndBackToTheSameSize()
+    {
+        // 2560×1440 at 125 %: Windows reports 2048×1152 for the system-DPI-aware app.
+        var mode = new Size(2560, 1440);
+        var bounds = new Size(2048, 1152);
+        var app = Monitors.Scale(Monitors.ErgometerMonitorSize, bounds, mode);
+        Assert.Equal(new Size(1024, 819), app);
+        Assert.Equal(Monitors.ErgometerMonitorSize, Monitors.Scale(app, mode, bounds));
+    }
+
     [Theory]
     [InlineData("1280x1024", 1280, 1024)]
     [InlineData("auto", null, null)]
