@@ -2,6 +2,9 @@ Steuerung für das Daum **ergo_bike 8008 TRS** über die serielle Schnittstelle 
 
 📖 **[Hilfe / Bedienungsanleitung](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.de.html)** · [Help (English)](https://andreaskuttruff-git.github.io/ErgoWattControl/Help.en.html) – in der App mit F1.
 
+### Neu in v2.3.2
+- **Fahransicht in kleinen Größen:** Bei kleiner Fahransicht (z. B. 1024 × 768) wurde die große Leistungszahl abgeschnitten. Leistung und Puls werden jetzt so weit verkleinert, dass sie ganz zu sehen sind; ab 1280 × 1024 bleibt alles wie bisher.
+
 ### Neu in v2.3.1
 - **Bluetooth-Smart-Trainer (FTMS, ErgoBridge): Die Verbindung klappt jetzt.** Bisher brach sie unter Windows 11 gleich nach dem Verbinden wieder ab („Bluetooth: Verbindung verloren“), weil Windows die zweite Dienstabfrage direkt hinter der ersten ablehnte. Jetzt fragt die App alle Dienste in einem Schritt ab. Mit der ErgoBridge getestet: Verbindung, Zielleistung in 5-W-Schritten, Leistung, Trittfrequenz und Puls zurück – auch über die ganze Strecke bis zum seriellen Cockpit-Anschluss. Am echten Daum-Cockpit hinter der Bridge ist es noch nicht ausprobiert.
 - **Log:** Unerwartete Bluetooth-Fehler stehen in `ErgoWattControl.log` jetzt mit der Stelle im Programm.
