@@ -130,7 +130,13 @@ public sealed class FtmsErgometer : IErgometer
                 {
                     // Not riding yet (refused, Bluetooth off, setup failed): noted once per reason, not every retry.
                     notedFailure = reason;
-                    AppPaths.Note($"Bluetooth: {reason} – retrying every {_retryDelay.TotalSeconds:0} s");
+                    var line = $"Bluetooth: {reason} – retrying every {_retryDelay.TotalSeconds:0} s";
+                    // Unexpected errors (not our own FtmsLinkException) get their stack trace: the message alone, often
+                    // empty for a COMException from Windows' Bluetooth stack, doesn't tell which call failed.
+                    if (ex is FtmsLinkException)
+                        AppPaths.Note(line);
+                    else
+                        AppPaths.Log(line, ex);
                 }
                 Report(L.F("Ftms_Retrying", Describe(ex)), false, reason);
             }

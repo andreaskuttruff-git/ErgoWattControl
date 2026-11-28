@@ -138,9 +138,9 @@ internal sealed class WinRtFtmsConnection : IFtmsConnection
         GattCharacteristic? range, status;
         try
         {
-            ftms = await FirstServiceAsync(device, BluetoothUuidHelper.FromShortId(FtmsProtocol.FitnessMachineService), cancel)
-                ?? throw new IOException("no Fitness Machine Service");
-            bridge = await FirstServiceAsync(device, FtmsProtocol.BridgeService, cancel);
+            (ftms, bridge) = await ServicesAsync(device, cancel);
+            if (ftms is null)
+                throw new IOException("no Fitness Machine Service");
 
             ibd = await CharacteristicAsync(ftms, BluetoothUuidHelper.FromShortId(FtmsProtocol.IndoorBikeDataChar), cancel)
                 ?? throw new IOException("no Indoor Bike Data");
@@ -179,19 +179,35 @@ internal sealed class WinRtFtmsConnection : IFtmsConnection
         }
     }
 
-    private static async Task<GattDeviceService?> FirstServiceAsync(BluetoothLEDevice device, Guid uuid, CancellationToken cancel)
+    /// <summary>
+    /// The FTMS and the bridge service from one uncached discovery of all services. Uncached (a fresh firmware may have
+    /// changed them), but only once: a second uncached query right after the first is refused by Windows with
+    /// 0x80070016 (ERROR_BAD_COMMAND) on an ESP32 – measured with the ErgoBridge on 2026-11-28.
+    /// </summary>
+    private static async Task<(GattDeviceService? Ftms, GattDeviceService? Bridge)> ServicesAsync(BluetoothLEDevice device,
+        CancellationToken cancel)
     {
-        var result = await device.GetGattServicesForUuidAsync(uuid, BluetoothCacheMode.Uncached).AsTask(cancel);
+        var result = await device.GetGattServicesAsync(BluetoothCacheMode.Uncached).AsTask(cancel);
         if (result.Status != GattCommunicationStatus.Success)
             throw new IOException($"service query failed ({result.Status})");
-        for (var i = 1; i < result.Services.Count; i++)
-            result.Services[i].Dispose();
-        return result.Services.Count > 0 ? result.Services[0] : null;
+        var ftmsUuid = BluetoothUuidHelper.FromShortId(FtmsProtocol.FitnessMachineService);
+        GattDeviceService? ftms = null, bridge = null;
+        foreach (var service in result.Services)
+        {
+            if (ftms is null && service.Uuid == ftmsUuid)
+                ftms = service;
+            else if (bridge is null && service.Uuid == FtmsProtocol.BridgeService)
+                bridge = service;
+            else
+                service.Dispose();
+        }
+        return (ftms, bridge);
     }
 
     private static async Task<GattCharacteristic?> CharacteristicAsync(GattDeviceService service, Guid uuid, CancellationToken cancel)
     {
-        var result = await service.GetCharacteristicsForUuidAsync(uuid, BluetoothCacheMode.Uncached).AsTask(cancel);
+        // Cached: the services were just discovered uncached, and Windows fetches what isn't cached yet from the device.
+        var result = await service.GetCharacteristicsForUuidAsync(uuid, BluetoothCacheMode.Cached).AsTask(cancel);
         if (result.Status != GattCommunicationStatus.Success)
             throw new IOException($"characteristic query failed ({result.Status})");
         return result.Characteristics.Count > 0 ? result.Characteristics[0] : null;
