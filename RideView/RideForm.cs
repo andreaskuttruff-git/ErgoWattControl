@@ -156,6 +156,10 @@ public sealed class RideForm : Form
         // Right next to the big number: the pulse of the original ride at this point, green (positioned in ShowPulseThen).
         _pulse.Controls.Add(_pulseThen);
         _pulse.Resize += (_, _) => PlacePulseThen();
+        _pulse.FontChanged += (_, _) => PlacePulseThen();
+        // On a small ride view (e.g. 1024 × 768) the cells are lower than the 88 pt digits: shrink them to fit.
+        FitBigValue(_power, "888 W");
+        FitBigValue(_pulse, "188");
         pulseCell.Controls.Add(CreateValueCaption(L.T("Ride_Pulse")));
         pulseCell.Controls.Add(pulseHeader);
         grid.Controls.Add(pulseCell, 1, 0);
@@ -1024,6 +1028,48 @@ public sealed class RideForm : Form
         Font = new Font("Segoe UI", 18, FontStyle.Bold),
         TextAlign = ContentAlignment.MiddleCenter,
     };
+
+    /// <summary>
+    /// Keeps the big number of <paramref name="label"/> whole in its cell: the font shrinks (never grows beyond its
+    /// design size) until <paramref name="widest"/> fits, so the size doesn't jump as the value changes.
+    /// </summary>
+    private static void FitBigValue(Label label, string widest)
+    {
+        var designSize = label.Font.Size;
+        void Fit()
+        {
+            if (label.ClientSize.Width <= 0 || label.ClientSize.Height <= 0)
+                return;
+            var size = designSize;
+            while (size > 12 && !BigValueFits(label.ClientSize, widest, size))
+                size -= 2;
+            if (Math.Abs(label.Font.Size - size) < 0.1f)
+                return;
+            var old = label.Font;
+            label.Font = new Font(old.FontFamily, size, old.Style);
+            old.Dispose();
+        }
+        // After the layout pass, not inside it: a new font makes the parent lay out again, and doing that from
+        // within its own layout leaves the label at its initial size.
+        label.Resize += (_, _) =>
+        {
+            if (label.IsHandleCreated)
+                label.BeginInvoke(Fit);
+        };
+    }
+
+    /// <summary>
+    /// Whether <paramref name="text"/> in the big-number font of <paramref name="size"/> pt is whole in a cell of
+    /// <paramref name="cell"/>. The label centres the whole line height, but digits only use its upper part (no
+    /// descent, little of the internal leading): they stay whole while the cell has about 70 % of the line height.
+    /// </summary>
+    internal static bool BigValueFits(Size cell, string text, float size)
+    {
+        using var font = new Font("Segoe UI", size, FontStyle.Bold);
+        // Width with the label's own padding: any wider and it wraps "W" onto a second, hidden line.
+        var line = TextRenderer.MeasureText(text, font);
+        return line.Width <= cell.Width && line.Height * 0.7 <= cell.Height;
+    }
 
     private static Label CreateValue(float size, Color color) => new()
     {

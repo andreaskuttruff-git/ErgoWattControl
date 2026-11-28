@@ -75,6 +75,15 @@ public class RideViewSizeTests
         Assert.Equal(Monitors.ErgometerMonitorSize, Monitors.Scale(app, mode, bounds));
     }
 
+    [Fact]
+    public void BigNumber_FitsAtFullSize_OnTheErgometerMonitor_AndShrinksOnASmallOne()
+    {
+        // Cell sizes of the power number in the ride view at 1280×1024 and at 1024×768.
+        Assert.True(RideForm.BigValueFits(new Size(444, 158), "888 W", 88));
+        Assert.False(RideForm.BigValueFits(new Size(316, 88), "888 W", 88));
+        Assert.True(RideForm.BigValueFits(new Size(316, 88), "888 W", 60));
+    }
+
     [Theory]
     [InlineData("1280x1024", 1280, 1024)]
     [InlineData("auto", null, null)]
